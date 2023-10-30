@@ -1,4 +1,3 @@
-
 # Data Ecosystem Lab - Winter Semester 2023 (Group 3)
 
 Welcome to the Data Ecosystem Lab repository for Group 3 in the Winter Semester of 2023. This repository is dedicated to our collaborative work on the Data Ecosystem Lab project, where we will explore and analyze various aspects of data ecosystems.
@@ -16,4 +15,6 @@ In this repository, we will work on a health application using solid pods, with 
 For an overview of the roles and responsibilities of each team member, please refer to the [Roles & Responsibilities Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/Roles-and-Responsibilities).
 
 ## High-Level Overview
-To get a high-level understanding of our project, please read the [High-Level Overview Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description).
+To get a high-level understanding of the application architecture, please read the [High-Level Architecture Overview Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description).
+
+For a high-level insight into the application purposes and features, please refer to the [High-Level Purposes and Features Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description-of-application-purposes-and-features)
