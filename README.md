@@ -15,6 +15,4 @@ In this repository, we will work on a health application using solid pods, with 
 For an overview of the roles and responsibilities of each team member, please refer to the [Roles & Responsibilities Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/Roles-and-Responsibilities).
 
 ## High-Level Overview
-To get a high-level understanding of the application architecture, please read the [High-Level Architecture Overview Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description).
-
-For a high-level insight into the application purposes and features, please refer to the [High-Level Purposes and Features Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description-of-application-purposes-and-features)
+To get a high-level understanding of the application architecture, purpose, features and potential application domains, please read the [High-Level Overview Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description).
