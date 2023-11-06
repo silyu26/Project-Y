@@ -1,7 +1,13 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import Button from 'react-bootstrap/Button'
 
 export default function Home() {
+
+  const testConnection = () => {
+    console.log("Connection Established")
+  }
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -37,6 +43,11 @@ export default function Home() {
           height={37}
           priority
         />
+      </div>
+
+      <div className='align-center'>
+        <h1>Welcome to Project Y</h1>
+        <Button className='primary' onClick={testConnection()}>Test Connection to the Pods</Button>
       </div>
 
       <div className={styles.grid}>
