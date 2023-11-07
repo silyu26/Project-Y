@@ -4,9 +4,6 @@ import Button from 'react-bootstrap/Button'
 
 export default function Home() {
 
-  const testConnection = () => {
-    console.log("Connection Established")
-  }
 
   return (
     <main className={styles.main}>
@@ -47,7 +44,7 @@ export default function Home() {
 
       <div className='align-center'>
         <h1>Welcome to Project Y</h1>
-        <Button className='primary' onClick={testConnection()}>Test Connection to the Pods</Button>
+        <Button variant='primary'>Test Connection to the Pods</Button>
       </div>
 
       <div className={styles.grid}>
