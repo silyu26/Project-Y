@@ -1,5 +1,9 @@
 import { LoginButton, LogoutButton, Text, useSession, CombinedDataProvider } from "@inrupt/solid-ui-react"
-// import Button from 'react-bootstrap/Button'
+import { useState } from "react"
+import Toast from 'react-bootstrap/Toast'
+import ToastContainer from 'react-bootstrap/ToastContainer'
+import Button from 'react-bootstrap/Button'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 const authOptions = {
   clientName: "Solid Project Y",
@@ -8,6 +12,16 @@ const authOptions = {
 function App() {
   
   const {session} = useSession()
+  const [error, setError] = useState(null) 
+  const [showToast, setShowToast] = useState(false)
+
+  const onError = (Error) => {
+    console.log("Error:",Error)
+    // const statusCode = parseInt(Error.message.split(' ')[2])
+    setError(Error.message)
+    setShowToast(true)
+
+  }  
 
   return (
     <div className="App">
@@ -29,9 +43,20 @@ function App() {
             oidcIssuer="https://lab.wirtz.tech/"
             redirectUrl={window.location.href}
             authOptions={authOptions}
-          /> 
+            onError={onError}
+          >
+            <Button variant="outline-primary">Log In</Button>
+          </LoginButton> 
         </div>
       )}
+
+      <ToastContainer position="top-end">
+      <Toast bg="danger" show={showToast} onClose={() => setShowToast(false)} delay={5000} autohide>
+        <Toast.Header>
+          <strong className="mr-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body>{error}</Toast.Body>
+      </Toast></ToastContainer>
     </div>
   );
 }
