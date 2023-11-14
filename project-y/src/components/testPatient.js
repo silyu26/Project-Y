@@ -26,7 +26,7 @@ function GetOrCreatePatient() {
             const patient = await saveSolidDatasetAt(
               indexUrl,
               createSolidDataset(), {
-                fetch,
+                fetch
               }
             )
             return patient
@@ -69,15 +69,17 @@ function GetOrCreatePatient() {
         console.log("profile dataset:",profileDataset)
         const profileThing = getThing(profileDataset, session.info.webId)
         console.log("profile thing:",profileThing)
-        const podsUrls = getUrlAll(
+        {/*const podsUrls = getUrlAll(
           profileThing,
           "http://www.w3.org/ns/pim/space#storage"
-        )
+        )*/}
+        const mypods = await getPodUrlAll('https://lab.wirtz.tech/test/profile/card#me' , { fetch })
+        console.log("mypods:",mypods)
         // const pod = podsUrls[0]
         // const pod = 'https://lab.wirtz.tech/test/'
-        console.log("podUrl:",podsUrls)
+        // console.log("podUrl:",podsUrls)
         // const containerUri = `${pod}patient/`
-        const containerUri = 'https://lab.wirtz.tech/test/patient/'
+        const containerUri = 'https://lab.wirtz.tech/test/patient3/'
         const patient = await getOrCreatePatient(containerUri, session.fetch)
         console.log("patient:",patient)
         setPatient(patient)
@@ -93,6 +95,7 @@ function GetOrCreatePatient() {
             type="text"
             value={Text}
             onChange={handleChange}
+            required
           />
         </label>
         <Button type="submit" variant="info">
