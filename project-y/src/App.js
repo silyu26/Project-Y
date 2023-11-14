@@ -41,7 +41,7 @@ function App() {
           </div>
           <section>
             <GetOrCreatePatient />
-            
+            <Test />
           </section>
         </CombinedDataProvider>
       ) : (

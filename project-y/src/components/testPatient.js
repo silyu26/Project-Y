@@ -96,7 +96,7 @@ function GetOrCreatePatient() {
           />
         </label>
         <Button type="submit" variant="info">
-          Add Todo
+          Add Patient
         </Button>
       </form>
     )
