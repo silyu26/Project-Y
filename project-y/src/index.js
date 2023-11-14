@@ -8,7 +8,7 @@ import { SessionProvider } from "@inrupt/solid-ui-react";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
-    <SessionProvider>
+    <SessionProvider restorePreviousSession={true}>
       <App />
     </SessionProvider>
   // </React.StrictMode>

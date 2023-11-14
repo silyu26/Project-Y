@@ -15,12 +15,14 @@ const authOptions = {
 function App() {
   
   const {session} = useSession()
+  // const {webId} = session.info
+  // const storedItem = localStorage.getItem("solidClientAuthn:currentSession") || null
   const [error, setError] = useState(null) 
   const [showToast, setShowToast] = useState(false)
 
   const onError = (Error) => {
     console.log("Error:",Error)
-    // const statusCode = parseInt(Error.message.split(' ')[2])
+    // const statusCode = parseInt(Error.message.split(' ')[2])storedItem
     setError(Error.message)
     setShowToast(true)
   }  
