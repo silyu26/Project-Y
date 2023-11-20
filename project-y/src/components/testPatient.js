@@ -3,6 +3,10 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
 import { useSession } from "@inrupt/solid-ui-react"
 import { useEffect, useState } from "react"
 import Button from 'react-bootstrap/Button'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
 
 const STORAGE_PREDICATE = "http://www.w3.org/ns/pim/space#storage";
 const TEXT_PREDICATE = "http://schema.org/text";
@@ -53,6 +57,7 @@ function GetOrCreatePatient() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         addPatient(Text);
+        setText("")
     }
     
     const handleChange = (e) => {
@@ -79,7 +84,7 @@ function GetOrCreatePatient() {
         // const pod = 'https://lab.wirtz.tech/test/'
         // console.log("podUrl:",podsUrls)
         // const containerUri = `${pod}patient/`
-        const containerUri = 'https://lab.wirtz.tech/test/patient3/'
+        const containerUri = 'https://lab.wirtz.tech/test/patient/'
         const patient = await getOrCreatePatient(containerUri, session.fetch)
         console.log("patient:",patient)
         setPatient(patient)
@@ -88,20 +93,21 @@ function GetOrCreatePatient() {
     }, [session])
 
     return(
-        <form onSubmit={handleSubmit} className="todo-form">
-        <label htmlFor="todo-input">
-          <input
-            id="todo-input"
-            type="text"
-            value={Text}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <Button type="submit" variant="info">
-          Add Patient
-        </Button>
-      </form>
+      <Container>
+        <Row>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className='mb-3' controlId='title'>
+            <Form.Label>patient input</Form.Label>
+            <Form.Control type="text" placeholder="Plan Title" required
+                value={Text} onChange={(e) => setText(e.target.value)} />
+          </Form.Group>
+          
+          <Button type="submit" variant="info" size="sm">
+            Add Patient
+          </Button>
+        </Form>
+        </Row>
+      </Container>
     )
 }
 

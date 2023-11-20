@@ -49,7 +49,7 @@ function Test() {
         // const profileThing = getThing(profileDataset, session.info.webId)
         // const podsUrls = getUrlAll(profileThing, STORAGE_PREDICATE)
         // const pod = podsUrls[0]
-        const containerUri = 'https://lab.wirtz.tech/test/patient3/'
+        const containerUri = 'https://lab.wirtz.tech/test/patient/'
         const patient = await getOrCreatePatient(containerUri, session.fetch)
         console.log("patient got:",patient)
         setPatient(patient)
