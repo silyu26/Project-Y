@@ -1,25 +1,70 @@
-# Data Ecosystem Lab - Winter Semester 2023 (Group 3)
+# Getting Started with Create React App
 
-Welcome to the Data Ecosystem Lab repository for Group 3 in the Winter Semester of 2023. This repository is dedicated to our collaborative work on the Data Ecosystem Lab project, where we will explore and analyze various aspects of data ecosystems.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [Roles & Responsibilities](#roles-responsibilities)
-3. [High-Level Overview](#high-level-overview)
+## Available Scripts
 
+In the project directory, you can run:
 
-## Introduction
-In this repository, we will work on a health application using solid pods, with the ability to share the data with a doctor. This space is to collaborate, share resources, and document our progress.
-The project (for now) is divided in 4 subprojects.
-1. [Main App](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3)
-2. [Emotibit Firmware](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/firmware)
-3. [Middleware Interface](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/middleware-interface)
-4. [Presentation](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/presentation)
+### `npm start`
 
-Further information on the subprojects can be found at the links.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-## Roles & Responsibilities
-For an overview of the roles and responsibilities of each team member, please refer to the [Roles & Responsibilities Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/Roles-and-Responsibilities).
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## High-Level Overview
-To get a high-level understanding of the application architecture, purpose, features and potential application domains, please read the [High-Level Overview Wiki Article](https://git.rwth-aachen.de/dsma/teaching/deco-lab-ws23/group-3/group3/-/wikis/High-level-description).
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
