@@ -1,3 +1,5 @@
+##General
+
 This is the project folder for the main webapp. This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 The webapp is the main point for the user to interact with the web app. It will allow the user to see the correlations and and get suggestions of their health goals. It will also be the point where the user can setup the sharing with their doctor.
 
