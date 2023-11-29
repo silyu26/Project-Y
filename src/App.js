@@ -2,6 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Navigatebar from "./components/navbar"
 import Login from "./pages/login"
+import Footer from "./components/footer"
 
 function App() {
 
@@ -10,6 +11,7 @@ function App() {
     <div className="App">
       <Navigatebar />
       <Login />
+      <Footer />
     </div>
     </>
   );
