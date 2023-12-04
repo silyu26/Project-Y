@@ -118,7 +118,7 @@ const Correlation = () => {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Data Point Index',
+          text: 'Day of month',
         },
       },
       y: {
