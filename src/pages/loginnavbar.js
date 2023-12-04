@@ -7,17 +7,13 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Toast from 'react-bootstrap/Toast'
 import ToastContainer from 'react-bootstrap/ToastContainer'
-import GetOrCreatePatient from "../components/testPatient"
-import Test from "../components/test"
 
 const authOptions = {
     clientName: "Solid Project Y",
   }
 
-function Login() {
-    const {session} = useSession()
-    const [error, setError] = useState(null) 
-    const [showToast, setShowToast] = useState(false)
+function Loginnavbar() {
+
 
     const onError = (Error) => {
         console.log("Error:",Error)
@@ -35,26 +31,14 @@ function Login() {
             <CombinedDataProvider datasetUrl={session.info.webId} thingUrl={session.info.webId} >
               <Row className="text-center">
                 <div className="message logged-in">
-                  <span>You are logged in as: </span>
-                  <Text properties={[ "http://www.w3.org/2006/vcard/ns#fn",
-                    "http://xmlns.com/foaf/0.1/",]} />
-                  {/*<Text property={FOAF.name.iri.value} edit/>*/}
                   <LogoutButton >
                     <Button variant="outline-warning">Log Out</Button>
                   </LogoutButton>
                 </div>
               </Row>
-              <br />
-              <Row className="text-center">
-                <section>
-                  <GetOrCreatePatient />
-                  <Test />
-                </section>
-              </Row>
             </CombinedDataProvider>
         ) : <Row>
             <div className="message">
-              <span>You are not logged in. </span>
               <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
                 // oidcIssuer="https://inrupt.net/"
                 redirectUrl={window.location.href}
@@ -79,4 +63,4 @@ function Login() {
       </>
     )
 }
- export default Login
+ export default Loginnavbar

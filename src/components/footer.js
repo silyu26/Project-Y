@@ -34,6 +34,11 @@ function Footer() {
                             <li><p className="font-weight-bold">Contact us</p></li>
                             <li><a href="mailto:elias.wirtz@rwth-aachen.de" className="no-underline"><small>Elias Wirtz</small></a></li>
                             <li><a href="mailto:martin.neumueller@rwth-aachen.de" className="no-underline"><small>Martin Neumüller</small></a></li>
+                        </ul>
+                    </Col>
+                    <Col className="col-md-auto text-nowrap">
+                        <ul>
+                            <li><p className="font-weight-bold">&nbsp;</p></li>
                             <li><a href="mailto:silyu.li@rwth-aachen.de" className="no-underline"><small>Silyu Li</small></a></li>
                             <li><a href="mailto:van.dao@rwth-aachen.de" className="no-underline"><small>Van Dao</small></a></li>
                         </ul>

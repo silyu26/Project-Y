@@ -6,3 +6,8 @@
 ul {
     list-style: none;
 }
+
+.no-ul {
+    text-decoration: none; /* This removes the underline */
+    color: inherit; /* This ensures the link inherits the color from its parent */
+  }
