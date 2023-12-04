@@ -15,13 +15,9 @@ import Home from "./pages/home"
 import { Container } from "react-bootstrap";
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import React from 'react';
-import { useSession } from "@inrupt/solid-ui-react"
-import { useState } from "react"
 
 function App() {
-  const {session} = useSession()
-  const [error, setError] = useState(null) 
-  const [showToast, setShowToast] = useState(false)
+
 
   return (
     <div className="App">

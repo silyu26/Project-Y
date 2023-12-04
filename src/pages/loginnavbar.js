@@ -13,7 +13,9 @@ const authOptions = {
   }
 
 function Loginnavbar() {
-
+  const {session} = useSession()
+  const [error, setError] = useState(null) 
+  const [showToast, setShowToast] = useState(false)
 
     const onError = (Error) => {
         console.log("Error:",Error)
