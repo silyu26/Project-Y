@@ -35,13 +35,14 @@ function Login() {
             <CombinedDataProvider datasetUrl={session.info.webId} thingUrl={session.info.webId} >
               <Row className="text-center">
                 <div className="message logged-in">
-                  <span>You are logged in as: </span>
+                  {/*<span>You are logged in as: </span>
                   <Text properties={[ "http://www.w3.org/2006/vcard/ns#fn",
                     "http://xmlns.com/foaf/0.1/",]} />
-                  {/*<Text property={FOAF.name.iri.value} edit/>*/}
+                  {/*<Text property={FOAF.name.iri.value} edit/>
                   <LogoutButton >
                     <Button variant="outline-warning">Log Out</Button>
                   </LogoutButton>
+                  */}
                 </div>
               </Row>
               <br />
@@ -55,13 +56,13 @@ function Login() {
         ) : <Row>
             <div className="message">
               <span>You are not logged in. </span>
-              <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
+             {/* <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
                 // oidcIssuer="https://inrupt.net/"
                 redirectUrl={window.location.href}
                 authOptions={authOptions}
                 onError={onError} >
                 <Button variant="outline-primary">Log In</Button>
-              </LoginButton> 
+              </LoginButton> */}
             </div>
            </Row>}
           </Col>

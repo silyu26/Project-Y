@@ -11,6 +11,7 @@ import Manageaccount from './pages/manageaccount';
 import Managepod from './pages/managepod';
 import Settings from './pages/settings';
 import Home from "./pages/home"
+import Login from "./pages/login"
 
 import { Container } from "react-bootstrap";
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
@@ -32,6 +33,7 @@ function App() {
             
             <Route path="/pages/correlation" element={<Correlation />} />
             <Route path="/pages/suggestions" element={<Suggestions />} />
+            <Route path="/pages/login" element={<Login />} />
 
             <Route path="/pages/share" element={<Share />} />
             <Route path="/pages/manageaccount" element={<Manageaccount />} />
