@@ -6,10 +6,10 @@ import Col from 'react-bootstrap/Col';
 import { BiLogoGitlab } from "react-icons/bi";
 import "./style.css";
 import { TbHexagonLetterS } from "react-icons/tb";
-
+//
 function Footer() {
     return (
-        <Navbar bg="light" variant="light" fixed="bottom">
+        <Navbar bg="light" variant="light" fixed="bottom">{/** */}
             <Container>
                 <Row className="align-items-center">
                     <Col className="text-center col-md-auto text-nowrap">

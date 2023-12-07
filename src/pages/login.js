@@ -9,6 +9,8 @@ import Toast from 'react-bootstrap/Toast'
 import ToastContainer from 'react-bootstrap/ToastContainer'
 import GetOrCreatePatient from "../components/testPatient"
 import Test from "../components/test"
+import PatientForm from "../components/patientInfo"
+import Profile from "../components/patientProfile"
 
 const authOptions = {
     clientName: "Solid Project Y",
@@ -48,8 +50,10 @@ function Login() {
               <br />
               <Row className="text-center">
                 <section>
-                  <GetOrCreatePatient />
+                  {/*<GetOrCreatePatient />*/}
+                  <PatientForm />
                   <Test />
+                  <Profile />
                 </section>
               </Row>
             </CombinedDataProvider>

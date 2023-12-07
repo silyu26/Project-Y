@@ -13,7 +13,7 @@ import Settings from './pages/settings';
 import Home from "./pages/home"
 import Login from "./pages/login"
 
-import { Container } from "react-bootstrap";
+import Container from 'react-bootstrap/Container';
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import React from 'react';
 
@@ -21,16 +21,12 @@ function App() {
 
 
   return (
-    <div className="App">
-
-      
-      <BrowserRouter>
-      <Navigatebar />   
-
-      <Container>
-        <Routes>
+    <div className="App"style={{ overflowY: 'auto', maxHeight: '100vh', maxWidth: '100%'}}>
+      <Container >
+        <BrowserRouter>
+        <Navigatebar />   
+          <Routes>
             <Route path="/" element={<Home />} />
-            
             <Route path="/pages/correlation" element={<Correlation />} />
             <Route path="/pages/suggestions" element={<Suggestions />} />
             <Route path="/pages/login" element={<Login />} />
@@ -39,11 +35,10 @@ function App() {
             <Route path="/pages/manageaccount" element={<Manageaccount />} />
             <Route path="/pages/managepod" element={<Managepod />} />
             <Route path="/pages/settings" element={<Settings />} />
-        </Routes>
-      </Container>
+          </Routes>
         <Footer />
-      </BrowserRouter>
-
+        </BrowserRouter>
+    </Container>
     </div>
 
   );
