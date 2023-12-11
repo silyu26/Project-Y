@@ -59,7 +59,8 @@ function Login() {
                 </section>
               </Row>
             </CombinedDataProvider>
-        ) : <Row>
+        ) : (
+          <Row className="text-center">
             <div className="message">
               <span>You are not logged in. </span>
              {/* <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
@@ -70,7 +71,7 @@ function Login() {
                 <Button variant="outline-primary">Log In</Button>
               </LoginButton> */}
             </div>
-           </Row>}
+           </Row>)}
           </Col>
         </Row>
       </Container>
