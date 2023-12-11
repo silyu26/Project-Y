@@ -12,7 +12,8 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
   function PatientForm() {
       const { session } = useSession()
       const [patient, setPatient] = useState()
-      const [name, setName] = useState("")
+      const [fname, setFName] = useState("")
+      const [lname, setLName] = useState("")
       const [gender, setGender] = useState("")
       const [telecom, setTelecom] = useState("")
       const [birth, setBirth] = useState("")
@@ -41,7 +42,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           }
       }
 
-      const constructPatientResource = (name, gender, tel, birth) => {
+      const constructPatientResource = (fname, lname, gender, tel, birth) => {
         const patientResource = `
         @prefix fhir: <http://hl7.org/fhir/> .
         @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -56,28 +57,14 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           fhir:active [ fhir:v "true"^^xsd:boolean] ;  
           fhir:name ( [
              fhir:use [ fhir:v "official" ] ;
-             fhir:family [ fhir:v "Li" ] ;
-             fhir:given ( [ fhir:v "${name}" ] )
+             fhir:family [ fhir:v "${lname}" ] ;
+             fhir:given ( [ fhir:v "${fname}" ] )
           ] ) ;     
           fhir:telecom ( [
-             fhir:use [ fhir:v "home" ]
-          ] [
              fhir:system [ fhir:v "phone" ] ;
              fhir:value [ fhir:v "${tel}" ] ;
              fhir:use [ fhir:v "work" ] ;
              fhir:rank [ fhir:v "1"^^xsd:positiveInteger ]
-          ] [
-             fhir:system [ fhir:v "phone" ] ;
-             fhir:value [ fhir:v "(03) 3410 5613" ] ;
-             fhir:use [ fhir:v "mobile" ] ;
-             fhir:rank [ fhir:v "2"^^xsd:positiveInteger ]
-          ] [
-             fhir:system [ fhir:v "phone" ] ;
-             fhir:value [ fhir:v "(03) 5555 8834" ] ;
-             fhir:use [ fhir:v "old" ] ;
-             fhir:period [
-               fhir:end [ fhir:v "2014"^^xsd:gYear ]
-             ]
           ] ) ; #     home communication details aren't known    
           fhir:gender [ fhir:v "${gender}"] ;     
           fhir:birthDate [ fhir:v "${birth}"^^xsd:date ] ; 
@@ -93,7 +80,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
       const handleSubmit = async (event) => {
           event.preventDefault();
           //addPatient(Text);
-          const patientResource = constructPatientResource(name, gender, telecom, birth)
+          const patientResource = constructPatientResource(fname, lname, gender, telecom, birth)
           console.log("patient resource",patientResource)
           const containerUri = 'https://lab.wirtz.tech/test/patient/'
           const req = await createPatient(containerUri, session.fetch, patientResource)
@@ -112,7 +99,8 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           );*/
           console.log("req",savedFile)
 
-          setName("")
+          setFName("")
+          setLName("")
           setBirth("")
           setGender("")
           setTelecom("")
@@ -137,9 +125,16 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
             <Row>
               <Col>
                 <Form.Group className='mb-3' controlId='Name'>
-                  <Form.Label>patient name</Form.Label>
+                  <Form.Label>patient first name</Form.Label>
                   <Form.Control type="text" placeholder="Max Mustermann" required
-                    value={name} onChange={(e) => setName(e.target.value)} />
+                    value={fname} onChange={(e) => setFName(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group className='mb-3' controlId='Name'>
+                  <Form.Label>patient last name</Form.Label>
+                  <Form.Control type="text" placeholder="Max Mustermann" required
+                    value={lname} onChange={(e) => setLName(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
@@ -170,8 +165,8 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
                 </Form.Group>
               </Col>
             </Row>
-            <Button type="submit" variant="info" size="sm">
-              Add Patient
+            <Button type="submit" variant="primary" size="sm">
+              Save Profile
             </Button>
           </Form>
         </Container>

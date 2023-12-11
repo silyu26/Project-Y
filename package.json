@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@comunica/query-sparql": "^2.10.1",
     "@inrupt/solid-client": "^1.30.2",
     "@inrupt/solid-ui-react": "^2.9.0",
     "@testing-library/jest-dom": "^5.17.0",
