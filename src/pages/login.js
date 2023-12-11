@@ -52,7 +52,9 @@ function Login() {
                 <section>
                   {/*<GetOrCreatePatient />*/}
                   <PatientForm />
-                  <Test />
+                  <hr />
+                  <br />
+                  {/*<Test />*/}
                   <Profile />
                 </section>
               </Row>
