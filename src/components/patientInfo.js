@@ -20,7 +20,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
   
   
       const createPatient = async (containerUri, fetch, patientResource) => {
-          const indexUrl = `${containerUri}patientInformation.ttl`
+          const indexUrl = `${containerUri}patientInformation2.ttl`
           console.log("index",indexUrl)
           try{
             const patient = await getSolidDataset(indexUrl, {fetch})
@@ -87,7 +87,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           console.log("req",req)
 
           const savedFile = await overwriteFile(
-            "https://lab.wirtz.tech/test/patient/patientInformation.ttl",
+            "https://lab.wirtz.tech/test/patient/patientInformation2.ttl",
             new File([patientResource], "patientInformation", { type: "application/fhir+turtle" }),
             { contentType: "text/turtle", fetch: session.fetch }
           )
