@@ -19,7 +19,7 @@ const Profile = ()=> {
     const runQuery = async() => {
         const myEngine = new QueryEngine()
         // const parser = new Parser()
-        const endpointUrl = 'https://lab.wirtz.tech/test/patient/patientInformation.ttl'
+        // const endpointUrl = 'https://lab.wirtz.tech/test/patient/patientInformation.ttl'
         const queryStr = `
           PREFIX fhir: <http://hl7.org/fhir/> 
           PREFIX owl: <http://www.w3.org/2002/07/owl#> 
