@@ -1,11 +1,14 @@
 import React from 'react';
+import Profile from '../components/patientProfile';
+import { Container, Row, Col } from 'react-bootstrap';
 
 const Manageaccount = () => {
+
   return (
-    <div>
-      <h1>Manage Account</h1>
-      <p>This is the site to manage your account.</p>
-    </div>  
+      <Container className='text-center'>
+          <br />
+          <Profile />
+      </Container>
   );
 }
 

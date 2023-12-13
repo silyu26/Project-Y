@@ -1,6 +1,4 @@
 // correlation.js
-
-import Test from "../components/test"
 import { Line, Scatter  } from 'react-chartjs-2';
 import { Chart, registerables} from 'chart.js';
 import React, { useState } from 'react';

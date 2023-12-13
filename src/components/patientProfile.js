@@ -1,8 +1,13 @@
 import { getSolidDataset, getThingAll } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Button} from "react-bootstrap";
+import { Container, Row, Modal, Button, Image} from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import dummy from "../dummy_img.jpg"
+import { MdEdit } from "react-icons/md";
+import PatientForm from "./patientInfo";
 const QueryEngine = require('@comunica/query-sparql').QueryEngine
+
 
 const Profile = ()=> {
 
@@ -10,14 +15,99 @@ const Profile = ()=> {
     const [fname, setFName] = useState("")
     const [lname, setLName] = useState("")
     const [gender, setGender] = useState("")
+    const [modalOpen, setModalOpen] = useState(false)
     const [telecom, setTelecom] = useState("")
     const [birth, setBirth] = useState("")
     const [dataset, setDataset] = useState(null)
     const [patientSources, setPatientSources] = useState([])
 
+    /**
+     * // test emotibit observation data
+        const queryStr2 = `
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
+PREFIX loinc: <https://loinc.org/rdf/>
+PREFIX owl: <http://www.w3.org/2002/07/owl>
+PREFIX fhir: <http://hl7.org/fhir/> 
 
-    
-    const runQuery = async() => {
+SELECT ?heartRateValue ?bodyTemp
+WHERE {
+  {?observation a fhir:Observation ;
+               fhir:id [ fhir:v "heart-rate"] ;
+               fhir:value [ a fhir:Quantity ;
+                             fhir:value [ fhir:v ?heartRateValue] ;
+                             fhir:unit [ fhir:v "beats/minute" ] ;
+                             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+                             fhir:code [ fhir:v "/min" ]
+               ] .
+} 
+UNION 
+{
+  ?observation a fhir:Observation ;
+               fhir:id [ fhir:v "body-temperature"] ;
+               fhir:value [ a fhir:Quantity ;
+                             fhir:value [ fhir:v ?bodyTemp] ;
+                             fhir:unit [ fhir:v "C" ] ;
+                             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+                             fhir:code [ fhir:v "Cel" ]
+               ] .
+}
+}`
+// This is for testing the INSERT option
+          const queryStr3 = `
+          PREFIX fhir: <http://hl7.org/fhir/> 
+          PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+          PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+          PREFIX loinc: <https://loinc.org/rdf/> 
+
+          INSERT DATA 
+          {
+            #http://example.com/Patient/PATIENTNB a fhir:Patient .
+            [a fhir:Observation ;
+              fhir:nodeRole fhir:treeRoot ;
+              fhir:id [ fhir:v "heart-rate"] ; # 
+              fhir:meta [
+                 fhir:profile ( [
+                   fhir:v "http://hl7.org/fhir/StructureDefinition/vitalsigns"^^xsd:anyURI ;
+                   fhir:link <http://hl7.org/fhir/StructureDefinition/vitalsigns>
+                 ] )
+              ] ; #  
+              fhir:status [ fhir:v "final"] ; # 
+              fhir:category ( [
+                 fhir:coding ( [
+                   fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/observation-category"^^xsd:anyURI ] ;
+                   fhir:code [ fhir:v "vital-signs" ] ;
+                   fhir:display [ fhir:v "Vital Signs" ]
+                 ] ) ;
+                 fhir:text [ fhir:v "Vital Signs" ]
+              ] ) ; # 
+              fhir:code [
+                 fhir:coding ( [
+                   a loinc:8867-4 ;
+                   fhir:system [ fhir:v "http://loinc.org"^^xsd:anyURI ] ;
+                   fhir:code [ fhir:v "8867-4" ] ;
+                   fhir:display [ fhir:v "Heart rate" ]
+                 ] ) ;
+                 fhir:text [ fhir:v "Heart rate" ]
+              ] ; # 
+              fhir:subject [
+                 fhir:reference [ fhir:v "Patient/PATIENTNB" ]
+              ] ; # 
+              fhir:effective [ fhir:v "2023-12-12T16:27:22Z"^^xsd:date] ; # 
+              fhir:value [
+                 a fhir:Quantity ;
+                 fhir:value [ fhir:v "0.00"^^xsd:decimal ] ;
+                 fhir:unit [ fhir:v "beats/minute" ] ;
+                 fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+                 fhir:code [ fhir:v "/min" ]
+              ] ]. #
+          }
+          `
+     */
+
+    useEffect(() => {
+      const runQuery = async() => {
         const myEngine = new QueryEngine()
         const queryStr = `
           PREFIX fhir: <http://hl7.org/fhir/> 
@@ -39,72 +129,13 @@ const Profile = ()=> {
               fhir:birthDate [fhir:v ?birth];
             ]
           } `
+        const bindingsStream = await myEngine.queryBindings(queryStr, {
+          sources: ["https://lab.wirtz.tech/test/patient/patientInformation.ttl"]
+            //patientSources
+        })
 
-          // This is for testing the INSERT option
-          /*const queryStr = `
-          PREFIX fhir: <http://hl7.org/fhir/> 
-          PREFIX owl: <http://www.w3.org/2002/07/owl#> 
-          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-          PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-          INSERT DATA {
-            [ a fhir:Patient ;
-              fhir:nodeRole fhir:treeRoot ;
-              fhir:id [ fhir:v "example"] ;    
-              fhir:active [ fhir:v "true"^^xsd:boolean] ;  
-              fhir:name ( [
-                 fhir:use [ fhir:v "official" ] ;
-                 fhir:family [ fhir:v "Li" ] ;
-                 fhir:given ( [ fhir:v "Silyu" ] )
-              ] ) ;     
-              fhir:telecom ( [
-                 fhir:system [ fhir:v "phone" ] ;
-                 fhir:value [ fhir:v "0123456789" ] ;
-                 fhir:use [ fhir:v "work" ] ;
-                 fhir:rank [ fhir:v "1"^^xsd:positiveInteger ]
-              ] ) ;
-              fhir:gender [ fhir:v "male"] ;     
-              fhir:birthDate [ fhir:v "2023-12-13"^^xsd:date ] ; 
-              fhir:deceased [ fhir:v "false"^^xsd:boolean] ;
-              fhir:address ( [
-                 fhir:use [ fhir:v "home" ] ;
-                 fhir:type [ fhir:v "both" ] ;
-                 fhir:text [ fhir:v "534 Erewhon St PeasantVille, Rainbow, Vic  3999" ] ;
-                 fhir:line ( [ fhir:v "534 Erewhon St" ] ) ;
-                 fhir:city [ fhir:v "PleasantVille" ] ;
-                 fhir:district [ fhir:v "Rainbow" ] ;
-                 fhir:state [ fhir:v "Vic" ] ;
-                 fhir:postalCode [ fhir:v "3999" ] ;
-                 fhir:period [
-                   fhir:start [ fhir:v "1974-12-25"^^xsd:date ]
-                 ]
-              ] )
-            ] .
-          }
-          `*/
-          const bindingsStream = await myEngine.queryBindings(queryStr, {
-            sources: patientSources
-            /*[
-              "https://lab.wirtz.tech/test/patient/patientInformation.ttl",
-              "https://lab.wirtz.tech/test/patient/patientInformation2.ttl"
-            ]*/
-          })
-
-        if(dataset) {
-            // const result = RDFLib.Query(queryStr, dataset)
-            // console.log("result:",result)
+        if(bindingsStream) {
             const bindings = await bindingsStream.toArray()
-            console.log(bindings)
-            console.log(bindings[0].get('lname').value)
-            console.log(bindings[0].get('fname').value)
-            console.log(bindings[0].get('gender').value)
-            console.log(bindings[0].get('tel').value)
-            console.log(bindings[0].get('birth').value)
-            console.log(bindings[1].get('lname').value)
-            console.log(bindings[1].get('fname').value)
-            console.log(bindings[1].get('gender').value)
-            console.log(bindings[1].get('tel').value)
-            console.log(bindings[1].get('birth').value)
             setFName(bindings[0].get('fname').value)
             setLName(bindings[0].get('lname').value)
             setBirth(bindings[0].get('birth').value)
@@ -112,11 +143,19 @@ const Profile = ()=> {
             setGender(bindings[0].get('gender').value)
         } else {
             console.log("No Dataset Loaded")
-        }
-        
-    }
+        } 
+      }
+      runQuery()
+    },[session])
 
-    useEffect(() => {
+    const openModal = () => {
+      setModalOpen(true)
+    }
+    const closeModal = () => {
+      setModalOpen(false)
+    }
+    
+    /*useEffect(() => {
         const getPatientProfile = async() => {
             try {
                 const profileDataset = await getSolidDataset("https://lab.wirtz.tech/test/patient/", {fetch: session.fetch})
@@ -140,19 +179,46 @@ const Profile = ()=> {
             }
         }
         getPatientProfile()
-    },[session])
+    },[session])*/
 
     return (
         <Container>
-            {/**/}
+
+          <Modal show={modalOpen} onHide={closeModal} size="md">
+            <Modal.Header closeButton>
+            <Modal.Title>Profile Form</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <PatientForm />
+            </Modal.Body>
+          </Modal>
+
+          <Row>
+            <Card style={{ width: '18rem' }} className="text-center">
+              <div className="justify-content-center"><Image src={dummy} roundedCircle style={{width:"10rem"}}/></div>
+              <hr />
+              <Card.Body>
+                <Card.Title>{fname} {lname} <MdEdit onClick={openModal} style={{ cursor: 'pointer' }} /></Card.Title><br/>
+                <Card.Text >
+                  <div>Birthday: {birth}</div><br />
+                  <div>Gender: {gender}</div><br />
+                  <div>Tel: {telecom}</div>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          
+
+          {/*<Col>
             <Button variant="info" onClick={runQuery}>Run Query</Button>
-            <Row>
-              <Col>First Name: {fname}</Col>
-              <Col>Last Name: {lname}</Col>
-              <Col>Gender: {gender}</Col>
-              <Col>Tel: {telecom}</Col>
-              <Col>Birthday: {birth}</Col>
-            </Row>
+              <Row>
+                <Col>First Name: {fname}</Col>
+                <Col>Last Name: {lname}</Col>
+                <Col>Gender: {gender}</Col>
+                <Col>Tel: {telecom}</Col>
+                <Col>Birthday: {birth}</Col>
+              </Row>
+          </Col>*/}
+          </Row>  
         </Container>
     )
 }

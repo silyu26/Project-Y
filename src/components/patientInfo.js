@@ -19,8 +19,8 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
       const [birth, setBirth] = useState("")
   
   
-      const createPatient = async (containerUri, fetch, patientResource) => {
-          const indexUrl = `${containerUri}patientInformation2.ttl`
+      const createPatient = async (containerUri, fetch) => {
+          const indexUrl = `${containerUri}patientInformation.ttl`
           console.log("index",indexUrl)
           try{
             const patient = await getSolidDataset(indexUrl, {fetch})
@@ -43,6 +43,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
       }
 
       const constructPatientResource = (fname, lname, gender, tel, birth) => {
+
         const patientResource = `
         @prefix fhir: <http://hl7.org/fhir/> .
         @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -83,63 +84,42 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           const patientResource = constructPatientResource(fname, lname, gender, telecom, birth)
           console.log("patient resource",patientResource)
           const containerUri = 'https://lab.wirtz.tech/test/patient/'
-          const req = await createPatient(containerUri, session.fetch, patientResource)
+          const req = await createPatient(containerUri, session.fetch)
           console.log("req",req)
 
           const savedFile = await overwriteFile(
-            "https://lab.wirtz.tech/test/patient/patientInformation2.ttl",
+            "https://lab.wirtz.tech/test/patient/patientInformation.ttl",
             new File([patientResource], "patientInformation", { type: "application/fhir+turtle" }),
             { contentType: "text/turtle", fetch: session.fetch }
           )
-
-          /*const savedFile2 = await saveFileInContainer(
-            "https://lab.wirtz.tech/test/patient/",
-            new File(["This is a plain piece of text"], "myFile", { type: "plain/text" }),
-            { slug: "suggestedFileName.txt", contentType: "text/plain", fetch: session.fetch }
-          );*/
-          console.log("req",savedFile)
-
           setFName("")
           setLName("")
           setBirth("")
           setGender("")
           setTelecom("")
-          //setText("")
       }
-      
-      /*
-      useEffect(() => {
-        if (!session) return;
-        (async () => {
-          const containerUri = 'https://lab.wirtz.tech/test/patient/'
-          const patientFile = await createPatient(containerUri, session.fetch)
-          console.log("patient:",patientFile)
-          // setPatient(patient)
-          // console.log("patient:",patient)
-        })()
-      }, [session])*/
-  
+
       return(
         <Container>
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col>
                 <Form.Group className='mb-3' controlId='Name'>
-                  <Form.Label>patient first name</Form.Label>
+                  <Form.Label>First Name</Form.Label>
                   <Form.Control type="text" placeholder="Max Mustermann" required
                     value={fname} onChange={(e) => setFName(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className='mb-3' controlId='Name'>
-                  <Form.Label>patient last name</Form.Label>
+                  <Form.Label>Last Name</Form.Label>
                   <Form.Control type="text" placeholder="Max Mustermann" required
                     value={lname} onChange={(e) => setLName(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className='mb-3' controlId='gender'>
-                  <Form.Label>patient gender</Form.Label>
+                  <Form.Label>Gender</Form.Label>
                   <Form.Select required
                     value={gender} onChange={(e) => setGender(e.target.value)} >
                     <option>Select Gender</option>
@@ -152,14 +132,14 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
             <Row>
               <Col>
                 <Form.Group className='mb-3' controlId='telecom'>
-                  <Form.Label>patient telecome</Form.Label>
+                  <Form.Label>Telecome</Form.Label>
                   <Form.Control type="tel" placeholder="0123456789" required
                     value={telecom} onChange={(e) => setTelecom(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className='mb-3' controlId='telecom'>
-                  <Form.Label>patient birthday</Form.Label>
+                  <Form.Label>Birthday</Form.Label>
                   <Form.Control type="date" required
                     value={birth} onChange={(e) => setBirth(e.target.value)} />
                 </Form.Group>

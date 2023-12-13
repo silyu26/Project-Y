@@ -43,8 +43,7 @@ function Loginnavbar() {
         ) : <Row>
             <div className="message">
               <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
-                // oidcIssuer="https://inrupt.net/"
-                redirectUrl={window.location.href}
+                redirectUrl={"http://localhost:3000/"}
                 authOptions={authOptions}
                 onError={onError} >
                 <Button variant="outline-primary">Log In</Button>
