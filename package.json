@@ -20,6 +20,7 @@
     "react-router-dom": "^6.20.0",
     "react-scripts": "^5.0.1",
     "react-select": "^5.8.0",
+    "tracery-grammar": "^2.7.4",
     "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },
@@ -46,5 +47,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.23.6"
   }
 }
