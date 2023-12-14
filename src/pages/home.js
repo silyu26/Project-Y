@@ -1,6 +1,7 @@
 // Import necessary React components and styles
 import React from 'react';
 import { Link } from 'react-router-dom'; // If you're using React Router for navigation
+import HeartrateCor from '../components/correlations/heartRate';
 
 
 // Dummy data for featured health correlations
@@ -34,6 +35,7 @@ const home = () => {
           <p>Ready to explore your health data?</p>
           <Link to="pages/correlation" className="cta-button">Get Started</Link>
         </section>
+        <HeartrateCor />
       </div>
     );
   };

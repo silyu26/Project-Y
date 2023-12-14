@@ -75,6 +75,95 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
         
         # -------------------------------------------------------------------------------------
         `
+        const Str = `@prefix fhir: <http://hl7.org/fhir/> .
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns> .
+        @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema> .
+        @prefix loinc: <https://loinc.org/rdf/> .
+        @prefix owl: <http://www.w3.org/2002/07/owl#> .
+        
+        
+        #http://example.com/Patient/PATIENTNB a fhir:Patient .
+        
+        [a fhir:Observation ;
+          fhir:nodeRole fhir:treeRoot ;
+          fhir:id [ fhir:v "heart-rate"] ; # 
+          fhir:meta [
+             fhir:profile ( [
+               fhir:v "http://hl7.org/fhir/StructureDefinition/vitalsigns"^^xsd:anyURI ;
+               fhir:link <http://hl7.org/fhir/StructureDefinition/vitalsigns>
+             ] )
+          ] ; #  
+          fhir:status [ fhir:v "final"] ; # 
+          fhir:category ( [
+             fhir:coding ( [
+               fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/observation-category"^^xsd:anyURI ] ;
+               fhir:code [ fhir:v "vital-signs" ] ;
+               fhir:display [ fhir:v "Vital Signs" ]
+             ] ) ;
+             fhir:text [ fhir:v "Vital Signs" ]
+          ] ) ; # 
+          fhir:code [
+             fhir:coding ( [
+               a loinc:8867-4 ;
+               fhir:system [ fhir:v "http://loinc.org"^^xsd:anyURI ] ;
+               fhir:code [ fhir:v "8867-4" ] ;
+               fhir:display [ fhir:v "Heart rate" ]
+             ] ) ;
+             fhir:text [ fhir:v "Heart rate" ]
+          ] ; # 
+          fhir:subject [
+             fhir:reference [ fhir:v "Patient/PATIENTNB" ]
+          ] ; # 
+          fhir:effective [ fhir:v "2023-12-12T16:27:22Z"^^xsd:date] ; # 
+          fhir:value [
+             a fhir:Quantity ;
+             fhir:value [ fhir:v "18.00"^^xsd:decimal ] ;
+             fhir:unit [ fhir:v "beats/minute" ] ;
+             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+             fhir:code [ fhir:v "/min" ]
+          ]] . # 
+        
+        
+        
+        [a fhir:Observation ;
+          fhir:nodeRole fhir:treeRoot ;
+          fhir:id [ fhir:v "body-temperature"] ; # 
+          fhir:meta [
+             fhir:profile ( [
+               fhir:v "http://hl7.org/fhir/StructureDefinition/vitalsigns"^^xsd:anyURI ;
+               fhir:link <http://hl7.org/fhir/StructureDefinition/vitalsigns>
+             ] )
+          ] ; #  
+          fhir:status [ fhir:v "final"] ; # 
+          fhir:category ( [
+             fhir:coding ( [
+               fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/observation-category"^^xsd:anyURI ] ;
+               fhir:code [ fhir:v "vital-signs" ] ;
+               fhir:display [ fhir:v "Vital Signs" ]
+             ] ) ;
+             fhir:text [ fhir:v "Vital Signs" ]
+          ] ) ; # 
+          fhir:code [
+             fhir:coding ( [
+               a loinc:8310-5 ;
+               fhir:system [ fhir:v "http://loinc.org"^^xsd:anyURI ] ;
+               fhir:code [ fhir:v "8310-5" ] ;
+               fhir:display [ fhir:v "Body temperature" ]
+             ] ) ;
+             fhir:text [ fhir:v "Body temperature" ]
+          ] ; # 
+          fhir:subject [
+             fhir:reference [ fhir:v "Patient/PATIENTNB" ]
+          ] ; # 
+          fhir:effective [ fhir:v "2023-12-12T16:27:22Z"^^xsd:date] ; # 
+          fhir:value [
+             a fhir:Quantity ;
+             fhir:value [ fhir:v "22.00"^^xsd:decimal ] ;
+             fhir:unit [ fhir:v "C" ] ;
+             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+             fhir:code [ fhir:v "Cel" ]
+          ]] . # `
         return patientResource
       }
   
@@ -88,6 +177,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           console.log("req",req)
 
           const savedFile = await overwriteFile(
+            //"https://lab.wirtz.tech/test/patient/observation_test3.ttl",
             "https://lab.wirtz.tech/test/patient/patientInformation.ttl",
             new File([patientResource], "patientInformation", { type: "application/fhir+turtle" }),
             { contentType: "text/turtle", fetch: session.fetch }

@@ -18,8 +18,6 @@ const Profile = ()=> {
     const [modalOpen, setModalOpen] = useState(false)
     const [telecom, setTelecom] = useState("")
     const [birth, setBirth] = useState("")
-    const [dataset, setDataset] = useState(null)
-    const [patientSources, setPatientSources] = useState([])
 
     /**
      * // test emotibit observation data
@@ -53,58 +51,7 @@ UNION
                ] .
 }
 }`
-// This is for testing the INSERT option
-          const queryStr3 = `
-          PREFIX fhir: <http://hl7.org/fhir/> 
-          PREFIX owl: <http://www.w3.org/2002/07/owl#> 
-          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-          PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-          PREFIX loinc: <https://loinc.org/rdf/> 
-
-          INSERT DATA 
-          {
-            #http://example.com/Patient/PATIENTNB a fhir:Patient .
-            [a fhir:Observation ;
-              fhir:nodeRole fhir:treeRoot ;
-              fhir:id [ fhir:v "heart-rate"] ; # 
-              fhir:meta [
-                 fhir:profile ( [
-                   fhir:v "http://hl7.org/fhir/StructureDefinition/vitalsigns"^^xsd:anyURI ;
-                   fhir:link <http://hl7.org/fhir/StructureDefinition/vitalsigns>
-                 ] )
-              ] ; #  
-              fhir:status [ fhir:v "final"] ; # 
-              fhir:category ( [
-                 fhir:coding ( [
-                   fhir:system [ fhir:v "http://terminology.hl7.org/CodeSystem/observation-category"^^xsd:anyURI ] ;
-                   fhir:code [ fhir:v "vital-signs" ] ;
-                   fhir:display [ fhir:v "Vital Signs" ]
-                 ] ) ;
-                 fhir:text [ fhir:v "Vital Signs" ]
-              ] ) ; # 
-              fhir:code [
-                 fhir:coding ( [
-                   a loinc:8867-4 ;
-                   fhir:system [ fhir:v "http://loinc.org"^^xsd:anyURI ] ;
-                   fhir:code [ fhir:v "8867-4" ] ;
-                   fhir:display [ fhir:v "Heart rate" ]
-                 ] ) ;
-                 fhir:text [ fhir:v "Heart rate" ]
-              ] ; # 
-              fhir:subject [
-                 fhir:reference [ fhir:v "Patient/PATIENTNB" ]
-              ] ; # 
-              fhir:effective [ fhir:v "2023-12-12T16:27:22Z"^^xsd:date] ; # 
-              fhir:value [
-                 a fhir:Quantity ;
-                 fhir:value [ fhir:v "0.00"^^xsd:decimal ] ;
-                 fhir:unit [ fhir:v "beats/minute" ] ;
-                 fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
-                 fhir:code [ fhir:v "/min" ]
-              ] ]. #
-          }
-          `
-     */
+*/
 
     useEffect(() => {
       const runQuery = async() => {
