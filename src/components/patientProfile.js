@@ -11,7 +11,7 @@ const QueryEngine = require('@comunica/query-sparql').QueryEngine
 
 const Profile = ()=> {
 
-    const { session } = useSession()
+    const { session } = useSession() 
     const [fname, setFName] = useState("")
     const [lname, setLName] = useState("")
     const [gender, setGender] = useState("")
