@@ -1,25 +1,61 @@
 import { getSolidDataset, getThingAll } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Button} from "react-bootstrap";
+import { Container, Row, Modal, Button, Image} from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import dummy from "../dummy_img.jpg"
+import { MdEdit } from "react-icons/md";
+import PatientForm from "./patientInfo";
 const QueryEngine = require('@comunica/query-sparql').QueryEngine
+
 
 const Profile = ()=> {
 
-    const { session } = useSession()
+    const { session } = useSession() 
     const [fname, setFName] = useState("")
     const [lname, setLName] = useState("")
     const [gender, setGender] = useState("")
+    const [modalOpen, setModalOpen] = useState(false)
     const [telecom, setTelecom] = useState("")
     const [birth, setBirth] = useState("")
-    const [dataset, setDataset] = useState(null)
 
+    /**
+     * // test emotibit observation data
+        const queryStr2 = `
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
+PREFIX loinc: <https://loinc.org/rdf/>
+PREFIX owl: <http://www.w3.org/2002/07/owl>
+PREFIX fhir: <http://hl7.org/fhir/> 
 
-    
-    const runQuery = async() => {
+SELECT ?heartRateValue ?bodyTemp
+WHERE {
+  {?observation a fhir:Observation ;
+               fhir:id [ fhir:v "heart-rate"] ;
+               fhir:value [ a fhir:Quantity ;
+                             fhir:value [ fhir:v ?heartRateValue] ;
+                             fhir:unit [ fhir:v "beats/minute" ] ;
+                             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+                             fhir:code [ fhir:v "/min" ]
+               ] .
+} 
+UNION 
+{
+  ?observation a fhir:Observation ;
+               fhir:id [ fhir:v "body-temperature"] ;
+               fhir:value [ a fhir:Quantity ;
+                             fhir:value [ fhir:v ?bodyTemp] ;
+                             fhir:unit [ fhir:v "C" ] ;
+                             fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
+                             fhir:code [ fhir:v "Cel" ]
+               ] .
+}
+}`
+*/
+
+    useEffect(() => {
+      const runQuery = async() => {
         const myEngine = new QueryEngine()
-        // const parser = new Parser()
-        const endpointUrl = 'https://lab.wirtz.tech/test/patient/patientInformation.ttl'
         const queryStr = `
           PREFIX fhir: <http://hl7.org/fhir/> 
           PREFIX owl: <http://www.w3.org/2002/07/owl#> 
@@ -40,74 +76,96 @@ const Profile = ()=> {
               fhir:birthDate [fhir:v ?birth];
             ]
           } `
-          const bindingsStream = await myEngine.queryBindings(queryStr, {
-            sources: ['https://lab.wirtz.tech/test/patient/patientInformation.ttl'],
-          })
+        const bindingsStream = await myEngine.queryBindings(queryStr, {
+          sources: ["https://lab.wirtz.tech/test/patient/patientInformation.ttl"]
+            //patientSources
+        })
 
-        if(dataset) {
-            // const result = RDFLib.Query(queryStr, dataset)
-            // console.log("result:",result)
+        if(bindingsStream) {
             const bindings = await bindingsStream.toArray()
-            console.log(bindings[0].get('lname').value)
-            console.log(bindings[0].get('fname').value)
-            console.log(bindings[0].get('gender').value)
-            console.log(bindings[0].get('tel').value)
-            console.log(bindings[0].get('birth').value)
             setFName(bindings[0].get('fname').value)
             setLName(bindings[0].get('lname').value)
             setBirth(bindings[0].get('birth').value)
             setTelecom(bindings[0].get('tel').value)
             setGender(bindings[0].get('gender').value)
-            /*
-            bindingsStream.on('data', (binding) => {
-                console.log(binding.toString()); // Quick way to print bindings for testing
-            
-                console.log(binding.has('s')); // Will be true
-            
-                // Obtaining values
-                // console.log(binding.get('s').value);
-                // console.log(binding.get('s').termType);
-                // console.log(binding.get('p').value);
-                // console.log(binding.get('o').value);
-            });
-            bindingsStream.on('end', () => {
-                // The data-listener will not be called anymore once we get here.
-            });
-            bindingsStream.on('error', (error) => {
-                console.error(error);
-            });*/
         } else {
             console.log("No Dataset Loaded")
-        }
-        
-    }
+        } 
+      }
+      runQuery()
+    },[session])
 
-    useEffect(() => {
+    const openModal = () => {
+      setModalOpen(true)
+    }
+    const closeModal = () => {
+      setModalOpen(false)
+    }
+    
+    /*useEffect(() => {
         const getPatientProfile = async() => {
             try {
-                const profileDataset = await getSolidDataset("https://lab.wirtz.tech/test/patient/patientInformation.ttl", {fetch: session.fetch})
-                console.log("profile dataset",profileDataset)
+                const profileDataset = await getSolidDataset("https://lab.wirtz.tech/test/patient/", {fetch: session.fetch})
+                console.log("profile dataset",profileDataset.graphs.default)
                 setDataset(profileDataset)
-                const patientThings = profileDataset ? getThingAll(profileDataset) : [];
-                console.log("patientThings",patientThings)
+
+                let sources = []
+                for (const key in profileDataset.graphs.default) {
+                  if(profileDataset.graphs.default.hasOwnProperty(key)) {
+                    const pattern = /^https:\/\/lab\.wirtz\.tech\/test\/patient\/patientInformation.*\.ttl$/;
+                    const value = profileDataset.graphs.default[key]
+                    if(pattern.test(value.url)){
+                      sources.push(value.url)
+                    }
+                  }
+                }
+                console.log("sources",sources)
+                setPatientSources(sources)
             } catch (error) {
                 console.log("error!",error)
             }
         }
         getPatientProfile()
-    },[session])
+    },[session])*/
 
     return (
         <Container>
-            {/**/}
+
+          <Modal show={modalOpen} onHide={closeModal} size="md">
+            <Modal.Header closeButton>
+            <Modal.Title>Profile Form</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <PatientForm />
+            </Modal.Body>
+          </Modal>
+
+          <Row>
+            <Card style={{ width: '18rem' }} className="text-center">
+              <div className="justify-content-center"><Image src={dummy} roundedCircle style={{width:"10rem"}}/></div>
+              <hr />
+              <Card.Body>
+                <Card.Title>{fname} {lname} <MdEdit onClick={openModal} style={{ cursor: 'pointer' }} /></Card.Title><br/>
+                <Card.Text >
+                  <div>Birthday: {birth}</div><br />
+                  <div>Gender: {gender}</div><br />
+                  <div>Tel: {telecom}</div>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          
+
+          {/*<Col>
             <Button variant="info" onClick={runQuery}>Run Query</Button>
-            <Row>
-              <Col>First Name: {fname}</Col>
-              <Col>Last Name: {lname}</Col>
-              <Col>Gender: {gender}</Col>
-              <Col>Tel: {telecom}</Col>
-              <Col>Birthday: {birth}</Col>
-            </Row>
+              <Row>
+                <Col>First Name: {fname}</Col>
+                <Col>Last Name: {lname}</Col>
+                <Col>Gender: {gender}</Col>
+                <Col>Tel: {telecom}</Col>
+                <Col>Birthday: {birth}</Col>
+              </Row>
+          </Col>*/}
+          </Row>  
         </Container>
     )
 }

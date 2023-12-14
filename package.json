@@ -50,6 +50,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.23.6"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

@@ -30,7 +30,7 @@ function Navigatebar() {
             <Nav className="me-auto">
 
               <NavDropdown title="Dashboard" id="basic-nav-dropdown">
-                <NavDropdown.Item> <Link to="/pages/correlation" className="no-ul"> Correlations</Link></NavDropdown.Item>
+                <NavDropdown.Item><Link to="/pages/correlation" className="no-ul">  Correlations</Link></NavDropdown.Item>
                 <NavDropdown.Item> <Link to="/pages/suggestions" className="no-ul"> Suggestions</Link></NavDropdown.Item>
                 <NavDropdown.Item> <Link to="/pages/testMatrix" className="no-ul"> The Matrix</Link></NavDropdown.Item>
               </NavDropdown>
@@ -44,7 +44,7 @@ function Navigatebar() {
                   onHide={() => setEnterDataModalShow(false)}
                   />
     </NavDropdown.Item>*/}
-              <NavDropdown.Item> <Link to="/pages/login" className="no-ul"> Add/Show Data</Link></NavDropdown.Item>
+              {/*<NavDropdown.Item> <Link to="/pages/login" className="no-ul"> Add/Show Data</Link></NavDropdown.Item>*/}
               <NavDropdown.Item> <span onClick={() => setConnectSensorModalShow(true)}>
                  Connect Sensor
                  </span>

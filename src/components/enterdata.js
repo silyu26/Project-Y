@@ -1,6 +1,5 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import GetOrCreatePatient from './testPatient';
 function Enterdata(props) {
   return (
     <Modal
@@ -19,7 +18,7 @@ function Enterdata(props) {
         <p>
           Here you will be able to enter your data.
         </p>
-        <GetOrCreatePatient />
+        
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Cancel</Button>
