@@ -32,6 +32,7 @@ function Navigatebar() {
               <NavDropdown title="Dashboard" id="basic-nav-dropdown">
                 <NavDropdown.Item> <Link to="/pages/correlation" className="no-ul"> Correlations</Link></NavDropdown.Item>
                 <NavDropdown.Item> <Link to="/pages/suggestions" className="no-ul"> Suggestions</Link></NavDropdown.Item>
+                <NavDropdown.Item> <Link to="/pages/testMatrix" className="no-ul"> The Matrix</Link></NavDropdown.Item>
               </NavDropdown>
 
               <NavDropdown title="Add Data" id="basic-nav-dropdown">
