@@ -14,15 +14,15 @@ const MockCriteriaData = {
     values: [3, 2, 4, 5, 1],
     abnormal: 'too high',
   },
-  'bodyTemperature': {
+  'body temperature': {
     values: [4, 5, 3, 1, 2],
     abnormal: 'too low',
   },
-  'oxygenSaturation': {
+  'oxygen saturation': {
     values: [2, 3, 1, 4, 5],
     abnormal: 'too high',
   },
-  'heartRate': {
+  'heart rate': {
     values: [5, 1, 2, 4, 3],
     abnormal: 'too low',
   },

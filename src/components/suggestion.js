@@ -47,8 +47,8 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
     }
 
     const grammar = tracery.createGrammar({
-        AffectingCriteria: ['movement', 'respiration', 'hydration', 'bodyTemperature', 'oxygenSaturation', 'heartRate', 'temperature'],
-        AffectedCriteria: ['movement', 'respiration', 'hydration', 'bodyTemperature', 'oxygenSaturation', 'heartRate', 'temperature'],
+        AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature'],
+        AffectedCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature'],
         CorrelationSeverity: ['#Weak#', '#Moderate#', '#Strong#'],
         CorrelationDirection: ['#PositiveDirection#', '#NegativeDirection#'],
         Weak: ['minor', 'slight'],
@@ -100,7 +100,7 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
         // Use the grammar to generate suggestions
-        suggestions.push(grammar.flatten(`${affectingCriteria} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation. ` +
+        suggestions.push(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation. ` +
             `${severityAnalysis(correlationSeverity)} ${trendAnalysis(correlationDirection)} ${selectAdvice(correlationDirection, trendOfAbnormal)}`));
         return suggestions;
     } else {
@@ -108,6 +108,10 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         return suggestions;
     }
 };
+
+const  capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 
 export { generateSuggestion };
