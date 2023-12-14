@@ -13,9 +13,6 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
         Object.entries(criteriaData).map(([affectingCriterionKey, affectingCriterion]) => {
             Object.entries(criteriaData).map(([affectedCriterionKey, affectedCriterion]) => {
-                if (affectingCriterionKey === affectedCriterionKey) {
-                    return;
-                }
                 const corrcoeff = jstat.corrcoeff(affectingCriterion.values, affectedCriterion.values);
 
                 // Check if the correlation coefficient is above the threshold
@@ -38,7 +35,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
             });
         });
         setCorrelationMatrix(correlations);
-    }, [criteriaData, threshold]);
+    }, [criteriaData]);
 
 
     // Return your correlation matrix in a simple table form
@@ -51,7 +48,6 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                     type="number"
                     value={threshold}
                     onChange={(e) => setThreshold(Number(e.target.value))}
-                    step={0.1}
                 />
             </label>
 
@@ -70,7 +66,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <tr key={index}>
                             <td>{correlation.affectingCriterionKey}</td>
                             <td>{correlation.affectedCriterionKey}</td>
-                            <td>{correlation.corrcoeff.toFixed(2)}</td>
+                            <td>{correlation.corrcoeff}</td>
                             <td>{correlation.suggestions}</td>
                         </tr>
                     ))}
