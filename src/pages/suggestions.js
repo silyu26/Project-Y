@@ -1,6 +1,7 @@
 // Import necessary React components and styles
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import HeartrateCor from '../components/correlations/heartRate';
 
 
 // Dummy data for health markers and suggestions
@@ -80,6 +81,7 @@ const Suggestion = () => {
           ))}
         </ul>
       </section>
+      <HeartrateCor />
     </div>
   );
 };

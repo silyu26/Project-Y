@@ -35,7 +35,6 @@ const home = () => {
           <p>Ready to explore your health data?</p>
           <Link to="pages/correlation" className="cta-button">Get Started</Link>
         </section>
-        <HeartrateCor />
       </div>
     );
   };
