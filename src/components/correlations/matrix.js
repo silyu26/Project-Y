@@ -2,10 +2,46 @@ import React, { useEffect, useState } from 'react';
 import jstat from 'jstat';
 import { generateSuggestion } from './suggestion';
 import { Status } from './normalRanges';
+import Select from 'react-select';
+
+const healthMarkers = [
+    { value: 'heart rate', label: 'Heart Rate' },
+    { value: 'temperature', label: 'Body Temperature' }
+    // Add more health markers as needed
+];
+
+const thresholds = [
+    { label: "minor correlation", value: 0.01 },
+    { label: "medium correlation", value: 0.4 },
+    { label: "strong correlation", value: 0.8 }
+];
 
 const CorrelationMatrixComponent = ({ criteriaData }) => {
-    const [threshold, setThreshold] = useState(0.3);
+    const [selectedMarker, setSelectedMarker] = useState(healthMarkers[0]);
+    const [maxOptionWidth, setMaxOptionWidth] = useState(0);
+    const [threshold, setThreshold] = useState(thresholds[0]);
     const [correlationMatrix, setCorrelationMatrix] = useState([]);
+
+    useEffect(() => {
+        // Calculate the maximum width among all options
+        const maxWidth = healthMarkers.reduce((max, option) => {
+            const optionWidth = option.label.length * 12; // Adjust the multiplier as needed
+            return optionWidth > max ? optionWidth : max;
+        }, 0);
+
+        setMaxOptionWidth(maxWidth);
+    }, []);
+
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            width: maxOptionWidth + 20, // Add some padding for better appearance
+        }),
+        menu: (provided) => ({
+            ...provided,
+            width: maxOptionWidth + 20, // Add some padding for better appearance
+        }),
+    };
 
 
     useEffect(() => {
@@ -37,71 +73,65 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                 const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
                 const corrcoeff = jstat.corrcoeff(affectingValues, affectedValues);
 
-
                 console.log(new Date(), "Done preparing the correlation coefficients needed for the suggestion generator");
 
-                // Check if the correlation coefficient is above the threshold
-                if (Math.abs(corrcoeff) >= threshold) {
+                const suggestions = generateSuggestion(
+                    corrcoeff,
+                    affectingCriterionKey,
+                    affectedCriterionKey,
+                    finalAbnormalStatus
+                );
 
-                    const suggestions = generateSuggestion(
-                        corrcoeff,
-                        affectingCriterionKey,
-                        affectedCriterionKey,
-                        finalAbnormalStatus
-                    );
+                console.log(new Date(), "Done generating suggestion");
 
-                    console.log(new Date(), "Done generating suggestion");
+                correlations.push({
+                    affectingCriterionKey,
+                    affectedCriterionKey,
+                    corrcoeff,
+                    suggestions,
+                });
 
-                    correlations.push({
-                        affectingCriterionKey,
-                        affectedCriterionKey,
-                        corrcoeff,
-                        suggestions,
-                    });
-                }
             });
         });
         setCorrelationMatrix(correlations);
-    }, [criteriaData, threshold]);
+    }, [criteriaData]);
 
 
-    // Return your correlation matrix in a simple table form
-    // TODO: make it look nicer in the UI :D
+
     return (
-        <div>
-            <label>
-                Threshold:
-                <input
-                    type="number"
-                    value={threshold}
-                    onChange={(e) => setThreshold(Number(e.target.value))}
-                    step={0.1}
-                    max={1}
-                />
-            </label>
+        <div className="improvement-suggestions-container" style={{ marginTop: '2vh' }}>
+            <header>
+                <h1>Health Improvement Suggestions</h1>
+                <p>Get personalized suggestions to enhance your well-being.</p>
+            </header>
 
-            <h2>Correlation Matrix:</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Affecting Criterion</th>
-                        <th>Affected Criterion</th>
-                        <th>Correlation Coefficient</th>
-                        <th>Suggestions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {correlationMatrix.map((correlation, index) => (
-                        <tr key={index}>
-                            <td>{correlation.affectingCriterionKey}</td>
-                            <td>{correlation.affectedCriterionKey}</td>
-                            <td>{correlation.corrcoeff.toFixed(2)}</td>
-                            <td>{correlation.suggestions}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+            <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh' }}>
+                <label>Select Health Marker:</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <Select
+                        options={healthMarkers}
+                        value={selectedMarker}
+                        onChange={(healthMarker) => setSelectedMarker(healthMarker)}
+                        styles={customStyles}
+                    />
+                    <Select
+                        options={thresholds}
+                        value={threshold}
+                        onChange={(threshold) => setThreshold(threshold)}
+                        styles={customStyles}
+                    />
+                </div>
+            </section >
+            <section className="suggestions-list">
+                <h2>Suggestions to Improve {selectedMarker.label}</h2>
+                <ul>
+                    {correlationMatrix.filter(value => Math.abs(value.corrcoeff) >= threshold.value && value.affectedCriterionKey == selectedMarker.value)
+                        .map((suggestion, index) => (
+                            <li key={index} style={{ whiteSpace: 'pre-line' }}>{suggestion.suggestions}</li>
+                        ))}
+                </ul>
+            </section>
+        </div >
     );
 };
 

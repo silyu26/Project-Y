@@ -5,7 +5,6 @@ import Footer from "./components/footer"
 
 
 import Correlation from "./pages/correlation"
-import Suggestions from "./pages/suggestions"
 import Share from "./pages/share"
 import Manageaccount from './pages/manageaccount';
 import Managepod from './pages/managepod';
@@ -14,21 +13,20 @@ import Home from "./pages/home"
 
 
 import Container from 'react-bootstrap/Container';
-import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
+import PodConnectionCor from './components/correlations/connection'
 
 function App() {
-
-
   return (
-    <div className="App"style={{ overflowY: 'auto', maxHeight: '80vh', maxWidth: '100%'}}>
+    <div className="App" style={{ overflow: 'visible', maxHeight: '80vh', maxWidth: '100%' }}>
       <Container >
         <BrowserRouter>
-        <Navigatebar />   
+          <Navigatebar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pages/correlation" element={<Correlation />} />
-            <Route path="/pages/suggestions" element={<Suggestions />} />
+            <Route path="/pages/suggestions" element={<PodConnectionCor />} />
             {/*<Route path="/pages/login" element={<Login />} />*/}
 
             <Route path="/pages/share" element={<Share />} />
@@ -36,9 +34,9 @@ function App() {
             <Route path="/pages/managepod" element={<Managepod />} />
             <Route path="/pages/settings" element={<Settings />} />
           </Routes>
-        <Footer />
+          <Footer />
         </BrowserRouter>
-    </Container>
+      </Container>
     </div>
 
   );

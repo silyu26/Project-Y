@@ -1,7 +1,7 @@
 // Import necessary React components and styles
 import React from 'react';
 import { Link } from 'react-router-dom'; // If you're using React Router for navigation
-import HeartrateCor from '../components/correlations/heartRate';
+import PodConnectionCor from '../components/correlations/connection';
 
 
 // Dummy data for featured health correlations

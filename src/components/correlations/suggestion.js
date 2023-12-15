@@ -32,7 +32,7 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
             (correlationDirection == 'negative' && trendOfAbnormal == 'too high')) {
             return '#StrengthenAdvice#';
         }
-        else if (trendOfAbnormal == 'unstable'){
+        else if (trendOfAbnormal == 'unstable') {
             return '#MonitorAdvice#';
         }
         else {
@@ -106,8 +106,8 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
         // Use the grammar to generate suggestions
-        suggestions.push(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation. ` +
-            `${severityAnalysis(correlationSeverity)} ${trendAnalysis(correlationDirection)} ${selectAdvice(correlationDirection, trendOfAbnormal)}`));
+        suggestions.push(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n` +
+            `${severityAnalysis(correlationSeverity)}\n${trendAnalysis(correlationDirection)}\n${selectAdvice(correlationDirection, trendOfAbnormal)}`));
         return suggestions;
     } else {
         suggestions.push('No correlation information available for the specified attributes.');
@@ -115,7 +115,7 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
     }
 };
 
-const  capitalizeFirstLetter = (str) => {
+const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
