@@ -1,9 +1,9 @@
 import { useSession } from "@inrupt/solid-ui-react";
 import { getSolidDataset } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
 import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
 import CorrelationMatrixComponent from "./matrix";
+import GraphVisualizeComponent from "./graphVisualize";
 const QueryEngine = require('@comunica/query-sparql').QueryEngine
 
 const queryStr = `
@@ -44,7 +44,7 @@ const queryStr2 = `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
                          ] .
                     }`
 
-const PodConnectionCor = () => {
+const PodConnectionSuggestion = () => {
 
   const { session } = useSession()
   const [hrSources, setHrSources] = useState([])
@@ -52,8 +52,6 @@ const PodConnectionCor = () => {
   const [heartrateArr, setHeartrateArr] = useState([])
   const [bodyTempArr, setBodyTempArr] = useState([])
   const [queriedDataset, setQueriedDataset] = useState([])
-
-  const [suggestionData, setSuggestionData] = useState([])
 
   useEffect(() => {
     const getHeartrateSources = async () => {
@@ -135,9 +133,24 @@ const PodConnectionCor = () => {
     queryHeartRate()
   }, [hrSources])
 
+  // Example: conditionally render different components based on the route
+  const renderContent = () => {
+    const currentPath = window.location.pathname;
+
+    switch (currentPath) {
+      case '/pages/correlation':
+        return <GraphVisualizeComponent criteriaData={queriedDataset} />;
+      case '/pages/suggestions':
+        return <CorrelationMatrixComponent criteriaData={queriedDataset} />;
+      default:
+        // Default content if the route doesn't match
+        return <p>Invalid route</p>;
+    }
+  };
+
   return (
-    <CorrelationMatrixComponent criteriaData={queriedDataset} />
+    <div>{renderContent()}</div>
   )
 }
 
-export default PodConnectionCor
+export default PodConnectionSuggestion

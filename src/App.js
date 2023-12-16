@@ -2,8 +2,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Navigatebar from "./components/navbar"
 import Footer from "./components/footer"
-
-
 import Correlation from "./pages/correlation"
 import Share from "./pages/share"
 import Manageaccount from './pages/manageaccount';
@@ -15,7 +13,7 @@ import Home from "./pages/home"
 import Container from 'react-bootstrap/Container';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
-import PodConnectionCor from './components/correlations/connection'
+import PodConnectionSuggestion from './components/correlations/connection'
 
 function App() {
   return (
@@ -25,8 +23,8 @@ function App() {
           <Navigatebar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/pages/correlation" element={<Correlation />} />
-            <Route path="/pages/suggestions" element={<PodConnectionCor />} />
+            <Route path="/pages/correlation" element={<PodConnectionSuggestion />} />
+            <Route path="/pages/suggestions" element={<PodConnectionSuggestion />} />
             {/*<Route path="/pages/login" element={<Login />} />*/}
 
             <Route path="/pages/share" element={<Share />} />
