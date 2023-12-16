@@ -68,7 +68,7 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
         };
 
         new Chart(ctx, {
-            type: type,
+            type: type.value,
             data: chartData,
             options: chartOptions,
         });
