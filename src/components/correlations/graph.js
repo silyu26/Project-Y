@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Chart, registerables} from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import { Status } from './normalRanges';
 
 Chart.register(...registerables);
@@ -9,13 +9,17 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
     const chartRef = useRef(null);
 
     useEffect(() => {
-        console.log("Graph component is called");
-        console.log(dataset);
-        console.log(selectedX);
-        console.log(selectedY);
         if (!dataset || !chartRef.current || !dataset[selectedX.value] || !dataset[selectedY.value]) {
             // Data is still loading or missing, show loading message
             return;
+        }
+
+        if (chartRef.current) {
+            // If there's an existing chart, destroy it
+            const existingChartInstance = Chart.getChart(chartRef.current);
+            if (existingChartInstance) {
+                existingChartInstance.destroy();
+            }
         }
 
         const ctx = chartRef.current.getContext('2d');
@@ -67,11 +71,18 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
             },
         };
 
-        new Chart(ctx, {
+        const newChart = new Chart(ctx, {
             type: type.value,
             data: chartData,
             options: chartOptions,
         });
+
+        // Make sure to clean up the chart when the component is unmounted
+        return () => {
+            if (newChart) {
+                newChart.destroy();
+            }
+        };
     }, [dataset, selectedX, selectedY, type]);
 
     return (

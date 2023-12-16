@@ -10,11 +10,11 @@ const healthMarkers = [
 
 const diagramTypes = [
     { value: 'scatter', label: 'Scatter' },
+    { value: 'line', label: 'Line' },
+    { value: 'bubble', label: 'Bubble' },
     { value: 'bar', label: 'Bar' },
     { value: 'radar', label: 'Radar' },
     { value: 'polarArea', label: 'Polar Area' },
-    { value: 'doughnut', label: 'Doughnut' },
-    { value: 'pie', label: 'Pie' },
 ]
 
 const GraphVisualizeComponent = ({ criteriaData }) => {
