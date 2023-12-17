@@ -46,10 +46,12 @@ const GraphVisualizeComponent = ({ criteriaData }) => {
 
     return (
         <div className="graphs-container" style={{ marginTop: '2vh' }}>
+            <br />
             <header>
-                <h1>Correlation graph</h1>
+                <h2 className='text-center'>Correlation graph</h2>
             </header>
-
+            <hr />
+            <br />
             <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh' }}>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <Select

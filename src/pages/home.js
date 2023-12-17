@@ -2,6 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // If you're using React Router for navigation
 import PodConnectionSuggestion from '../components/correlations/connection';
+import { Container, Row, Col } from 'react-bootstrap';
+import { FcComboChart } from "react-icons/fc";
 
 
 // Dummy data for featured health correlations
@@ -14,27 +16,36 @@ const featuredCorrelations = [
 const home = () => {
     return (
       <div className="homepage-container">
+        <br />
         <header>
-          <h1>Your Health Data App</h1>
-          <p>Visualize and understand correlations in your health data.</p>
+          <h2 className='text-center'>Your Personal Health Data App</h2>
+          <p className='text-center' style={{ fontStyle: 'italic' }}>Visualize and understand correlations in your health data.</p>
         </header>
-  
-        <section className="featured-correlations">
-          <h2>Featured Correlations</h2>
-          <div className="correlation-list">
+        <hr />
+        
+        <Container>
+          <Row><h4>Featured Correlations</h4></Row>
+          <br />
+          <Row>
             {featuredCorrelations.map((correlation, index) => (
-              <div className="correlation-item" key={index}>
-                <h3>{correlation.title}</h3>
-                <p>{correlation.description}</p>
-              </div>
+              <Col key={index}><div className="correlation-item">
+                <h5><FcComboChart /> {correlation.title}</h5>
+                <p style={{ fontStyle: 'italic' }}>{correlation.description}</p>
+              </div></Col>
             ))}
-          </div>
-        </section>
-  
-        <section className="cta-section">
-          <p>Ready to explore your health data?</p>
-          <Link to="pages/correlation" className="cta-button">Get Started</Link>
-        </section>
+          </Row>
+          <br />
+          <Row>
+            <h4>Privacy & Safety</h4>
+          </Row> 
+          <br />
+          <Row>
+            <h4>Data Sharing</h4>
+          </Row>
+          <br />
+          <br />
+          <p className='text-muted'>Ready to explore your health data? <Link to="pages/correlation" className="cta-button">Get Started</Link></p>
+        </Container>
       </div>
     );
   };

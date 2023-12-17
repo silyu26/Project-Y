@@ -100,10 +100,13 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
     return (
         <div className="improvement-suggestions-container" style={{ marginTop: '2vh' }}>
+            <br />
             <header>
-                <h1>Health Improvement Suggestions</h1>
-                <p>Get personalized suggestions to enhance your well-being.</p>
+                <h2 className='text-center'>Health Improvement Suggestions</h2>
+                <p className='text-center' style={{ fontStyle: 'italic' }}>Get personalized suggestions to enhance your well-being.</p>
             </header>
+            <hr />
+            <br />
 
             <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh' }}>
                 <label>Select Health Marker:</label>

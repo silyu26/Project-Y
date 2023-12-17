@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { Status } from './normalRanges';
+import Spinner from 'react-bootstrap/Spinner';
 
 Chart.register(...registerables);
 
@@ -87,7 +88,7 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
 
     return (
         <div>
-            {(!dataset || !dataset[selectedX.value] || !dataset[selectedY.value]) && <p>Data is loading...</p>}
+            {(!dataset || !dataset[selectedX.value] || !dataset[selectedY.value]) && <div className='text-center'><Spinner variant='info' animation="border" /><p>Fetching Data</p></div>}
             <canvas ref={chartRef} />
         </div>
     );

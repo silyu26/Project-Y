@@ -141,8 +141,8 @@ UNION
           </Modal>
 
           <Row>
-            <Card style={{ width: '18rem' }} className="text-center">
-              <div className="justify-content-center"><Image src={dummy} roundedCircle style={{width:"10rem"}}/></div>
+            <Card style={{ width: '14rem' }} className="text-center">
+              <div className="justify-content-center"><Image src={dummy} roundedCircle style={{width:"8rem"}}/></div>
               <hr />
               <Card.Body>
                 <Card.Title>{fname} {lname} <MdEdit onClick={openModal} style={{ cursor: 'pointer' }} /></Card.Title><br/>
@@ -153,18 +153,6 @@ UNION
                 </Card.Text>
               </Card.Body>
             </Card>
-          
-
-          {/*<Col>
-            <Button variant="info" onClick={runQuery}>Run Query</Button>
-              <Row>
-                <Col>First Name: {fname}</Col>
-                <Col>Last Name: {lname}</Col>
-                <Col>Gender: {gender}</Col>
-                <Col>Tel: {telecom}</Col>
-                <Col>Birthday: {birth}</Col>
-              </Row>
-          </Col>*/}
           </Row>  
         </Container>
     )

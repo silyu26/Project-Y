@@ -3,8 +3,11 @@ import React from 'react';
 const Managepod = () => {
   return (
     <div>
-      <h1>Manage Pod</h1>
-      <p>This is the site to manage your pod.</p>
+      <br />
+        <h2 className='text-center'>Manage Pod</h2>
+        <p className='text-center' style={{ fontStyle: 'italic' }}>This is the site to manage your pod.</p>
+      <hr />
+      <br />
     </div>  
   );
 }
