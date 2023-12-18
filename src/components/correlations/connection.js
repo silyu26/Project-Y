@@ -63,7 +63,7 @@ const PodConnectionSuggestion = () => {
         let sources = []
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
-            const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-14T18-2.*.ttl$/
+            const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
             const value = hrDataset.graphs.default[key]
             if (pattern.test(value.url)) {
               sources.push(value.url)
