@@ -17,10 +17,10 @@ import PodConnectionSuggestion from './components/correlations/connection'
 
 function App() {
   return (
-    <div className="App" style={{ overflow: 'visible', maxHeight: '80vh', maxWidth: '100%' }}>
-        <BrowserRouter>
-          <Navigatebar />
-          <Container >
+    <div className="App" style={{ overflow: 'visible', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <BrowserRouter>
+        <Navigatebar />
+        <Container style={{ flex: 1, overflow: 'auto' }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pages/correlation" element={<PodConnectionSuggestion />} />
@@ -32,9 +32,9 @@ function App() {
             <Route path="/pages/managepod" element={<Managepod />} />
             <Route path="/pages/settings" element={<Settings />} />
           </Routes>
-          <Footer />
-          </Container>
-        </BrowserRouter>
+        </Container>
+        <Footer />
+      </BrowserRouter>
     </div>
 
   );
