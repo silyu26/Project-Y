@@ -35,14 +35,14 @@ function Navigatebar() {
               </NavDropdown>
 
               <NavDropdown title="Add Data" id="basic-nav-dropdown">
-{/*               <NavDropdown.Item> <span onClick={() => setEnterDataModalShow(true)}>
-                 Enter Data
+               <NavDropdown.Item> <span onClick={() => setEnterDataModalShow(true)}>
+                 Manually enter data
                  </span>
                   <EnterData
                   show={enterDataModalShow}
                   onHide={() => setEnterDataModalShow(false)}
                   />
-    </NavDropdown.Item>*/}
+              </NavDropdown.Item>
               {/*<NavDropdown.Item> <Link to="/pages/login" className="no-ul"> Add/Show Data</Link></NavDropdown.Item>*/}
               <NavDropdown.Item> <span onClick={() => setConnectSensorModalShow(true)}>
                  Connect Sensor
