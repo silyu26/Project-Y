@@ -136,7 +136,7 @@ UNION
             <Modal.Title>Profile Form</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <PatientForm />
+              <PatientForm f={fname} l={lname} g={gender} t={telecom} b={birth}/>
             </Modal.Body>
           </Modal>
 

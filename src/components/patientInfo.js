@@ -9,14 +9,14 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
   import Form from 'react-bootstrap/Form'
   
   
-  function PatientForm() {
+  function PatientForm({f,l,g,t,b}) {
       const { session } = useSession()
       const [patient, setPatient] = useState()
-      const [fname, setFName] = useState("")
-      const [lname, setLName] = useState("")
-      const [gender, setGender] = useState("")
-      const [telecom, setTelecom] = useState("")
-      const [birth, setBirth] = useState("")
+      const [fname, setFName] = useState(f || "")
+      const [lname, setLName] = useState(l || "")
+      const [gender, setGender] = useState(g || "")
+      const [telecom, setTelecom] = useState(t || "")
+      const [birth, setBirth] = useState(b || "")
   
   
       const createPatient = async (containerUri, fetch) => {

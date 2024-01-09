@@ -1,5 +1,6 @@
 // Import necessary React components and styles
 import React from 'react';
+import { useSession } from "@inrupt/solid-ui-react";
 import { Link } from 'react-router-dom'; // If you're using React Router for navigation
 import PodConnectionSuggestion from '../components/correlations/connection';
 import { Container, Row, Col } from 'react-bootstrap';
@@ -13,7 +14,10 @@ const featuredCorrelations = [
   // Add more featured correlations as needed
 ];
 
-const home = () => {
+const Home = () => {
+
+  const { session } = useSession()
+
     return (
       <div className="homepage-container">
         <br />
@@ -44,10 +48,16 @@ const home = () => {
           </Row>
           <br />
           <br />
-          <p className='text-muted'>Ready to explore your health data? <Link to="pages/correlation" className="cta-button">Get Started</Link></p>
+          { session.info.isLoggedIn ?
+            <p className='text-muted'>Ready to explore your health data? 
+              <Link to="pages/correlation" className="cta-button">Get Started</Link>
+            </p>
+            :
+            <p className='text-muted'>Ready to explore your health data? <b>Sign in to continue!</b></p>
+          }
         </Container>
       </div>
     );
   };
 
-  export default home;
+  export default Home;
