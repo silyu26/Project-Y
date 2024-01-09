@@ -136,9 +136,6 @@ const Correlation = () => {
   return (
     <div>
       <h1>Mood and Sleep Time Correlation</h1>
-
-
-
       <div style={{ width: '80%', height: '80%' }}>
         <h2>Trends</h2>
         {showFirstGraph ? (

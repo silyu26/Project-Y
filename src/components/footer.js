@@ -9,7 +9,7 @@ import { TbHexagonLetterS } from "react-icons/tb";
 //
 function Footer() {
     return (
-        <Navbar bg="light" variant="light" fixed="bottom">{/** */}
+        <Navbar bg="light" variant="light" fixed="bottom" style={{ position: 'relative'}}>{/** */}
             <Container>
                 <Row className="align-items-center">
                     <Col className="text-center col-md-auto text-nowrap">

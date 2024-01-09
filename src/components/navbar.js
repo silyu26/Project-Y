@@ -1,4 +1,5 @@
 import Nav from 'react-bootstrap/Nav';
+import { useSession } from "@inrupt/solid-ui-react";
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container'
@@ -10,9 +11,12 @@ import Connectsensor from './connectsensor';
 import Createcorrelation from './createcorrelation';
 
 function Navigatebar() {
-  const [enterDataModalShow, setEnterDataModalShow] = useState(false);
-  const [connectSensorModalShow, setConnectSensorModalShow] = useState(false);
-  const [createCorrelationModalShow, setCreateCorrelationModalShow] = useState(false);
+
+    const [enterDataModalShow, setEnterDataModalShow] = useState(false)
+    const [connectSensorModalShow, setConnectSensorModalShow] = useState(false)
+    const [createCorrelationModalShow, setCreateCorrelationModalShow] = useState(false)
+    const { session } = useSession() 
+
     return(
       <Navbar bg="dark" data-bs-theme="dark" >
         <Container>
@@ -25,7 +29,8 @@ function Navigatebar() {
               alt="Project Y logo"
             />
           </Navbar.Brand>
-
+          {session.info.isLoggedIn ?
+          (
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
 
@@ -36,14 +41,14 @@ function Navigatebar() {
               </NavDropdown>
 
               <NavDropdown title="Add Data" id="basic-nav-dropdown">
-{/*               <NavDropdown.Item> <span onClick={() => setEnterDataModalShow(true)}>
-                 Enter Data
+               <NavDropdown.Item> <span onClick={() => setEnterDataModalShow(true)}>
+                 Manually enter data
                  </span>
                   <EnterData
                   show={enterDataModalShow}
                   onHide={() => setEnterDataModalShow(false)}
                   />
-    </NavDropdown.Item>*/}
+              </NavDropdown.Item>
               {/*<NavDropdown.Item> <Link to="/pages/login" className="no-ul"> Add/Show Data</Link></NavDropdown.Item>*/}
               <NavDropdown.Item> <span onClick={() => setConnectSensorModalShow(true)}>
                  Connect Sensor
@@ -65,19 +70,26 @@ function Navigatebar() {
 
               
             </Nav>
-          </Navbar.Collapse>
-
+          </Navbar.Collapse>)
+          : null
+          }
+          
           <Navbar.Collapse >
             <Nav className="ms-auto">
+              {session.info.isLoggedIn ?
+              (<>
               <Nav.Link ><Link to="/pages/share" className="no-ul"> Share</Link></Nav.Link>
               <NavDropdown title="Profile" id="basic-nav-dropdown" >
                 <NavDropdown.Item> <Link to="/pages/manageaccount" className="no-ul"> Manage Account</Link></NavDropdown.Item>
                 <NavDropdown.Item> <Link to="/pages/managepod" className="no-ul"> Manage Pod</Link></NavDropdown.Item>
                 <NavDropdown.Item> <Link to="/pages/settings" className="no-ul"> Settings</Link></NavDropdown.Item>
               </NavDropdown>
-              <Loginnavbar />
+              <Loginnavbar /></>)
+              : <Loginnavbar />}
+              
             </Nav>
-          </Navbar.Collapse>
+          </Navbar.Collapse> 
+          
        </Container>
       </Navbar>
     )
