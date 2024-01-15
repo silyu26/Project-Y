@@ -68,6 +68,8 @@ function Navigatebar() {
               </NavDropdown.Item>
               </NavDropdown>
 
+              <Nav.Link ><Link to="/pages/goals" className="no-ul"> Goals</Link></Nav.Link>
+
               
             </Nav>
           </Navbar.Collapse>)
