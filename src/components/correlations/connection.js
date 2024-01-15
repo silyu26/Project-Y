@@ -1,5 +1,5 @@
 import { useSession } from "@inrupt/solid-ui-react";
-import { getSolidDataset } from "@inrupt/solid-client";
+import { getSolidDataset, getFile } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
 import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
 import CorrelationMatrixComponent from "./matrix";
@@ -56,21 +56,26 @@ const PodConnectionSuggestion = () => {
   useEffect(() => {
     const getHeartrateSources = async () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
+        const currentDate1 = new Date()
+        console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
         const hrDataset = await getSolidDataset("https://lab.wirtz.tech/fhir/", { fetch: session.fetch })
-        // console.log("HR dataset",hrDataset.graphs.default)
+        // console.log("HR dataset",hrDataset)
+        const currentDate2 = new Date()
+        console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
         setDataset(hrDataset)
 
         let sources = []
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
-            const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
+            // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
+            const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
             const value = hrDataset.graphs.default[key]
             if (pattern.test(value.url)) {
               sources.push(value.url)
             }
           }
         }
-        // console.log("sources",sources)
+        console.log("sources",sources)
         setHrSources(sources)
       } catch (error) {
         console.log("error!", error)
@@ -80,6 +85,38 @@ const PodConnectionSuggestion = () => {
   }, [session])
 
   useEffect(() => {
+    const queryObj = async () => {
+      try {
+        const responseArr = []
+        const objArr = []
+        if(hrSources.length > 0){
+          const currentDate3 = new Date()
+          console.log('Start getting obj:', currentDate3.toLocaleTimeString())
+          hrSources.forEach(async source => {
+            const file = await getFile(
+              source,           
+              { fetch: session.fetch }   
+            )
+            responseArr.push(file)
+          })
+          console.log("res:",responseArr)
+          //const obj = JSON.parse(await file.text())
+          //console.log("file",obj.measurement)
+          const currentDate4 = new Date()
+          console.log('Finish getting obj:', currentDate4.toLocaleTimeString())
+        }
+        // const file = await getFile(hrSources[0],{ fetch: session.fetch})
+        // const myfetchedjson = JSON.parse(await file.text())
+        // writeFile(saveAsFilename, new Uint8Array(arrayBuffer))
+        // console.log("buffer",myfetchedjson.measurement)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    queryObj()
+  },[hrSources])
+
+  /*useEffect(() => {
     const queryHeartRate = async () => {
       const myEngine = new QueryEngine()
 
@@ -131,7 +168,7 @@ const PodConnectionSuggestion = () => {
       }
     }
     queryHeartRate()
-  }, [hrSources])
+  }, [hrSources])*/
 
   // Example: conditionally render different components based on the route
   const renderContent = () => {
