@@ -10,10 +10,7 @@ const Goals = () => {
         <p className='text-center' style={{ fontStyle: 'italic' }}>Manage your goal here</p>
         <hr />
           <br />
-          <Row>
-            <Col sm={4}><GoalComponent /></Col>
-            <Col sm={8}></Col>
-          </Row>
+          <GoalComponent />
           
           
       </Container>

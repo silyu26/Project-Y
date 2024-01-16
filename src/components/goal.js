@@ -84,20 +84,22 @@ const GoalComponent = () => {
 
     return (
         <Container>
-            <Row>
-                {items.map((item, index) => (
-                    <Card key={item.id} style={{ width: '14rem', margin: '10px', position: 'flex' }} className="text-center">
-                        <Card.Body>
-                            <Card.Title>{item.text}</Card.Title>
-                            <hr />
-                            <Card.Text>
-                                {getDescription(item.text)}
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
+            <MdEdit onClick={openModal} style={{ cursor: 'pointer', margin: '10px', marginLeft: 'auto' }} />
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {items.map((item) => (
+                    item.show && (
+                        <Card key={item.id} style={{ width: '14rem', margin: '10px' }} className="text-center">
+                            <Card.Body>
+                                <Card.Title>{item.text}</Card.Title>
+                                <hr />
+                                <Card.Text>{getDescription(item.text)}</Card.Text>
+                            </Card.Body>
+                        </Card>
+                    )
                 ))}
-            </Row>
-            <MdEdit onClick={openModal} style={{ cursor: 'pointer', margin: '10px' }} />
+            </div>
+
+
 
             <Modal show={modalOpen} onHide={closeModal} size="md">
                 <Modal.Header closeButton>
@@ -127,7 +129,7 @@ const GoalComponent = () => {
                                                     <div>
                                                         <input
                                                             type="checkbox"
-                                                            show={item.show}
+                                                            checked={item.show}
                                                             onChange={() => handleCheckboxChange(item.id)}
                                                         />
                                                     </div>
