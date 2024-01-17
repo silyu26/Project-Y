@@ -49,9 +49,10 @@ const PodConnectionSuggestion = () => {
   const { session } = useSession()
   const [hrSources, setHrSources] = useState([])
   const [dataset, setDataset] = useState(null)
-  const [heartrateArr, setHeartrateArr] = useState([])
-  const [bodyTempArr, setBodyTempArr] = useState([])
-  const [queriedDataset, setQueriedDataset] = useState([])
+  const [heartrateArr, setHeartrateArr] = useState(null)
+  const [bodyTempArr, setBodyTempArr] = useState(null)
+  const [queriedDataset, setQueriedDataset] = useState(null)
+
 
   useEffect(() => {
     const getHeartrateSources = async () => {
@@ -69,7 +70,7 @@ const PodConnectionSuggestion = () => {
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
             // const pattern = /^https:\/\/88.99.95.51:3000\/Test2\/data_2023-12-18.*.ttl$/
-            const pattern = /^http:\/\/88.99.95.51:3000\/Test2\/data_2024-01-16T16-4.*.json$/
+            const pattern = /^http:\/\/88.99.95.51:3000\/Test2\/data_2024-01-16T16-.*.json$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
             const value = hrDataset.graphs.default[key]
@@ -118,12 +119,12 @@ const PodConnectionSuggestion = () => {
             const heartrateObj = {
               value: obj.measurement.heartrate,
               abnormal: checkHeartRateStatus(obj.measurement.heartrate),
-              timestamp: obj.measurement.timestamp
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             const bodyTemperatureObj = {
               value: obj.measurement.temperature,
               abnormal: checkHeartRateStatus(obj.measurement.temperature),
-              timestamp: obj.measurement.timestamp
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             hrArr.push(heartrateObj)
             tempArr.push(bodyTemperatureObj)
@@ -135,15 +136,16 @@ const PodConnectionSuggestion = () => {
         console.log("body temp object array", tempArr)
         setBodyTempArr(tempArr)
         setHeartrateArr(hrArr)
-        setQueriedDataset({ "temperature": tempArr, "heart rate": hrArr })
+        const temp = { "temperature": tempArr, "heart rate": hrArr }
+        setQueriedDataset(temp)
         console.log(new Date(), "Done creating the data objects in heartRate.js");
-        console.log(new Date(), queriedDataset);
+        console.log(new Date(), temp);
       } catch (error) {
         console.log(error)
       }
     }
     queryObj()
-  },[hrSources, session.fetch])
+  },[hrSources, session])
 
   /*useEffect(() => {
     const queryHeartRate = async () => {
@@ -204,7 +206,7 @@ const PodConnectionSuggestion = () => {
 
   // Example: conditionally render different components based on the route
   const renderContent = () => {
-    const currentPath = window.location.pathname;
+    const currentPath = window.location.pathname
 
     switch (currentPath) {
       case '/pages/correlation':
@@ -218,7 +220,16 @@ const PodConnectionSuggestion = () => {
   };
 
   return (
-    <div>{renderContent()}</div>
+    
+      <div>
+      {
+        queriedDataset ?
+        renderContent()
+        :
+        <p>Loading</p>
+      }
+      </div>
+
   )
 }
 

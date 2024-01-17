@@ -47,7 +47,8 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                 {
                     label: `Impact of ${selectedX.label} on ${selectedY.label}`,
                     data: xValues.map((timestamp, index) => ({
-                        x: new Date(timestamp),
+                        //x: new Date(timestamp),
+                        x: timestamp,
                         y: yValues[index],
                         backgroundColor: colors[index],
                     })),
@@ -76,7 +77,7 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
             type: type.value,
             data: chartData,
             options: chartOptions,
-        });
+        })
 
         // Make sure to clean up the chart when the component is unmounted
         return () => {
