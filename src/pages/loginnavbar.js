@@ -42,7 +42,7 @@ function Loginnavbar() {
             </CombinedDataProvider>
         ) : <Row>
             <div className="message">
-              <LoginButton className="authButton" oidcIssuer="https://lab.wirtz.tech/"
+              <LoginButton className="authButton" oidcIssuer="http://88.99.95.51:3000/" //"https://lab.wirtz.tech/""https://solidweb.me/"
                 redirectUrl={"http://localhost:3000/"}
                 authOptions={authOptions}
                 onError={onError} >
