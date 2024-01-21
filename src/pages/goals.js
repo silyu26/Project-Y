@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import GoalComponent from '../components/goal';
+import GoalComponent from '../components/goals/goal';
 
 const Goals = () => {
 
