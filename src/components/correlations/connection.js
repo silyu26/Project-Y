@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
+import Goals from "../../pages/goals";
+
+
 const QueryEngine = require('@comunica/query-sparql').QueryEngine
 
 const queryStr = `
@@ -63,7 +66,7 @@ const PodConnectionSuggestion = () => {
         // console.log("HR dataset",hrDataset) "https://lab.wirtz.tech/fhir/"
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
-        console.log("All Files",hrDataset)
+        console.log("All Files", hrDataset)
         setDataset(hrDataset)
 
         let sources = []
@@ -79,7 +82,7 @@ const PodConnectionSuggestion = () => {
             }
           }
         }
-        console.log("sources",sources)
+        console.log("sources", sources)
         setHrSources(sources)
       } catch (error) {
         console.log("error!", error)
@@ -93,7 +96,7 @@ const PodConnectionSuggestion = () => {
       try {
         let hrArr = []
         let tempArr = []
-        if(hrSources.length > 0){
+        if (hrSources.length > 0) {
           const currentDate3 = new Date()
           console.log('Start getting obj:', currentDate3.toLocaleTimeString())
           /*hrSources.forEach(async source => {
@@ -145,7 +148,7 @@ const PodConnectionSuggestion = () => {
       }
     }
     queryObj()
-  },[hrSources, session])
+  }, [hrSources, session])
 
   /*useEffect(() => {
     const queryHeartRate = async () => {
@@ -213,6 +216,8 @@ const PodConnectionSuggestion = () => {
         return <GraphVisualizeComponent criteriaData={queriedDataset} />;
       case '/pages/suggestions':
         return <CorrelationMatrixComponent criteriaData={queriedDataset} />;
+      case '/pages/goals':
+        return <Goals criteriaData={queriedDataset} />
       default:
         // Default content if the route doesn't match
         return <p>Invalid route</p>;
@@ -220,15 +225,15 @@ const PodConnectionSuggestion = () => {
   };
 
   return (
-    
-      <div>
+
+    <div>
       {
         queriedDataset ?
-        renderContent()
-        :
-        <p>Loading</p>
+          renderContent()
+          :
+          <p>Loading</p>
       }
-      </div>
+    </div>
 
   )
 }

@@ -8,12 +8,11 @@ import { getSolidDataset } from "@inrupt/solid-client"
 import { overwriteFile } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { getFile } from "@inrupt/solid-client";
-import { useHealthData } from "../healthDataContext";
 import GoalCard from "./goalCard";
 
 
 
-const GoalComponent = () => {
+const GoalComponent = ({ healthData }) => {
     const { session } = useSession();
     const [modalOpen, setModalOpen] = useState(false);
     const [respiration, setRespiration] = useState({ id: 'respiration', label: 'Respiration', priority: 0, show: false });
@@ -25,7 +24,6 @@ const GoalComponent = () => {
     const [sleep, setSleep] = useState({ id: 'sleep', label: 'Sleep', priority: 0, show: false });
     const [sport, setSport] = useState({ id: 'sport', label: 'Sport', priority: 0, show: false });
     const [source, setSource] = useState(null);
-    const { healthData } = useHealthData();
 
     useEffect(() => {
         const getGoalSource = async () => {

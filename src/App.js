@@ -2,8 +2,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Navigatebar from "./components/navbar"
 import Footer from "./components/footer"
-import Correlation from "./pages/correlation"
-import Goals from './pages/goals'
 import Share from "./pages/share"
 import Manageaccount from './pages/manageaccount';
 import Managepod from './pages/managepod';
@@ -28,7 +26,7 @@ function App() {
             <Route path="/pages/correlation" element={<PodConnectionSuggestion />} />
             <Route path="/pages/suggestions" element={<PodConnectionSuggestion />} />
             {/*<Route path="/pages/login" element={<Login />} />*/}
-            <Route path="/pages/goals" element={<Goals />} />
+            <Route path="/pages/goals" element={<PodConnectionSuggestion />} />
             <Route path="/pages/share" element={<Share />} />
             <Route path="/pages/manageaccount" element={<Manageaccount />} />
             <Route path="/pages/managepod" element={<Managepod />} />
