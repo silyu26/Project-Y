@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import GoalComponent from '../components/goals/goal';
+import GoalComponent from '../components/goals/goalComponent';
 
 const Goals = () => {
 
@@ -11,8 +11,6 @@ const Goals = () => {
         <hr />
           <br />
           <GoalComponent />
-          
-          
       </Container>
   );
 }
