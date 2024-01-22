@@ -14,76 +14,74 @@ import GoalCard from "./goalCard";
 const GoalComponent = ({ healthData }) => {
     const { session } = useSession();
     const [modalOpen, setModalOpen] = useState(false);
-    const [respiration, setRespiration] = useState({ id: 'respiration', label: 'Respiration', priority: 0, show: true });
-    const [hydration, setHydration] = useState({ id: 'hydration', label: 'Hydration', priority: 1, show: true });
-    const [temperature, setTemperature] = useState({ id: 'temperature', label: 'Temperature', priority: 2, show: true });
-    const [oxygenSaturation, setOxygenSaturation] = useState({ id: '[oxygenSaturation', label: 'Oxygen Saturation', priority: 3, show: true });
-    const [heartRate, setHeartRate] = useState({ id: 'heartRate', label: 'Heart Rate', priority: 4, show: true });
-    const [mood, setMood] = useState({ id: 'mood', label: 'Mood', priority: 5, show: true });
-    const [sleep, setSleep] = useState({ id: 'sleep', label: 'Sleep', priority: 6, show: true });
-    const [sport, setSport] = useState({ id: 'sport', label: 'Sport', priority: 7, show: true });
-    const [source, setSource] = useState(null);
-
-    const [goals, setGoals] = useState([
-        respiration, hydration, temperature, oxygenSaturation, heartRate, mood, sleep, sport
-    ]);
-
+    const [respiration, setRespiration] = useState(null);
+    const [hydration, setHydration] = useState(null);
+    const [temperature, setTemperature] = useState(null);
+    const [oxygenSaturation, setOxygenSaturation] = useState(null);
+    const [heartRate, setHeartRate] = useState(null);
+    const [mood, setMood] = useState(null);
+    const [sleep, setSleep] = useState(null);
+    const [sport, setSport] = useState(null);
+    const [initiated, setInitiated] = useState(false);
     const goalIds = ['respiration', 'hydration', 'temperature', 'oxygenSaturation', 'heartRate', 'mood', 'sleep', 'sport'];
+    const getDefaultLabel = (goalId) => {
+        switch (goalId) {
+            case 'respiration':
+                return 'Respiration';
+            case 'hydration':
+                return 'Hydration';
+            case 'temperature':
+                return 'Temperature';
+            case 'oxygenSaturation':
+                return 'Oxygen Saturation';
+            case 'heartRate':
+                return 'Heart Rate';
+            case 'mood':
+                return 'Mood';
+            case 'sleep':
+                return 'Sleep';
+            case 'sport':
+                return 'Sport';
+            default:
+                return '';
+        }
+    }
+    const [goals, setGoals] = useState(goalIds.map((goalId, index) => ({
+        id: goalId,
+        label: getDefaultLabel(goalId),
+        priority: index,
+        show: true
+    })));
+
 
     useEffect(() => {
-        const getGoalSource = async () => {
-            try {
-                const goalDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}/goals/goals.json`, { fetch: session.fetch });
-                // Check if the file exists before updating the state
-                if (goalDataset) {
-                    setSource(goalDataset.uri);
-                }
-            } catch (error) {
-                console.log("error!", error);
-            }
-        };
-        getGoalSource();
-    }, [session]);
-
-    useEffect(() => {
+        if (initiated) {
+            return;
+        }
         const queryObj = async () => {
-            try {
-                if (source.length > 0) {
-                    const file = await getFile(source, { fetch: session.fetch });
-
-                    if (file) {
-                        const obj = JSON.parse(await file.text());
-
-                        // Update each goal state only if the corresponding property exists in the loaded JSON
-                        goalIds.forEach((goalId) => {
-                            if (obj.hasOwnProperty(goalId)) {
-                                const updatedGoal = { ...getGoalState(goalId), ...obj[goalId] };
-                                setGoalState(updatedGoal);
-                            }
-                        });
-                    } else {
-                        // If the file doesn't exist, set default initial values for each goal
-                        goalIds.forEach((goalId) => {
-                            const defaultGoal = { id: goalId, label: getDefaultLabel(goalId), priority: 0, show: false }; // Adjust the default values
-                            setGoalState(defaultGoal);
-                        });
+            const file = await getFile(`${process.env.REACT_APP_SERVER_URL}goal2/goals.json`, { fetch: session.fetch });
+            if (file) {
+                const obj = JSON.parse(await file.text());
+                setGoals(Object.values(obj));
+                goalIds.forEach((goalId) => {
+                    if (obj.hasOwnProperty(goalId)) {
+                        setGoalState(obj[goalId], false, false);
                     }
-                }
-            } catch (error) {
-                console.log(error);
+                });
             }
         };
-
         queryObj();
-    }, [source, session]);
+        setInitiated(true);
+        console.log(goals)
+    }, [session, initiated]);
 
     const handleSubmit = async () => {
         const goalsObject = goals.reduce((acc, goal) => {
-            acc[goal.id] = goal;
+            acc[goal.id] = { ...goal }; // Create a shallow copy of the goal object
             return acc;
         }, {});
 
-        const uri = `${process.env.REACT_APP_SERVER_URL}/goals/goals.json`;
+        const uri = `${process.env.REACT_APP_SERVER_URL}goal2/goals.json`;
 
         // Convert the JSON content to a Blob
         const jsonBlob = new Blob([JSON.stringify(goalsObject)], { type: "application/json" });
@@ -108,84 +106,68 @@ const GoalComponent = ({ healthData }) => {
     };
 
     const onDragEnd = (result) => {
-        if (!result.destination) return; // Dragged outside the list
-
-        const updatedGoals = [...goals];
-        const [movedGoal] = updatedGoals.splice(result.source.index, 1);
+        if (!result.destination) { return; }
+        const updatedGoals = goals;
+        const [movedGoal] = goals.splice(result.source.index, 1);
         updatedGoals.splice(result.destination.index, 0, movedGoal);
-
-        setGoals(updatedGoals);
-        goals.forEach((goal) => {
-            setGoalState(goal);
+        updatedGoals.forEach((goal, index) => {
+            goal.priority = index;
+            setGoalState(goal, true, true);
         });
         handleSubmit();
     };
 
-    const getDefaultLabel = (goalId) => {
-        switch (goalId) {
-            case 'respiration':
-                return 'Respiration';
-            case 'hydration':
-                return 'Hydration';
-            case 'temperature':
-                return 'Temperature';
-            case 'oxygenSaturation':
-                return 'Oxygen Saturation';
-            case 'heartRate':
-                return 'Heart Rate';
-            case 'mood':
-                return 'Mood';
-            case 'sleep':
-                return 'Sleep';
-            case 'sport':
-                return 'Sport';
-            default:
-                return '';
-        }
-    }
+
 
     const handleCheckboxChange = (goalId, event) => {
         const updatedGoal = getGoalState(goalId);
-
         if (updatedGoal) {
             updatedGoal.show = event.target.checked;
-            setGoalState(updatedGoal);
+            setGoalState(updatedGoal, false, true);
             handleSubmit();
         } else {
             console.error(`Goal with id ${goalId} not found.`);
         }
     };
 
-    const setGoalState = (updatedGoal) => {
-        switch (updatedGoal.id) {
+    const setGoalState = (goal, sort, updateGoals) => {
+        switch (goal.id) {
             case 'respiration':
-                setRespiration(updatedGoal);
+                setRespiration(goal);
                 break;
             case 'hydration':
-                setHydration(updatedGoal);
+                setHydration(goal);
                 break;
             case 'temperature':
-                setTemperature(updatedGoal);
+                setTemperature(goal);
                 break;
             case 'oxygenSaturation':
-                setOxygenSaturation(updatedGoal);
+                setOxygenSaturation(goal);
                 break;
             case 'heartRate':
-                setHeartRate(updatedGoal);
+                setHeartRate(goal);
                 break;
             case 'mood':
-                setMood(updatedGoal);
+                setMood(goal);
                 break;
             case 'sleep':
-                setSleep(updatedGoal);
+                setSleep(goal);
                 break;
             case 'sport':
-                setSport(updatedGoal);
+                setSport(goal);
                 break;
             default:
                 break;
         }
-    }
+        if (updateGoals) {
+            const updatedGoals = goals.map((g) => (g.id == goal.id ? goal : g));
+            if (sort) {
+                updatedGoals.sort((a, b) => a.priority - b.priority);
+            }
+            setGoals(updatedGoals);
+        }
+
+    };
 
 
     const getGoalState = (goalId) => {
@@ -214,14 +196,18 @@ const GoalComponent = ({ healthData }) => {
     return (
         <Container>
             <MdEdit onClick={openModal} style={{ cursor: 'pointer', margin: '10px', marginLeft: 'auto' }} />
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                {goals.map((goal) => (
-                    goal.show && (
-                        <GoalCard key={goal.id} goal={goal} healthData={healthData} />
-                    )
-                ))}
-            </div>
-
+            {initiated ? (
+                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                    {goals.map((goal) => (
+                        goal.show && (
+                            <GoalCard key={goal.id} goal={goal} healthData={healthData} />
+                        )
+                    ))}
+                </div>
+            ) : (
+                // Render a loading icon or message here
+                <div>Loading...</div>
+            )}
             <Modal show={modalOpen} onHide={closeModal} size="md">
                 <Modal.Header closeButton>
                     <Modal.Title>Change your goals</Modal.Title>
@@ -267,6 +253,7 @@ const GoalComponent = ({ healthData }) => {
             </Modal>
         </Container>
     );
+
 };
 
 export default GoalComponent;

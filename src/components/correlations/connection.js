@@ -62,7 +62,7 @@ const PodConnectionSuggestion = () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
         console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}/Test2/`, { fetch: session.fetch })
+        const hrDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}temporal_pod/`, { fetch: session.fetch })
         // console.log("HR dataset",hrDataset) "https://lab.wirtz.tech/fhir/"
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
