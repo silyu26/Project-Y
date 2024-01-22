@@ -77,7 +77,7 @@ UNION
             ]
           } `
       const bindingsStream = await myEngine.queryBindings(queryStr, {
-        sources: ["https://lab.wirtz.tech/test/patient/patientInformation.ttl"]
+        sources: [`${process.env.REACT_APP_SERVER_URL}/test/patient/patientInformation.ttl`]
         //patientSources
       })
 

@@ -62,7 +62,7 @@ const PodConnectionSuggestion = () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
         console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset("http://88.99.95.51:3000/Test2/", { fetch: session.fetch })
+        const hrDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}/Test2/`, { fetch: session.fetch })
         // console.log("HR dataset",hrDataset) "https://lab.wirtz.tech/fhir/"
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
@@ -73,7 +73,7 @@ const PodConnectionSuggestion = () => {
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
             // const pattern = /^https:\/\/88.99.95.51:3000\/Test2\/data_2023-12-18.*.ttl$/
-            const pattern = /^http:\/\/88.99.95.51:3000\/Test2\/data_2024-01-16T16-.*.json$/
+            const pattern = process.env.REACT_APP_PATTERN
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
             const value = hrDataset.graphs.default[key]
