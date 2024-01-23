@@ -1,10 +1,13 @@
 import { useSession } from "@inrupt/solid-ui-react";
 import { getSolidDataset, getFile } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
-import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
+import { checkHeartRateStatus, checkTemperatureStatus, checkHydrationStatus } from "../../utils/normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
 import { Container, Row } from "react-bootstrap";
+import { Status } from "../../utils/normalRanges";
+import Goals from "../../pages/goals";
+import { parseNumberFromString } from "../../utils/parser";
 
 const PodConnectionSuggestion = () => {
 
@@ -25,7 +28,7 @@ const PodConnectionSuggestion = () => {
         //console.log("HR dataset",hrDataset) 
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
-        console.log("All Files",hrDataset)
+        console.log("All Files", hrDataset)
         setDataset(hrDataset)
 
         let sources = []
@@ -41,7 +44,7 @@ const PodConnectionSuggestion = () => {
             }
           }
         }
-        console.log("sources",sources)
+        console.log("sources", sources)
         setHrSources(sources)
       } catch (error) {
         console.log("error!", error)
@@ -55,7 +58,9 @@ const PodConnectionSuggestion = () => {
       try {
         let hrArr = []
         let tempArr = []
-        if(hrSources.length > 0){
+        let hydArr = []
+        let activeArr = []
+        if (hrSources.length > 0) {
           const currentDate3 = new Date()
           console.log('Start getting obj:', currentDate3.toLocaleTimeString())
           /*hrSources.forEach(async source => {
@@ -79,26 +84,42 @@ const PodConnectionSuggestion = () => {
 
           objArr.forEach(obj => {
             const heartrateObj = {
-              value: obj.measurement.heartrate,
+              value: parseNumberFromString(obj.measurement.heartrate),
               abnormal: checkHeartRateStatus(obj.measurement.heartrate),
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             const bodyTemperatureObj = {
-              value: obj.measurement.temperature,
-              abnormal: checkHeartRateStatus(obj.measurement.temperature),
+              value: parseNumberFromString(obj.measurement.temperature),
+              abnormal: checkTemperatureStatus(obj.measurement.temperature),
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+            }
+            const hydrationObj = {
+              value: parseNumberFromString(obj.measurement.humidity),
+              abnormal: checkHydrationStatus(obj.measurement.temperature),
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+            }
+            const sportObj = {
+              value: parseNumberFromString(obj.measurement.doingsport),
+              abnormal: Status.NORMAL,
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             hrArr.push(heartrateObj)
             tempArr.push(bodyTemperatureObj)
+            hydArr.push(hydrationObj)
+            activeArr.push(sportObj)
           })
         }
         hrArr.sort((a, b) => a.timestamp - b.timestamp)
         tempArr.sort((a, b) => a.timestamp - b.timestamp)
+        hydArr.sort((a, b) => a.timestamp - b.timestamp)
+        activeArr.sort((a, b) => a.timestamp - b.timestamp)
+
+
         console.log("heart rate object array", hrArr)
         console.log("body temp object array", tempArr)
         setBodyTempArr(tempArr)
         setHeartrateArr(hrArr)
-        const temp = { "temperature": tempArr, "heart rate": hrArr }
+        const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr, "sport": activeArr }
         setQueriedDataset(temp)
         console.log(new Date(), "Done creating the data objects in heartRate.js");
         console.log(new Date(), temp);
@@ -107,7 +128,7 @@ const PodConnectionSuggestion = () => {
       }
     }
     queryObj()
-  },[hrSources, session])
+  }, [hrSources, session])
 
   // Example: conditionally render different components based on the route
   const renderContent = () => {
@@ -118,6 +139,8 @@ const PodConnectionSuggestion = () => {
         return <GraphVisualizeComponent criteriaData={queriedDataset} />;
       case '/pages/suggestions':
         return <CorrelationMatrixComponent criteriaData={queriedDataset} />;
+      case '/pages/goals':
+        return <Goals criteriaData={queriedDataset} />
       default:
         // Default content if the route doesn't match
         return <p>Invalid route</p>;
@@ -129,9 +152,9 @@ const PodConnectionSuggestion = () => {
       <Container>
       {
         queriedDataset ?
-        renderContent()
-        :
-        <p>Loading</p>
+          renderContent()
+          :
+          <p>Loading</p>
       }
       </Container>
 

@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import jstat from 'jstat';
-import { generateSuggestion } from './suggestion';
-import { Status } from './normalRanges';
+import { findCorrelationsFromData } from './suggestion';
 import Select from 'react-select';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import Spinner from 'react-bootstrap/Spinner';
+import { Carousel } from "react-bootstrap";
 
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
-    { value: 'temperature', label: 'Body Temperature' }
+    { value: 'temperature', label: 'Body Temperature' },
+    { value: 'hydration', label: 'Hydration' },
+    { value: 'sport', label: 'Sport' }
     // Add more health markers as needed
 ];
 
-const thresholds = [
-    { label: "minor correlation", value: 0.01 },
-    { label: "medium correlation", value: 0.4 },
-    { label: "strong correlation", value: 0.8 }
-];
+const thresholds = {
+    min: 0,
+    max: 1,
+    step: 0.01,
+};
 
 const CorrelationMatrixComponent = ({ criteriaData }) => {
     const [selectedMarker, setSelectedMarker] = useState(healthMarkers[0]);
     const [maxOptionWidth, setMaxOptionWidth] = useState(0);
-    const [threshold, setThreshold] = useState(thresholds[0]);
+    const [threshold, setThreshold] = useState(thresholds.min);
     const [correlationMatrix, setCorrelationMatrix] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         // Calculate the maximum width among all options
@@ -45,58 +50,21 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
 
     useEffect(() => {
-        console.log(new Date(), "Call the Correlation Matrix component");
+        setLoading(true);
 
-        const correlations = [];
-        // Extract values arrays from criteriaData for jstat calculation
+        setCorrelationMatrix(findCorrelationsFromData(criteriaData, null));
 
-        Object.entries(criteriaData).map(([affectingCriterionKey, affectingCriterion]) => {
-            Object.entries(criteriaData).map(([affectedCriterionKey, affectedCriterion]) => {
-                if (affectingCriterionKey === affectedCriterionKey) {
-                    return;
-                }
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000); // Simulating a 2-second delay
 
-                const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
-                const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
-                const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
-
-                const finalAbnormalStatus =
-                    tooHighCount.length > 2 && tooLowCount > 2
-                        ? 'unstable'
-                        : tooHighCount > 2
-                            ? 'too high'
-                            : tooLowCount > 2
-                                ? 'too low'
-                                : 'normal';
-
-                const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
-                const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
-                const corrcoeff = jstat.corrcoeff(affectingValues, affectedValues);
-
-                console.log(new Date(), "Done preparing the correlation coefficients needed for the suggestion generator");
-
-                const suggestions = generateSuggestion(
-                    corrcoeff,
-                    affectingCriterionKey,
-                    affectedCriterionKey,
-                    finalAbnormalStatus
-                );
-
-                console.log(new Date(), "Done generating suggestion");
-
-                correlations.push({
-                    affectingCriterionKey,
-                    affectedCriterionKey,
-                    corrcoeff,
-                    suggestions,
-                });
-
-            });
-        });
-        setCorrelationMatrix(correlations);
     }, [criteriaData]);
 
+    const getSuggestions = (suggestionObj, affectingCriterionKey) => {
+        console.log(suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey));
 
+        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey);
+    };
 
     return (
         <div className="improvement-suggestions-container" style={{ marginTop: '2vh' }}>
@@ -117,22 +85,38 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         onChange={(healthMarker) => setSelectedMarker(healthMarker)}
                         styles={customStyles}
                     />
-                    <Select
-                        options={thresholds}
-                        value={threshold}
-                        onChange={(threshold) => setThreshold(threshold)}
-                        styles={customStyles}
-                    />
+                    <div className="threshold-slider">
+                        <Slider
+                            min={thresholds.min}
+                            max={thresholds.max}
+                            step={thresholds.step}
+                            value={threshold}
+                            onChange={(value) => setThreshold(value)}
+                        />
+                        <label style={{ marginRight: '10px' }}>Correlation Threshold:</label>
+                    </div>
                 </div>
             </section >
             <section className="suggestions-list">
-                <h2>Suggestions to Improve {selectedMarker.label}</h2>
-                <ul>
-                    {correlationMatrix.filter(value => Math.abs(value.corrcoeff) >= threshold.value && value.affectedCriterionKey == selectedMarker.value)
-                        .map((suggestion, index) => (
-                            <li key={index} style={{ whiteSpace: 'pre-line' }}>{suggestion.suggestions}</li>
+                {loading ? (
+                    <div className='text-center'>
+                        <Spinner variant='info' animation="border" />
+                        <p>Loading Suggestions...</p>
+                    </div>
+                ) : (
+                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
+                            <Carousel.Item key={index}>
+                                <div style={{ color: 'black', width: '100%' }}>
+                                    <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
+                                    <ul>
+                                        <li key={index} style={{ whiteSpace: 'pre-line', marginBottom: '20px' }}>{item.suggestion}</li>
+                                    </ul>
+                                </div>
+                            </Carousel.Item>
                         ))}
-                </ul>
+                    </Carousel>
+                )}
             </section>
         </div >
     );

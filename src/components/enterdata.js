@@ -59,7 +59,7 @@ fhir:display [ fhir:v "Sleep, function (observable entity)" ]       ] )     ] )
 
   `
 
-const solidURL = 'https://lab.wirtz.tech/';
+const solidURL = process.env.REACT_APP_SERVER_URL;
 
 async function createTTLFile(selectedAttribute, startDate, selectedValue, solidPodURL) {
     // Define the file URL

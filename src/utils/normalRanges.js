@@ -13,6 +13,11 @@ const normalRanges = {
         min: 36.1,
         max: 37.2,
     },
+    //TODO: what values to use here?
+    hydration: {
+        min: -1,
+        max: 1,
+    }
 };
 
 /**
@@ -49,8 +54,21 @@ function checkTemperatureStatus(temperatureCelsius) {
     }
 }
 
+function checkHydrationStatus(hydration){
+    const { min, max } = normalRanges.hydration;
+
+    if (hydration > max) {
+        return Status.TOO_HIGH;
+    } else if (hydration < min) {
+        return Status.TOO_LOW;
+    } else {
+        return Status.NORMAL;
+    }
+}
+
 export {
     Status,
     checkHeartRateStatus,
     checkTemperatureStatus,
+    checkHydrationStatus
 };
