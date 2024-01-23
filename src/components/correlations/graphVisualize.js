@@ -13,8 +13,8 @@ const diagramTypes = [
     { value: 'line', label: 'Line' },
     { value: 'bubble', label: 'Bubble' },
     { value: 'bar', label: 'Bar' },
-    { value: 'radar', label: 'Radar' },
-    { value: 'polarArea', label: 'Polar Area' },
+    //{ value: 'radar', label: 'Radar' },
+    //{ value: 'polarArea', label: 'Polar Area' },
 ]
 
 const GraphVisualizeComponent = ({ criteriaData }) => {
