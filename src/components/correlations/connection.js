@@ -1,12 +1,13 @@
 import { useSession } from "@inrupt/solid-ui-react";
 import { getSolidDataset, getFile } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
-import { checkHeartRateStatus, checkTemperatureStatus, checkHydrationStatus } from "./normalRanges";
+import { checkHeartRateStatus, checkTemperatureStatus, checkHydrationStatus } from "../../utils/normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
 import { Container, Row } from "react-bootstrap";
-import { Status } from "./normalRanges";
+import { Status } from "../../utils/normalRanges";
 import Goals from "../../pages/goals";
+import { parseNumberFromString } from "../../utils/parser";
 
 const PodConnectionSuggestion = () => {
 
@@ -83,22 +84,22 @@ const PodConnectionSuggestion = () => {
 
           objArr.forEach(obj => {
             const heartrateObj = {
-              value: obj.measurement.heartrate,
+              value: parseNumberFromString(obj.measurement.heartrate),
               abnormal: checkHeartRateStatus(obj.measurement.heartrate),
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             const bodyTemperatureObj = {
-              value: obj.measurement.temperature,
+              value: parseNumberFromString(obj.measurement.temperature),
               abnormal: checkTemperatureStatus(obj.measurement.temperature),
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             const hydrationObj = {
-              value: obj.measurement.humidity,
+              value: parseNumberFromString(obj.measurement.humidity),
               abnormal: checkHydrationStatus(obj.measurement.temperature),
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             const sportObj = {
-              value: obj.measurement.doingsport,
+              value: parseNumberFromString(obj.measurement.doingsport),
               abnormal: Status.NORMAL,
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }

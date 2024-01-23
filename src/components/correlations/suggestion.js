@@ -1,9 +1,11 @@
 import tracery from 'tracery-grammar';
 import jstat from 'jstat';
-import { Status } from './normalRanges';
+import { Status } from '../../utils/normalRanges';
 
 const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal) => {
-    const suggestions = [];
+    if (corrcoeff == NaN || affectedCriteria == null || affectingCriteria == null || trendOfAbnormal == null) {
+        return;
+    }
 
     // Map correlation values to severity levels
     const mapCorrelationSeverity = (correlation) => {
@@ -170,12 +172,10 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
         // Use the grammar to generate suggestions
-        suggestions.push(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n` +
-            `${severityAnalysis(correlationSeverity)}\n${trendAnalysis(correlationDirection)}\n${selectAdvice(correlationDirection, trendOfAbnormal)}`));
-        return suggestions;
+        return grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n` +
+            `${severityAnalysis(correlationSeverity)}\n${trendAnalysis(correlationDirection)}\n${selectAdvice(correlationDirection, trendOfAbnormal)}`);
     } else {
-        suggestions.push('No correlation information available for the specified attributes.');
-        return suggestions;
+        return 'No correlation information available for the specified attributes.';
     }
 };
 
@@ -185,8 +185,8 @@ const capitalizeFirstLetter = (str) => {
 
 const findCorrelationsFromData = (healthData, goalId) => {
     const correlations = [];
-    Object.entries(healthData).map(([affectingCriterionKey, affectingCriterion]) => {
-        Object.entries(healthData).map(([affectedCriterionKey, affectedCriterion]) => {
+    Object.entries(healthData).forEach(([affectedCriterionKey, affectedCriterion]) => {
+        Object.entries(healthData).forEach(([affectingCriterionKey, affectingCriterion]) => {
             if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
                 return;
             }
@@ -208,7 +208,8 @@ const findCorrelationsFromData = (healthData, goalId) => {
             const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
             const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
 
-            const suggestions = generateSuggestion(
+
+            const suggestion = generateSuggestion(
                 correlationCoefficient,
                 affectingCriterionKey,
                 affectedCriterionKey,
@@ -217,11 +218,13 @@ const findCorrelationsFromData = (healthData, goalId) => {
 
             correlations.push({
                 affectingCriterionKey,
+                affectedCriterionKey,
                 correlationCoefficient,
-                suggestions,
+                suggestion,
             });
         });
     });
+    console.log(correlations);
     return correlations;
 }
 

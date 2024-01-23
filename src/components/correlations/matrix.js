@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import Spinner from 'react-bootstrap/Spinner';
+import { Carousel } from "react-bootstrap";
 
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
@@ -59,6 +60,12 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
     }, [criteriaData]);
 
+    const getSuggestions = (suggestionObj, affectingCriterionKey) => {
+        console.log(suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey));
+
+        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey);
+    };
+
     return (
         <div className="improvement-suggestions-container" style={{ marginTop: '2vh' }}>
             <br />
@@ -97,15 +104,18 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <p>Loading Suggestions...</p>
                     </div>
                 ) : (
-                    <>
-                        <h2>Suggestions to Improve {selectedMarker.label}</h2>
-                        <ul>
-                            {correlationMatrix.filter(value => Math.abs(value.corrcoeff) >= threshold && value.affectedCriterionKey == selectedMarker.value)
-                                .map((suggestion, index) => (
-                                    <li key={index} style={{ whiteSpace: 'pre-line' }}>{suggestion.suggestions}</li>
-                                ))}
-                        </ul>
-                    </>
+                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
+                            <Carousel.Item key={index}>
+                                <div style={{ color: 'black', width: '100%' }}>
+                                    <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
+                                    <ul>
+                                        <li key={index} style={{ whiteSpace: 'pre-line', marginBottom: '20px' }}>{item.suggestion}</li>
+                                    </ul>
+                                </div>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
                 )}
             </section>
         </div >

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
-import { Status } from './normalRanges';
+import { Status } from "../../utils/normalRanges";
 import Spinner from 'react-bootstrap/Spinner';
 
 Chart.register(...registerables);

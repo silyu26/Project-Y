@@ -101,17 +101,13 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Carousel style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         {correlation &&
                             correlation.map((correlationItem, index) => (
                                 <Carousel.Item key={index}>
                                     <div style={{ color: 'black', width: '100%' }}>
                                     <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
-                                        <ul>
-                                            {correlationItem.suggestions.map((suggestion, i) => (
-                                                <li key={i}>{suggestion}</li>
-                                            ))}
-                                        </ul>
+                                    <i>{correlationItem.suggestion}</i>
                                     </div>
                                     <GraphComponent
                                         dataset={healthData}
