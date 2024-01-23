@@ -42,7 +42,7 @@ function Loginnavbar() {
             </CombinedDataProvider>
         ) : <Row>
             <div className="message">
-              <LoginButton className="authButton" oidcIssuer={process.env.REACT_APP_SERVER_URL} //"https://lab.wirtz.tech/""https://solidweb.me/"
+              <LoginButton className="authButton" oidcIssuer={process.env.REACT_APP_SERVER_URL2}
                 redirectUrl={"http://localhost:3000/"}
                 authOptions={authOptions}
                 onError={onError} >

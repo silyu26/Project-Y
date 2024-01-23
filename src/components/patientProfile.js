@@ -76,10 +76,10 @@ UNION
               fhir:birthDate [fhir:v ?birth];
             ]
           } `
-      const bindingsStream = await myEngine.queryBindings(queryStr, {
-        sources: [`${process.env.REACT_APP_SERVER_URL}/test/patient/patientInformation.ttl`]
-        //patientSources
-      })
+        const bindingsStream = await myEngine.queryBindings(queryStr, {
+          sources: [process.env.REACT_APP_SERVER_URL2+"patient/patientInformation.ttl"] 
+            //patientSources
+        })
 
       if (bindingsStream) {
         const bindings = await bindingsStream.toArray()

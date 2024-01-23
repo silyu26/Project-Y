@@ -172,13 +172,12 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           //addPatient(Text);
           const patientResource = constructPatientResource(fname, lname, gender, telecom, birth)
           console.log("patient resource",patientResource)
-          const containerUri = `${process.env.REACT_APP_SERVER_URL}/test/patient/`
+          const containerUri = process.env.REACT_APP_SERVER_URL2+'patient/'
           const req = await createPatient(containerUri, session.fetch)
           console.log("req",req)
 
           const savedFile = await overwriteFile(
-            //"https://lab.wirtz.tech/test/patient/observation_test3.ttl",
-            `${process.env.REACT_APP_SERVER_URL}/test/patient/patientInformation.ttl`,
+            process.env.REACT_APP_SERVER_URL2+"patient/patientInformation.ttl",
             new File([patientResource], "patientInformation", { type: "application/fhir+turtle" }),
             { contentType: "text/turtle", fetch: session.fetch }
           )
