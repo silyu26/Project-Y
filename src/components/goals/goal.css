@@ -21,7 +21,8 @@
 }
 
 .dragging {
-    background-color: #d4edda; /* Highlight color while dragging */
+    background-color: #d4edda;
+    /* Highlight color while dragging */
 }
 
 .list-header {
@@ -34,12 +35,12 @@
     padding: 10px;
 }
 
-.list-header > div:first-child {
+.list-header>div:first-child {
     flex: 1;
     text-align: left;
 }
 
-.list-header > div:last-child {
+.list-header>div:last-child {
     flex: 1;
     text-align: right;
 }

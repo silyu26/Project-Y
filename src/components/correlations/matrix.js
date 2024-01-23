@@ -6,6 +6,7 @@ import 'rc-slider/assets/index.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { Carousel } from "react-bootstrap";
 
+
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
     { value: 'temperature', label: 'Body Temperature' },
@@ -61,9 +62,8 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
     }, [criteriaData]);
 
     const getSuggestions = (suggestionObj, affectingCriterionKey) => {
-        console.log(suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey));
-
-        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey);
+        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey)
+            .sort((a, b) => b.correlationCoefficient - a.correlationCoefficient);;
     };
 
     return (
@@ -104,14 +104,12 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <p>Loading Suggestions...</p>
                     </div>
                 ) : (
-                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Carousel data-bs-theme="dark" indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
                             <Carousel.Item key={index}>
-                                <div style={{ color: 'black', width: '100%' }}>
+                                <div style={{ padding: '50px' }}>
                                     <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
-                                    <ul>
-                                        <li key={index} style={{ whiteSpace: 'pre-line', marginBottom: '20px' }}>{item.suggestion}</li>
-                                    </ul>
+                                    <i>{item.suggestion}</i>
                                 </div>
                             </Carousel.Item>
                         ))}

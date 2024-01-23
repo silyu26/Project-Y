@@ -4,6 +4,7 @@ import { Carousel } from "react-bootstrap";
 
 import GraphComponent from "../correlations/graph";
 import { findCorrelationsFromData } from "../correlations/suggestion";
+import "./goal.css";
 
 const getDescription = (attribute) => {
     switch (attribute) {
@@ -101,22 +102,22 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                         {correlation &&
                             correlation.map((correlationItem, index) => (
                                 <Carousel.Item key={index}>
-                                    <div style={{ color: 'black', width: '100%' }}>
-                                    <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
-                                    <i>{correlationItem.suggestion}</i>
-                                    </div>
-                                    <GraphComponent
-                                        dataset={healthData}
-                                        selectedX={getDisplayForGraph(correlationItem.affectingCriterionKey)}
-                                        selectedY={getDisplayForGraph(goal.id)}
-                                        type={{ value: 'scatter', label: 'Scatter' }}
-                                        style={{ width: '100%' }}
-                                    />
+                                    <div style={{ padding: '0px 100px 50px 100px' }}>
+                                        <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
+                                        <i>{correlationItem.suggestion}</i>
 
+                                        <GraphComponent
+                                            dataset={healthData}
+                                            selectedX={getDisplayForGraph(correlationItem.affectingCriterionKey)}
+                                            selectedY={getDisplayForGraph(goal.id)}
+                                            type={{ value: 'scatter', label: 'Scatter' }}
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
                                 </Carousel.Item>
                             ))}
                     </Carousel>
