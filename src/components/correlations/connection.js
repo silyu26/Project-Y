@@ -4,45 +4,7 @@ import { useEffect, useState } from "react";
 import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
-const QueryEngine = require('@comunica/query-sparql').QueryEngine
-
-const queryStr = `
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
-                PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
-                PREFIX loinc: <https://loinc.org/rdf/>
-                PREFIX owl: <http://www.w3.org/2002/07/owl>
-                PREFIX fhir: <http://hl7.org/fhir/> 
-
-                SELECT ?heartRateValue ?hrDate
-                WHERE {
-                    ?observation a fhir:Observation ;
-                      fhir:id [ fhir:v "heart-rate"] ;
-                      fhir:effective [ fhir:v ?hrDate] ;
-                      fhir:value [ a fhir:Quantity ;
-                        fhir:value [ fhir:v ?heartRateValue] ;
-                        fhir:unit [ fhir:v "beats/minute" ] ;
-                        fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
-                        fhir:code [ fhir:v "/min" ]
-                      ] .
-                } `
-const queryStr2 = `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns>
-                   PREFIX xsd: <http://www.w3.org/2001/XMLSchema>
-                   PREFIX loinc: <https://loinc.org/rdf/>
-                   PREFIX owl: <http://www.w3.org/2002/07/owl>
-                   PREFIX fhir: <http://hl7.org/fhir/>
-                   SELECT ?bodyTemp ?btDate
-                   WHERE { 
-                       ?observation a fhir:Observation ;
-                         fhir:id [ fhir:v "body-temperature"] ;
-                         fhir:effective [ fhir:v ?btDate] ;
-                         fhir:value [
-                            a fhir:Quantity ;
-                            fhir:value [ fhir:v ?bodyTemp] ;
-                            fhir:unit [ fhir:v "C" ] ;
-                            fhir:system [ fhir:v "http://unitsofmeasure.org"^^xsd:anyURI ] ;
-                            fhir:code [ fhir:v "Cel" ]
-                         ] .
-                    }`
+import { Container, Row } from "react-bootstrap";
 
 const PodConnectionSuggestion = () => {
 
@@ -59,8 +21,8 @@ const PodConnectionSuggestion = () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
         console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset("http://88.99.95.51:3000/Test2/", { fetch: session.fetch })
-        // console.log("HR dataset",hrDataset) "https://lab.wirtz.tech/fhir/"
+        const hrDataset = await getSolidDataset(process.env.REACT_APP_FHIR_DATA_URL+"2024-1-22/", { fetch: session.fetch })
+        //console.log("HR dataset",hrDataset) 
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
         console.log("All Files",hrDataset)
@@ -70,7 +32,7 @@ const PodConnectionSuggestion = () => {
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
             // const pattern = /^https:\/\/88.99.95.51:3000\/Test2\/data_2023-12-18.*.ttl$/
-            const pattern = /^http:\/\/88.99.95.51:3000\/Test2\/data_2024-01-16T16-.*.json$/
+            const pattern = /^http:\/\/88.99.95.51:4000\/temporal_pod\/2024-1-22\/data_2024-01-22T.*.json$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
             const value = hrDataset.graphs.default[key]
@@ -147,63 +109,6 @@ const PodConnectionSuggestion = () => {
     queryObj()
   },[hrSources, session])
 
-  /*useEffect(() => {
-    const queryHeartRate = async () => {
-      const myEngine = new QueryEngine()
-
-      const bindingsStream = await myEngine.queryBindings(queryStr, {
-        sources: hrSources
-        //["https://lab.wirtz.tech/test/patient/patientInformation.ttl"] ? ? ? ?
-      })
-      const bindingsStream2 = await myEngine.queryBindings(queryStr2, {
-        sources: hrSources
-      })
-
-      console.log("streams:",bindingsStream)
-
-      if (bindingsStream && bindingsStream2) {
-
-        console.log(new Date(), "Binding: ")
-
-        const bindingsHr = await bindingsStream.toArray()
-        const bindingsTemp = await bindingsStream2.toArray()
-        console.log(new Date(), "BindingsStream Converted to Arr ")
-        if (bindingsHr.length > 0 && bindingsTemp.length > 0) {
-          const hrArr = []
-          const tempArr = []
-          bindingsHr.forEach(hrObj => {
-            const heartrateObj = {
-              value: parseFloat(hrObj.get('heartRateValue').value),
-              abnormal: checkHeartRateStatus(hrObj.get('heartRateValue').value),
-              timestamp: hrObj.get('hrDate').value
-            }
-            hrArr.push(heartrateObj)
-          })
-          bindingsTemp.forEach(btObj => {
-            const bodyTemperatureObj = {
-              value: parseFloat(btObj.get('bodyTemp').value),
-              abnormal: checkTemperatureStatus(btObj.get('bodyTemp').value),
-              timestamp: btObj.get('btDate').value
-            }
-            tempArr.push(bodyTemperatureObj)
-          })
-          hrArr.sort((a, b) => a.timestamp - b.timestamp)
-          tempArr.sort((a, b) => a.timestamp - b.timestamp)
-          //console.log("heart rate object array", hrArr)
-          //console.log("body temp object array", tempArr)
-          setBodyTempArr(tempArr)
-          setHeartrateArr(hrArr)
-          setQueriedDataset({ "temperature": tempArr, "heart rate": hrArr })
-          console.log(new Date(), "Done creating the data objects in heartRate.js");
-          console.log(new Date(), queriedDataset);
-        }
-      } else {
-        console.log("No Data Available!")
-      }
-    }
-    queryHeartRate()
-  }, [hrSources])*/
-
   // Example: conditionally render different components based on the route
   const renderContent = () => {
     const currentPath = window.location.pathname
@@ -221,14 +126,14 @@ const PodConnectionSuggestion = () => {
 
   return (
     
-      <div>
+      <Container>
       {
         queriedDataset ?
         renderContent()
         :
         <p>Loading</p>
       }
-      </div>
+      </Container>
 
   )
 }
