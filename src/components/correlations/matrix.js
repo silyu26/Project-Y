@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import jstat from 'jstat';
-import { generateSuggestion } from './suggestion';
-import { Status } from './normalRanges';
+import { findCorrelationsFromData } from './suggestion';
 import Select from 'react-select';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -53,55 +51,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
     useEffect(() => {
         setLoading(true);
 
-        console.log(new Date(), "Call the Correlation Matrix component");
-
-        const correlations = [];
-        // Extract values arrays from criteriaData for jstat calculation
-
-        Object.entries(criteriaData).map(([affectingCriterionKey, affectingCriterion]) => {
-            Object.entries(criteriaData).map(([affectedCriterionKey, affectedCriterion]) => {
-                if (affectingCriterionKey === affectedCriterionKey) {
-                    return;
-                }
-
-                const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
-                const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
-                const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
-
-                const finalAbnormalStatus =
-                    tooHighCount.length > 2 && tooLowCount > 2
-                        ? 'unstable'
-                        : tooHighCount > 2
-                            ? 'high'
-                            : tooLowCount > 2
-                                ? 'low'
-                                : 'normal';
-
-                const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
-                const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
-                const corrcoeff = jstat.corrcoeff(affectingValues, affectedValues);
-
-                console.log(new Date(), "Done preparing the correlation coefficients needed for the suggestion generator");
-
-                const suggestions = generateSuggestion(
-                    corrcoeff,
-                    affectingCriterionKey,
-                    affectedCriterionKey,
-                    finalAbnormalStatus
-                );
-
-                console.log(new Date(), "Done generating suggestion");
-
-                correlations.push({
-                    affectingCriterionKey,
-                    affectedCriterionKey,
-                    corrcoeff,
-                    suggestions,
-                });
-
-            });
-        });
-        setCorrelationMatrix(correlations);
+        setCorrelationMatrix(findCorrelationsFromData(criteriaData, null));
 
         setTimeout(() => {
             setLoading(false);

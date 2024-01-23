@@ -1,4 +1,6 @@
 import tracery from 'tracery-grammar';
+import jstat from 'jstat';
+import { Status } from './normalRanges';
 
 const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal) => {
     const suggestions = [];
@@ -181,5 +183,46 @@ const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+const findCorrelationsFromData = (healthData, goalId) => {
+    const correlations = [];
+    Object.entries(healthData).map(([affectingCriterionKey, affectingCriterion]) => {
+        Object.entries(healthData).map(([affectedCriterionKey, affectedCriterion]) => {
+            if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
+                return;
+            }
 
-export { generateSuggestion };
+            const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
+            const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
+            const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
+
+            const finalAbnormalStatus =
+                tooHighCount.length > 2 && tooLowCount > 2
+                    ? 'unstable'
+                    : tooHighCount > 2
+                        ? 'too high'
+                        : tooLowCount > 2
+                            ? 'too low'
+                            : 'normal';
+
+            const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
+            const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
+            const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
+
+            const suggestions = generateSuggestion(
+                correlationCoefficient,
+                affectingCriterionKey,
+                affectedCriterionKey,
+                finalAbnormalStatus
+            );
+
+            correlations.push({
+                affectingCriterionKey,
+                correlationCoefficient,
+                suggestions,
+            });
+        });
+    });
+    return correlations;
+}
+
+export { generateSuggestion, findCorrelationsFromData };

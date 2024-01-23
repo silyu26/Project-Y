@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Container, Card } from "react-bootstrap";
-import jstat from 'jstat';
+import { Modal, Card } from "react-bootstrap";
 import { Carousel } from "react-bootstrap";
 
 import GraphComponent from "../correlations/graph";
-import { generateSuggestion } from "../correlations/suggestion";
-import { Status } from "../correlations/normalRanges";
+import { findCorrelationsFromData } from "../correlations/suggestion";
 
 const getDescription = (attribute) => {
     switch (attribute) {
@@ -85,49 +83,8 @@ const GoalCard = ({ goal, healthData }) => {
         if (!available) {
             return;
         }
-
-        const correlations = [];
-
-        Object.entries(healthData).map(([affectingCriterionKey, affectingCriterion]) => {
-            Object.entries(healthData).map(([affectedCriterionKey, affectedCriterion]) => {
-                if (affectingCriterionKey === affectedCriterionKey || affectedCriterionKey !== goal.id) {
-                    return;
-                }
-
-                const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
-                const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
-                const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
-
-                const finalAbnormalStatus =
-                    tooHighCount.length > 2 && tooLowCount > 2
-                        ? 'unstable'
-                        : tooHighCount > 2
-                            ? 'too high'
-                            : tooLowCount > 2
-                                ? 'too low'
-                                : 'normal';
-
-                const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
-                const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
-                const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
-
-                const suggestions = generateSuggestion(
-                    correlationCoefficient,
-                    affectingCriterionKey,
-                    affectedCriterionKey,
-                    finalAbnormalStatus
-                );
-
-                correlations.push({
-                    affectingCriterionKey,
-                    correlationCoefficient,
-                    suggestions,
-                });
-            });
-        });
-
-        setCorrelation(correlations);
-    }, [healthData, available]);
+        setCorrelation(findCorrelationsFromData(healthData, goal.id));
+    }, [healthData, available, goal]);
 
     return (
         <div>
@@ -149,6 +106,7 @@ const GoalCard = ({ goal, healthData }) => {
                             correlation.map((correlationItem, index) => (
                                 <Carousel.Item key={index}>
                                     <div style={{ color: 'black', width: '100%' }}>
+                                    <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
                                         <ul>
                                             {correlationItem.suggestions.map((suggestion, i) => (
                                                 <li key={i}>{suggestion}</li>
