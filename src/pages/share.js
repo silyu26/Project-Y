@@ -1,13 +1,63 @@
 // share.js
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Row, Spinner, Toast, ToastContainer } from 'react-bootstrap';
+import { Button, Col, Container, Row, Spinner, Toast, ToastContainer, Form } from 'react-bootstrap';
 import { useSession } from '@inrupt/solid-ui-react';
-import { getSolidDataset, isContainer, overwriteFile, getFile } from "@inrupt/solid-client";
+import { fetch } from '@inrupt/solid-client-authn-browser';
+import { getSolidDatasetWithAcl, getSolidDataset, hasResourceAcl, createAclFromFallbackAcl,
+   isContainer, saveAclFor, overwriteFile, setAgentResourceAccess,
+   hasFallbackAcl, getResourceAcl, hasAccessibleAcl, getFile } from "@inrupt/solid-client";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { FaRegFaceSmileWink } from "react-icons/fa6";
 
 const animatedComponents = makeAnimated()
+
+async function setAccess(resourceURL, agentWebID, toread, towrite, toappend, tocontrol) {
+  console.log("Resource URL:", resourceURL);
+    if (!resourceURL) {
+      throw new Error("Resource URL is undefined or invalid.");
+    }
+
+  try {
+    // Fetch the SolidDataset and its associated ACLs, if available:
+    const myDatasetWithAcl = await getSolidDatasetWithAcl(resourceURL);
+
+    // Obtain the SolidDataset's own ACL, if available,
+    // or initialise a new one, if possible:
+    let resourceAcl;
+    if (!hasResourceAcl(myDatasetWithAcl)) {
+      if (!hasAccessibleAcl(myDatasetWithAcl)) {
+        throw new Error(
+          "The current user does not have permission to change access rights to this Resource."
+        );
+      }
+      if (!hasFallbackAcl(myDatasetWithAcl)) {
+        throw new Error(
+          "The current user does not have permission to see who currently has access to this Resource."
+        );
+        // Alternatively, initialise a new empty ACL as follows,
+        // but be aware that if you do not give someone Control access,
+        // **nobody will ever be able to change Access permissions in the future**:
+        // resourceAcl = createAcl(myDatasetWithAcl);
+      }
+      resourceAcl = createAclFromFallbackAcl(myDatasetWithAcl);
+    } else {
+      resourceAcl = getResourceAcl(myDatasetWithAcl);
+    }
+
+    // Give someone Control access to the given Resource:
+    const updatedAcl = setAgentResourceAccess(
+      resourceAcl,
+      agentWebID,
+      { read: toread, append: toappend, write: towrite, control: tocontrol }
+    );
+
+    // Now save the ACL:
+    await saveAclFor(myDatasetWithAcl, updatedAcl);
+  } catch (error) {
+    console.error("Error setting access:", error);
+  }
+}
 
 const Share = () => {
 
@@ -17,6 +67,12 @@ const Share = () => {
   const [isSharing, setIsSharing] = useState(false)
   const [show, setShow] = useState(false)
   const [show2, setShow2] = useState(false)
+  const [resourceURL, setResourceURL] = useState('');
+  const [agentWebID, setAgentWebID] = useState('');
+  const [readAccess, setReadAccess] = useState(false);
+  const [writeAccess, setWriteAccess] = useState(false);
+  const [appendAccess, setAppendAccess] = useState(false);
+  const [controlAccess, setControlAccess] = useState(false);
 
   useEffect(() => {
     const getAllContainers = async() => {
@@ -188,6 +244,12 @@ const Share = () => {
     
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await setAccess(resourceURL, agentWebID, readAccess, writeAccess, appendAccess, controlAccess);
+    alert('Access request has been sent!');
+  }
+
   return (
     <Container>
       <br />
@@ -225,6 +287,55 @@ const Share = () => {
         }
         </Col>
       </Row>
+      <br />
+      <hr />
+      <br />
+
+      <Row>
+        <p className='text-center' style={{ fontStyle: 'italic' }}>Manage the access control for your resources! <FaRegFaceSmileWink /></p>
+      </Row>
+      <br />
+      <Form onSubmit={handleSubmit}>
+      
+      <Row>
+        <Col>
+        <Form.Label>
+          Resource URL:
+        </Form.Label>
+        <Form.Control type="text" required value={resourceURL} onChange={(e) => setResourceURL(e.target.value)} />
+        </Col>
+        <Col>
+        <Form.Label>
+          Agent WebID:
+        </Form.Label>
+        <Form.Control type="text" required value={agentWebID} onChange={(e) => setAgentWebID(e.target.value)} />
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col>
+        <Form.Check label={"Read Access:"} checked={readAccess} onChange={(e) => setReadAccess(e.target.checked)} />
+        </Col>
+        <Col>
+        <Form.Check label={"Write Access:"} checked={writeAccess} onChange={(e) => setWriteAccess(e.target.checked)} />
+        </Col>
+        <Col>
+        <Form.Check label={"Append Access:"} checked={appendAccess} onChange={(e) => setAppendAccess(e.target.checked)} />
+        </Col>
+        <Col>
+        <Form.Check label={"Control Access:"} checked={controlAccess} onChange={(e) => setControlAccess(e.target.checked)} />
+        </Col>
+      </Row>
+      <br />
+      <Button type="submit" variant="primary" size="md">Set Access</Button>
+      </Form>
+
+      {/*<div>{readAccess ? <p>t</p> : <p>f</p>}</div>
+      <div>{writeAccess ? <p>t</p> : <p>f</p>}</div>
+      <div>{appendAccess ? <p>t</p> : <p>f</p>}</div>
+      <div>{controlAccess ? <p>t</p> : <p>f</p>}</div>*/}
+
+
       <ToastContainer position='top-end'>
       <Toast show={show} onClose={() => setShow(false)} delay={5000} bg='success'>
         <Toast.Header>
