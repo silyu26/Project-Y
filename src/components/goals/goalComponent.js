@@ -59,7 +59,7 @@ const GoalComponent = ({ healthData }) => {
             return;
         }
         const queryObj = async () => {
-            const file = await getFile(`${process.env.REACT_APP_SERVER_URL}goal2/goals.json`, { fetch: session.fetch });
+            const file = await getFile(`${process.env.REACT_APP_SERVER_URL2}goal2/goals.json`, { fetch: session.fetch });
             if (file) {
                 const obj = JSON.parse(await file.text());
                 setGoals(Object.values(obj));
@@ -80,7 +80,7 @@ const GoalComponent = ({ healthData }) => {
             return acc;
         }, {});
 
-        const uri = `${process.env.REACT_APP_SERVER_URL}goal2/goals.json`;
+        const uri = `${process.env.REACT_APP_SERVER_URL2}goal2/goals.json`;
 
         // Convert the JSON content to a Blob
         const jsonBlob = new Blob([JSON.stringify(goalsObject)], { type: "application/json" });
