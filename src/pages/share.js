@@ -155,12 +155,16 @@ const Share = () => {
         for(const key in datasets.graphs.default){
           
           const value = datasets.graphs.default[key]
-          sources.push(value.url)
+          if(!isContainer(value.url)){
+            sources.push(value.url)
+          }
+          
         }
-        const validSources = sources.slice(1)
-        console.log(validSources)
-        const promises = validSources.map(async (source) => {
+        // const validSources = sources.slice(1)
+        // console.log(validSources)
+        const promises = sources.map(async (source) => {
           const file = await getFile(source, { fetch: session.fetch })
+          // console.log("file",file)
           return JSON.parse(await file.text())
         })
         const objArr = await Promise.all(promises)
@@ -178,6 +182,7 @@ const Share = () => {
       setShow(true)
     } catch (error) {
       console.log(error)
+      setIsSharing(false)
       setShow2(true)
     }
     
