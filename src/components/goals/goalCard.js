@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Card, Modal, Accordion, CardGroup } from "react-bootstrap";
+import { Modal, Container, Card } from "react-bootstrap";
+import jstat from 'jstat';
+import { Carousel } from "react-bootstrap";
+
 import GraphComponent from "../correlations/graph";
 import { generateSuggestion } from "../correlations/suggestion";
 import { Status } from "../correlations/normalRanges";
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import jstat from 'jstat';
 
 const getDescription = (attribute) => {
     switch (attribute) {
@@ -33,9 +34,34 @@ const getDescription = (attribute) => {
     }
 };
 
+const getDisplayForGraph = (key) => {
+    switch (key) {
+        case 'respiration':
+            return { value: 'respiration', label: 'Respiration' };
+        case 'hydration':
+            return { value: 'hydration', label: 'Hydration' };
+        case 'temperature':
+            return { value: 'temperature', label: 'Temperature' };
+        case 'oxygen saturation':
+            return { value: 'oxygen saturation', label: 'Oxygen Saturation' };
+        case 'heart rate':
+            return { value: 'heart rate', label: 'Heart Rate' };
+        case 'mood':
+            return { value: 'mood', label: 'Mood' };
+        case 'sleep':
+            return { value: 'sleep', label: 'Sleep' };
+        case 'sport':
+            return { value: 'sport', label: 'Sport' };
+        default:
+            return null;
+
+    }
+}
+
 const GoalCard = ({ goal, healthData }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [correlation, setCorrelation] = useState(null);
+    const [available, setAvailable] = useState(false);
 
     const openModal = () => {
         setModalOpen(true);
@@ -46,6 +72,20 @@ const GoalCard = ({ goal, healthData }) => {
     };
 
     useEffect(() => {
+        if (available) {
+            return;
+        }
+        if (healthData.hasOwnProperty(goal.id)) {
+            setAvailable(true);
+        }
+
+    }, [healthData, available]);
+
+    useEffect(() => {
+        if (!available) {
+            return;
+        }
+
         const correlations = [];
 
         Object.entries(healthData).map(([affectingCriterionKey, affectingCriterion]) => {
@@ -87,10 +127,10 @@ const GoalCard = ({ goal, healthData }) => {
         });
 
         setCorrelation(correlations);
-    }, [healthData]);
+    }, [healthData, available]);
 
     return (
-        <>
+        <div>
             <Card key={goal.id} style={{ width: '14rem', margin: '10px' }} className="text-center" onClick={openModal}>
                 <Card.Body>
                     <Card.Title>{goal.label}</Card.Title>
@@ -104,34 +144,32 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Accordion>
-                        {correlation && correlation.map((correlationItem, index) => (
-                            <Card key={index}>
-                                <Accordion.Toggle as={Card.Header} eventKey={index}>
-                                    {correlationItem.affectingCriterionKey} - Correlation: {correlationItem.correlationCoefficient.toFixed(2)}
-                                    {index === 0 ? <FaAngleUp /> : <FaAngleDown />}
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey={index}>
-                                    <Card.Body>
-                                        <GraphComponent
-                                            dataset={healthData}
-                                            selectedX={correlationItem.affectingCriterionKey}
-                                            selectedY={goal.id}
-                                            type={'scatter'}
-                                        />
+                    <Carousel style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {correlation &&
+                            correlation.map((correlationItem, index) => (
+                                <Carousel.Item key={index}>
+                                    <div style={{ color: 'black', width: '100%' }}>
                                         <ul>
                                             {correlationItem.suggestions.map((suggestion, i) => (
                                                 <li key={i}>{suggestion}</li>
                                             ))}
                                         </ul>
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                        ))}
-                    </Accordion>
+                                    </div>
+                                    <GraphComponent
+                                        dataset={healthData}
+                                        selectedX={getDisplayForGraph(correlationItem.affectingCriterionKey)}
+                                        selectedY={getDisplayForGraph(goal.id)}
+                                        type={{ value: 'scatter', label: 'Scatter' }}
+                                        style={{ width: '100%' }}
+                                    />
+
+                                </Carousel.Item>
+                            ))}
+                    </Carousel>
                 </Modal.Body>
+
             </Modal>
-        </>
+        </div>
     );
 };
 

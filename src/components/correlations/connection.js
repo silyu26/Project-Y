@@ -1,10 +1,11 @@
 import { useSession } from "@inrupt/solid-ui-react";
 import { getSolidDataset, getFile } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
-import { checkHeartRateStatus, checkTemperatureStatus } from "./normalRanges";
+import { checkHeartRateStatus, checkTemperatureStatus, checkHydrationStatus } from "./normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
 import Goals from "../../pages/goals";
+import { Status } from "./normalRanges";
 
 
 const QueryEngine = require('@comunica/query-sparql').QueryEngine
@@ -62,7 +63,7 @@ const PodConnectionSuggestion = () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
         console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}temporal_pod/`, { fetch: session.fetch })
+        const hrDataset = await getSolidDataset(`${process.env.REACT_APP_SERVER_URL}temporal_pod/2024-1-22/`, { fetch: session.fetch })
         // console.log("HR dataset",hrDataset) "https://lab.wirtz.tech/fhir/"
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
@@ -73,7 +74,7 @@ const PodConnectionSuggestion = () => {
         for (const key in hrDataset.graphs.default) {
           if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
             // const pattern = /^https:\/\/88.99.95.51:3000\/Test2\/data_2023-12-18.*.ttl$/
-            const pattern = process.env.REACT_APP_PATTERN
+            const pattern = /^http:\/\/88.99.95.51:4000\/temporal_pod\/2024-1-22\/data_2024-01-22T.*.json$/;
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
             // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
             const value = hrDataset.graphs.default[key]
@@ -96,6 +97,8 @@ const PodConnectionSuggestion = () => {
       try {
         let hrArr = []
         let tempArr = []
+        let hydArr = []
+        let activeArr = []
         if (hrSources.length > 0) {
           const currentDate3 = new Date()
           console.log('Start getting obj:', currentDate3.toLocaleTimeString())
@@ -126,20 +129,36 @@ const PodConnectionSuggestion = () => {
             }
             const bodyTemperatureObj = {
               value: obj.measurement.temperature,
-              abnormal: checkHeartRateStatus(obj.measurement.temperature),
+              abnormal: checkTemperatureStatus(obj.measurement.temperature),
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+            }
+            const hydrationObj = {
+              value: obj.measurement.humidity,
+              abnormal: checkHydrationStatus(obj.measurement.temperature),
+              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+            }
+            const sportObj = {
+              value: obj.measurement.doingsport,
+              abnormal: Status.NORMAL,
               timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
             }
             hrArr.push(heartrateObj)
             tempArr.push(bodyTemperatureObj)
+            hydArr.push(hydrationObj)
+            activeArr.push(sportObj)
           })
         }
         hrArr.sort((a, b) => a.timestamp - b.timestamp)
         tempArr.sort((a, b) => a.timestamp - b.timestamp)
+        hydArr.sort((a, b) => a.timestamp - b.timestamp)
+        activeArr.sort((a, b) => a.timestamp - b.timestamp)
+
+
         console.log("heart rate object array", hrArr)
         console.log("body temp object array", tempArr)
         setBodyTempArr(tempArr)
         setHeartrateArr(hrArr)
-        const temp = { "temperature": tempArr, "heart rate": hrArr }
+        const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr, "sport": activeArr }
         setQueriedDataset(temp)
         console.log(new Date(), "Done creating the data objects in heartRate.js");
         console.log(new Date(), temp);

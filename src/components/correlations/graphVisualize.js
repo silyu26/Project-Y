@@ -4,7 +4,9 @@ import GraphComponent from './graph';
 
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
-    { value: 'temperature', label: 'Skin Temperature' }
+    { value: 'temperature', label: 'Skin Temperature' },
+    { value: 'hydration', label: 'Hydration' },
+    { value: 'sport', label: 'Sport' }
     // Add more health markers as needed
 ];
 

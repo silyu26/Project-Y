@@ -6,7 +6,9 @@ import Select from 'react-select';
 
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
-    { value: 'temperature', label: 'Body Temperature' }
+    { value: 'temperature', label: 'Body Temperature' },
+    { value: 'hydration', label: 'Hydration' },
+    { value: 'sport', label: 'Sport' }
     // Add more health markers as needed
 ];
 

@@ -23,7 +23,7 @@ const GoalComponent = ({ healthData }) => {
     const [sleep, setSleep] = useState(null);
     const [sport, setSport] = useState(null);
     const [initiated, setInitiated] = useState(false);
-    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygenSaturation', 'heartRate', 'mood', 'sleep', 'sport'];
+    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygen saturation', 'heart rate', 'mood', 'sleep', 'sport'];
     const getDefaultLabel = (goalId) => {
         switch (goalId) {
             case 'respiration':
@@ -32,9 +32,9 @@ const GoalComponent = ({ healthData }) => {
                 return 'Hydration';
             case 'temperature':
                 return 'Temperature';
-            case 'oxygenSaturation':
+            case 'oxygen saturation':
                 return 'Oxygen Saturation';
-            case 'heartRate':
+            case 'heart rate':
                 return 'Heart Rate';
             case 'mood':
                 return 'Mood';
@@ -72,7 +72,6 @@ const GoalComponent = ({ healthData }) => {
         };
         queryObj();
         setInitiated(true);
-        console.log(goals)
     }, [session, initiated]);
 
     const handleSubmit = async () => {
@@ -141,10 +140,10 @@ const GoalComponent = ({ healthData }) => {
             case 'temperature':
                 setTemperature(goal);
                 break;
-            case 'oxygenSaturation':
+            case 'oxygen saturation':
                 setOxygenSaturation(goal);
                 break;
-            case 'heartRate':
+            case 'heart rate':
                 setHeartRate(goal);
                 break;
             case 'mood':
@@ -178,9 +177,9 @@ const GoalComponent = ({ healthData }) => {
                 return hydration;
             case 'temperature':
                 return temperature;
-            case 'oxygenSaturation':
+            case 'oxygen saturation':
                 return oxygenSaturation;
-            case 'heartRate':
+            case 'heart rate':
                 return heartRate;
             case 'mood':
                 return mood;
