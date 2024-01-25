@@ -4,6 +4,7 @@ import { Carousel } from "react-bootstrap";
 
 import GraphComponent from "../correlations/graph";
 import { findCorrelationsFromData } from "../correlations/suggestion";
+import { SuggestionComponent } from "../correlations/suggestion";
 import "./goal.css";
 
 const getDescription = (attribute) => {
@@ -104,15 +105,15 @@ const GoalCard = ({ goal, healthData }) => {
                 <Modal.Body>
                     <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                         {correlation &&
-                            correlation.map((correlationItem, index) => (
+                            correlation.map((item, index) => (
                                 <Carousel.Item key={index}>
                                     <div style={{ padding: '0px 100px 50px 100px' }}>
-                                        <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
-                                        <i>{correlationItem.suggestion}</i>
+                                        <h5>Correlation with {item.affectingCriterionKey}:</h5>
+                                        <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
 
                                         <GraphComponent
                                             dataset={healthData}
-                                            selectedX={getDisplayForGraph(correlationItem.affectingCriterionKey)}
+                                            selectedX={getDisplayForGraph(item.affectingCriterionKey)}
                                             selectedY={getDisplayForGraph(goal.id)}
                                             type={{ value: 'scatter', label: 'Scatter' }}
                                             style={{ width: '100%' }}

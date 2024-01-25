@@ -1,59 +1,105 @@
 import tracery from 'tracery-grammar';
 import jstat from 'jstat';
 import { Status } from '../../utils/normalRanges';
+import { HiOutlineKey } from "react-icons/hi";
+import { HiBell } from 'react-icons/hi';
+import { HiInformationCircle } from 'react-icons/hi';
+import { Container } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 
-const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal) => {
-    if (corrcoeff == NaN || affectedCriteria == null || affectingCriteria == null || trendOfAbnormal == null) {
-        return;
+// Map correlation values to severity levels
+const mapCorrelationSeverity = (correlation) => {
+    var absCor = Math.abs(correlation);
+    if (absCor >= 0.8 && absCor <= 1) return 'very strong';
+    if (absCor >= 0.6 && absCor < 0.8) return 'strong';
+    if (absCor >= 0.4 && absCor < 0.6) return 'moderate';
+    if (absCor >= 0.2 && absCor < 0.4) return 'weak';
+    if (absCor >= 0 && absCor < 0.2) return 'very weak';
+    return 'none';
+};
+
+// Adjust weights for each severity level
+const severityAnalysis = (correlationSeverity) => {
+    switch (correlationSeverity) {
+        case 'very weak': return '#AnalysisVeryWeak#';
+        case 'weak': return '#AnalysisWeak#';
+        case 'moderate': return '#AnalysisModerate#';
+        case 'strong': return '#AnalysisStrong#';
+        case 'very strong': return '#AnalysisVeryStrong#';
     }
+};
 
-    // Map correlation values to severity levels
-    const mapCorrelationSeverity = (correlation) => {
-        var absCor = Math.abs(correlation);
-        if (absCor >= 0.8 && absCor <= 1) return 'very strong';
-        if (absCor >= 0.6 && absCor < 0.8) return 'strong';
-        if (absCor >= 0.4 && absCor < 0.6) return 'moderate';
-        if (absCor >= 0.2 && absCor < 0.4) return 'weak';
-        if (absCor >= 0 && absCor < 0.2) return 'very weak';
-        return 'none';
-    };
-
-    // Adjust weights for each severity level
-    const severityAnalysis = (correlationSeverity) => {
-        switch (correlationSeverity) {
-            case 'very weak': return '#AnalysisVeryWeak#';
-            case 'weak': return '#AnalysisWeak#';
-            case 'moderate': return '#AnalysisModerate#';
-            case 'strong': return '#AnalysisStrong#';
-            case 'very strong': return '#AnalysisVeryStrong#';
-        }
-    };
-
-    // Decide on the #suggestion# based on correlationDirection and trendOfAbnormal
-    const selectAdvice = (correlationDirection, trendOfAbnormal) => {
-        if ((correlationDirection == 'positive' && trendOfAbnormal == 'high') ||
-            (correlationDirection == 'negative' && trendOfAbnormal == 'low')) {
-            return '#LowerAdvice#';
-        } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'low') ||
-            (correlationDirection == 'negative' && trendOfAbnormal == 'high')) {
-            return '#StrengthenAdvice#';
-        }
-        else if (trendOfAbnormal == 'unstable') {
-            return '#MonitorAdvice#';
-        }
-        else {
-            return '#NeutralAdvice#';
-        }
-    };
-
-    const trendAnalysis = (direction) => {
-        if (direction === "Positive") {
-            return '#DirectionAnalysisPositive#';
-        }
-        else {
-            return '#DirectionAnalysisNegative#';
-        }
+// Decide on the #suggestion# based on correlationDirection and trendOfAbnormal
+const selectAdvice = (correlationDirection, trendOfAbnormal) => {
+    if ((correlationDirection == 'positive' && trendOfAbnormal == 'high') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'low')) {
+        return '#LowerAdvice#';
+    } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'low') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'high')) {
+        return '#StrengthenAdvice#';
     }
+    else if (trendOfAbnormal == 'unstable') {
+        return '#MonitorAdvice#';
+    }
+    else {
+        return '#NeutralAdvice#';
+    }
+};
+
+const trendAnalysis = (direction) => {
+    if (direction === "Positive") {
+        return '#DirectionAnalysisPositive#';
+    }
+    else {
+        return '#DirectionAnalysisNegative#';
+    }
+}
+
+const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const findCorrelationsFromData = (healthData, goalId) => {
+    const correlations = [];
+    Object.entries(healthData).forEach(([affectedCriterionKey, affectedCriterion]) => {
+        Object.entries(healthData).forEach(([affectingCriterionKey, affectingCriterion]) => {
+            if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
+                return;
+            }
+
+            const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
+            const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
+            const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
+
+            const finalAbnormalStatus =
+                tooHighCount.length > 2 && tooLowCount > 2
+                    ? 'unstable'
+                    : tooHighCount > 2
+                        ? 'too high'
+                        : tooLowCount > 2
+                            ? 'too low'
+                            : 'normal';
+
+            const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
+            const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
+            const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
+
+            correlations.push({
+                correlationCoefficient,
+                affectingCriterionKey,
+                affectedCriterionKey,
+                finalAbnormalStatus
+            });
+        });
+    });
+    return correlations;
+}
+
+const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal }) => {
+
+    const [info, setInfo] = useState("");
+    const [detectedValue, setDetectedValue] = useState("");
+    const [change, setChange] = useState("");
 
     const grammar = tracery.createGrammar({
         AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
@@ -167,65 +213,46 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         ],
     });
 
-    if (corrcoeff !== undefined) {
-        const correlationSeverity = mapCorrelationSeverity(corrcoeff);
-        const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
+    useEffect(() => {
+        if (corrcoeff == NaN || affectedCriteria == null || affectingCriteria == null || trendOfAbnormal == null) {
+            return;
+        }
 
-        // Use the grammar to generate suggestions
-        return grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n` +
-            `${severityAnalysis(correlationSeverity)}\n${trendAnalysis(correlationDirection)}\n${selectAdvice(correlationDirection, trendOfAbnormal)}`);
-    } else {
-        return 'No correlation information available for the specified attributes.';
-    }
+        if (corrcoeff !== undefined) {
+            const correlationSeverity = mapCorrelationSeverity(corrcoeff);
+            const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
+
+            setInfo(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n${trendAnalysis(correlationDirection)}`));
+            setDetectedValue(grammar.flatten(`${severityAnalysis(correlationSeverity)}`));
+            setChange(grammar.flatten(`${selectAdvice(correlationDirection, trendOfAbnormal)}`));
+
+        } else {
+            return 'No correlation information available for the specified attributes.';
+        }
+
+    }, [corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal]);
+
+
+    return (
+        <Container>
+            <div>
+                <HiInformationCircle />
+                {info}
+            </div>
+            <div>
+                <HiBell />
+                {detectedValue}
+            </div>
+            <div>
+                <HiOutlineKey />
+                {change}
+            </div>
+        </Container>
+    );
+
 };
 
-const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+export {
+    SuggestionComponent,
+    findCorrelationsFromData
 }
-
-const findCorrelationsFromData = (healthData, goalId) => {
-    const correlations = [];
-    Object.entries(healthData).forEach(([affectedCriterionKey, affectedCriterion]) => {
-        Object.entries(healthData).forEach(([affectingCriterionKey, affectingCriterion]) => {
-            if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
-                return;
-            }
-
-            const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
-            const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
-            const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
-
-            const finalAbnormalStatus =
-                tooHighCount.length > 2 && tooLowCount > 2
-                    ? 'unstable'
-                    : tooHighCount > 2
-                        ? 'too high'
-                        : tooLowCount > 2
-                            ? 'too low'
-                            : 'normal';
-
-            const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
-            const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
-            const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
-
-
-            const suggestion = generateSuggestion(
-                correlationCoefficient,
-                affectingCriterionKey,
-                affectedCriterionKey,
-                finalAbnormalStatus
-            );
-
-            correlations.push({
-                affectingCriterionKey,
-                affectedCriterionKey,
-                correlationCoefficient,
-                suggestion,
-            });
-        });
-    });
-    console.log(correlations);
-    return correlations;
-}
-
-export { generateSuggestion, findCorrelationsFromData };

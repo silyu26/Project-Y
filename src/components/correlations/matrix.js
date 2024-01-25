@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { findCorrelationsFromData } from './suggestion';
 import Select from 'react-select';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { Carousel } from "react-bootstrap";
+import { SuggestionComponent, findCorrelationsFromData } from './suggestion';
+
 
 
 const healthMarkers = [
@@ -109,7 +110,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                             <Carousel.Item key={index}>
                                 <div style={{ padding: '50px 150px 50px 150px' }}>
                                     <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
-                                    <i>{item.suggestion}</i>
+                                    <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
                                 </div>
                             </Carousel.Item>
                         ))}
