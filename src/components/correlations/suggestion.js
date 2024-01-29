@@ -151,21 +151,19 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             `It appears that when ${affectingCriteria} increases, your ${affectedCriteria} tends to decrease.`,
             `An increase in your ${affectingCriteria} is associated with a decrease in ${affectedCriteria}.`,
             `There is an inverse relationship between ${affectingCriteria} and ${affectedCriteria}: as one goes up, the other goes down.`,
-            `Your ${affectedCriteria} shows a negative trend when ${affectingCriteria} experiences an upward movement.`,
-            `Observations suggest a negative correlation: increasing ${affectingCriteria} coincides with decreasing ${affectedCriteria}.`,
+            `Observations suggest that, increasing ${affectingCriteria} coincides with decreasing ${affectedCriteria}.`,
             `A negative trend is evident, indicating that an increase in ${affectingCriteria} is associated with a downward movement in ${affectedCriteria}.`,
-            `There is a discernible negative trend, where rising ${affectingCriteria} coincides with a decrease in ${affectedCriteria}.`,
+            `There is a negative trend, where rising ${affectingCriteria} coincides with a decrease in ${affectedCriteria}.`,
         ],
 
         DirectionAnalysisPositive: [
-            `There seems to be a positive correlation between an increase in your ${affectingCriteria} and an increase in ${affectedCriteria}.`,
             `Your ${affectedCriteria} tends to increase as ${affectingCriteria} increases.`,
             `There is a positive relationship between ${affectingCriteria} and ${affectedCriteria}: as one rises, the other also rises.`,
             `Observations indicate a positive trend: increasing ${affectingCriteria} aligns with an increase in ${affectedCriteria}.`,
-            `A positive correlation is evident, where an increase in ${affectingCriteria} corresponds to a rise in ${affectedCriteria}.`,
-            `A positive trend is notable, suggesting that an increase in ${affectingCriteria} corresponds with an upward movement in ${affectedCriteria}.`,
+            `A positive trend is evident, where an increase in ${affectingCriteria} corresponds to a rise in ${affectedCriteria}.`,
+            `Observations suggest that, an increase in ${affectingCriteria} corresponds with an upward movement in ${affectedCriteria}.`,
             `Evidence points towards a positive trend: when ${affectingCriteria} goes up, so does ${affectedCriteria}.`,
-            `The data indicates a favorable correlation, with increasing ${affectingCriteria} linked to a positive shift in ${affectedCriteria}.`,
+            `The data indicates a positive relationship, with increasing ${affectingCriteria} linked to a positive shift in ${affectedCriteria}.`,
         ],
 
         AbnormalMeasurementsAnalysis: [
@@ -222,6 +220,7 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             const correlationSeverity = mapCorrelationSeverity(corrcoeff);
             const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
+            console.log(`${trendAnalysis(correlationDirection)}`);
             setInfo(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n${trendAnalysis(correlationDirection)}`));
             setDetectedValue(grammar.flatten(`${severityAnalysis(correlationSeverity)}`));
             setChange(grammar.flatten(`${selectAdvice(correlationDirection, trendOfAbnormal)}`));
