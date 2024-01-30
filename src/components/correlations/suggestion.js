@@ -4,6 +4,7 @@ import { Status } from '../../utils/normalRanges';
 import { HiOutlineKey } from "react-icons/hi";
 import { HiBell } from 'react-icons/hi';
 import { HiInformationCircle } from 'react-icons/hi';
+import { HiExclamation } from "react-icons/hi";
 import { Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
@@ -31,11 +32,11 @@ const severityAnalysis = (correlationSeverity) => {
 
 // Decide on the #suggestion# based on correlationDirection and trendOfAbnormal
 const selectAdvice = (correlationDirection, trendOfAbnormal) => {
-    if ((correlationDirection == 'positive' && trendOfAbnormal == 'high') ||
-        (correlationDirection == 'negative' && trendOfAbnormal == 'low')) {
+    if ((correlationDirection == 'positive' && trendOfAbnormal == 'too high') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'too low')) {
         return '#LowerAdvice#';
-    } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'low') ||
-        (correlationDirection == 'negative' && trendOfAbnormal == 'high')) {
+    } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'too low') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'too high')) {
         return '#StrengthenAdvice#';
     }
     else if (trendOfAbnormal == 'unstable') {
@@ -46,8 +47,60 @@ const selectAdvice = (correlationDirection, trendOfAbnormal) => {
     }
 };
 
+const detailedAdvice = (affectedCriteria, trend) => {
+    if (trend == "too high") {
+        switch (affectedCriteria) {
+            case 'movement':
+                return '#HighMovement#';
+            case 'respiration':
+                return '#HighRespiration#';
+            case 'hydration':
+                return '#HighHydration#';
+            case 'body temperature':
+                return '#HighTemperature#';
+            case 'oxygen saturation':
+                return '#HighOxygenSaturation#';
+            case 'heart rate':
+                return '#HighHeartRate#';
+            case 'temperature':
+                return '#HighTemperature#';
+            case 'mood':
+                return '#HighMood#';
+            case 'sleep time':
+                return '#HighSleepTime#';
+            case 'sport time':
+                return '#HighSportTime#';
+        }
+    }
+    else if (trend == "too low") {
+        switch (affectedCriteria) {
+            case 'movement':
+                return '#LowMovement#';
+            case 'respiration':
+                return '#LowRespiration#';
+            case 'hydration':
+                return '#LowHydration#';
+            case 'body temperature':
+                return '#LowTemperature#';
+            case 'oxygen saturation':
+                return '#LowOxygenSaturation#';
+            case 'heart rate':
+                return '#LowHeartRate#';
+            case 'temperature':
+                return '#LowTemperature#';
+            case 'mood':
+                return '#LowMood#';
+            case 'sleep time':
+                return '#LowSleepTime#';
+            case 'sport time':
+                return '#LowSportTime#';
+        }
+    }
+    return;
+}
+
 const trendAnalysis = (direction) => {
-    if (direction === "Positive") {
+    if (direction === "positive") {
         return '#DirectionAnalysisPositive#';
     }
     else {
@@ -100,6 +153,7 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
     const [info, setInfo] = useState("");
     const [detectedValue, setDetectedValue] = useState("");
     const [change, setChange] = useState("");
+    const [possibilities, setPossibilities] = useState("");
 
     const grammar = tracery.createGrammar({
         AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
@@ -187,11 +241,11 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
         ],
 
         MonitorAdvice: [
-            'You should continue monitoring and make adjustments as needed.',
-            'Continuous monitoring is recommended to track any changes over time.',
-            'Regular monitoring will provide insights into any fluctuations. Adjustments can be made accordingly.',
-            'Keeping a watchful eye on your metrics is crucial for long-term health management. Make adjustments based on changes.',
-            'Ongoing monitoring will help you stay proactive in maintaining your health. Adjust your routine as needed.',
+            'Unstable values are detected, you should continue monitoring and make adjustments as needed.',
+            'Unstable values are detected, continuous monitoring is recommended to track any changes over time.',
+            'Unstable values are detected, regular monitoring will provide insights into any fluctuations. Adjustments can be made accordingly.',
+            'Unstable values are detected, keeping a watchful eye on your metrics is crucial for long-term health management. Make adjustments based on changes.',
+            'Unstable values are detected, ongoing monitoring will help you stay proactive in maintaining your health. Adjust your routine as needed.',
         ],
 
         LowerAdvice: [
@@ -209,6 +263,66 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             `Consider strategies to strengthen your ${affectingCriteria} for improved control over your ${affectedCriteria}.`,
             `Implementing changes to boost your ${affectingCriteria} could lead to enhanced management of your ${affectedCriteria}.`,
         ],
+        HighMovement: [
+            'Excessive movement or strenuous activity without proper rest can result in fatigue, injuries, or muscle strain.'
+        ],
+        HighRespiration: [
+            'Rapid or labored breathing may indicate respiratory distress or underlying health issues.'
+        ],
+        HighHydration: [
+            'Overhydration may result in electrolyte imbalances and, in severe cases, hyponatremia.'
+        ],
+        HighTemperature: [
+            'Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
+        ],
+        HighOxygenSaturation: [
+            'Monitoring oxygen saturation is crucial for individuals with respiratory conditions like COPD or asthma.'
+        ],
+        HighHeartRate: [
+            `Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
+        ],
+        HighTemperature: [
+            'Low skin temperature may indicate poor circulation or exposure to cold conditions.'
+        ],
+        HighMood: [
+            'Extreme mood swings may suggest bipolar disorder or emotional instability.'
+        ],
+        HighSleepTime: [
+            'Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
+        ],
+        HighSportTime: [
+            'Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.'
+        ],
+        LowMovement: [
+            'Lack of movement may lead to stiffness, muscle atrophy, and decreased joint flexibility.'
+        ],
+        LowRespiration: [
+            'Shallow breathing may lead to insufficient oxygen intake, causing fatigue and reduced cognitive function.'
+        ],
+        LowHydration: [
+            'Dehydration can lead to dizziness, fatigue, headaches, and impaired cognitive function.'
+        ],
+        LowTemperature: [
+            'Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
+        ],
+        LowOxygenSaturation: [
+            'Low oxygen saturation levels can indicate respiratory or cardiovascular problems, leading to shortness of breath and fatigue.'
+        ],
+        LowHeartRate: [
+            `Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
+        ],
+        LowTemperature: [
+            'Low skin temperature may indicate poor circulation or exposure to cold conditions.'
+        ],
+        LowMood: [
+            'Persistent low mood may indicate depression or other mental health concerns.'
+        ],
+        LowSleepTime: [
+            'Insufficient sleep can lead to fatigue, impaired cognitive function, and increased susceptibility to illness.'
+        ],
+        LowSportTime: [
+            'Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.'
+        ]
     });
 
     useEffect(() => {
@@ -220,10 +334,23 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             const correlationSeverity = mapCorrelationSeverity(corrcoeff);
             const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
-            console.log(`${trendAnalysis(correlationDirection)}`);
-            setInfo(grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n${trendAnalysis(correlationDirection)}`));
-            setDetectedValue(grammar.flatten(`${severityAnalysis(correlationSeverity)}`));
-            setChange(grammar.flatten(`${selectAdvice(correlationDirection, trendOfAbnormal)}`));
+            const trend = grammar.flatten(trendAnalysis(correlationDirection));
+            const detect = grammar.flatten(severityAnalysis(correlationSeverity));
+            const ad = grammar.flatten(selectAdvice(correlationDirection, trendOfAbnormal));
+            const pos = grammar.flatten(detailedAdvice(affectedCriteria, trendOfAbnormal));
+
+            if (trend) {
+                setInfo(trend);
+            }
+            if (detect) {
+                setDetectedValue(detect);
+            }
+            if (ad) {
+                setChange(ad);
+            }
+            if (pos) {
+                setPossibilities(pos);
+            }
 
         } else {
             return 'No correlation information available for the specified attributes.';
@@ -234,18 +361,33 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
 
     return (
         <Container>
-            <div>
-                <HiInformationCircle />
-                {info}
-            </div>
-            <div>
-                <HiBell />
-                {detectedValue}
-            </div>
-            <div>
-                <HiOutlineKey />
-                {change}
-            </div>
+            {info !== "" && (
+                <div>
+                    <HiInformationCircle />
+                    {info}
+                </div>
+            )}
+
+            {detectedValue !== "" && (
+                <div>
+                    <HiBell />
+                    {detectedValue}
+                </div>
+            )}
+
+            {change !== "" && (
+                <div>
+                    <HiOutlineKey />
+                    {change}
+                </div>
+            )}
+
+            {possibilities !== "" && (
+                <div>
+                    <HiExclamation />
+                    {possibilities}
+                </div>
+            )}
         </Container>
     );
 

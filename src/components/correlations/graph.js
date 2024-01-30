@@ -33,9 +33,10 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
         const colors = dataset[selectedY.value].map((entry) => {
             switch (entry.abnormal) {
                 case Status.TOO_HIGH:
+                    console.log("should be red");
                     return 'red';
                 case Status.TOO_LOW:
-                    return 'blue';
+                    return 'gray';
                 default:
                     return 'green';
             }

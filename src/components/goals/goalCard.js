@@ -103,7 +103,7 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                    <Carousel data-bs-theme="dark" autoPlay={false} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                         {correlation &&
                             correlation.map((item, index) => (
                                 <Carousel.Item key={index}>
