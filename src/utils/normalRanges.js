@@ -10,8 +10,8 @@ const normalRanges = {
         max: 100,
     },
     temperatureCelsius: {
-        min: 36.1,
-        max: 37.2,
+        min: 25.5,
+        max: 26.5,
     },
     //TODO: what values to use here?
     hydration: {

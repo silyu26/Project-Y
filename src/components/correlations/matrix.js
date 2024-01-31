@@ -105,7 +105,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <p>Loading Suggestions...</p>
                     </div>
                 ) : (
-                    <Carousel data-bs-theme="dark" indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Carousel data-bs-theme="dark" interval={null} indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
                             <Carousel.Item key={index}>
                                 <div style={{ padding: '50px 150px 50px 150px' }}>

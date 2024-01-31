@@ -33,12 +33,11 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
         const colors = dataset[selectedY.value].map((entry) => {
             switch (entry.abnormal) {
                 case Status.TOO_HIGH:
-                    console.log("should be red");
-                    return 'red';
+                    return '#FF7C7C';
                 case Status.TOO_LOW:
-                    return 'gray';
+                    return '#6492E3';
                 default:
-                    return 'green';
+                    return '#60C462';
             }
         });
 
@@ -48,11 +47,10 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                 {
                     label: `Impact of ${selectedX.label} on ${selectedY.label}`,
                     data: xValues.map((timestamp, index) => ({
-                        //x: new Date(timestamp),
                         x: timestamp,
                         y: yValues[index],
-                        backgroundColor: colors[index],
                     })),
+                    backgroundColor: colors, // Set the backgroundColor here
                 },
             ],
         };
