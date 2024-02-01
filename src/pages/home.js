@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'; // If you're using React Router for nav
 import PodConnectionSuggestion from '../components/correlations/connection';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FcComboChart } from "react-icons/fc";
+import { FcPrivacy } from "react-icons/fc";
+import { FcExport } from "react-icons/fc";
 
 
 // Dummy data for featured health correlations
@@ -33,24 +35,33 @@ const Home = () => {
           <Row>
             {featuredCorrelations.map((correlation, index) => (
               <Col key={index}><div className="correlation-item">
-                <h5><FcComboChart /> {correlation.title}</h5>
+                <h6><FcComboChart /> {correlation.title}</h6>
                 <p style={{ fontStyle: 'italic' }}>{correlation.description}</p>
               </div></Col>
             ))}
           </Row>
           <br />
+
           <Row>
             <h4>Privacy & Safety</h4>
+          </Row>
+          <br />
+          <Row>
+            <h6 style={{ fontStyle: 'italic' }}><FcPrivacy /> We value your privacy! Only authorized third-party entities can access your data.</h6>
           </Row> 
           <br />
+
           <Row>
             <h4>Data Sharing</h4>
           </Row>
           <br />
+          <Row>
+            <h6 style={{ fontStyle: 'italic' }}><FcExport /> We possess the capability to adapt and share your data in a standardized and interoperable manner.</h6>
+          </Row>
           <br />
           { session.info.isLoggedIn ?
             <p className='text-muted'>Ready to explore your health data? 
-              <Link to="pages/correlation" className="cta-button">Get Started</Link>
+              <Link to="pages/correlation" className="cta-button"> Get Started</Link>
             </p>
             :
             <p className='text-muted'>Ready to explore your health data? <b>Sign in to continue!</b></p>

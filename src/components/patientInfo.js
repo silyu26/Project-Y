@@ -1,12 +1,14 @@
 import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, getThing, getPodUrlAll,
     addDatetime, addStringNoLocale, createThing, setThing, getSourceUrl, addUrl, overwriteFile, saveFileInContainer } from "@inrupt/solid-client"
-  import { useSession } from "@inrupt/solid-ui-react"
-  import { useEffect, useState } from "react"
-  import Button from 'react-bootstrap/Button'
-  import Container from 'react-bootstrap/Container'
-  import Row from 'react-bootstrap/Row'
-  import Col from 'react-bootstrap/Col'
-  import Form from 'react-bootstrap/Form'
+import { useSession } from "@inrupt/solid-ui-react"
+import { useEffect, useState } from "react"
+import Button from 'react-bootstrap/Button'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+import Toast from 'react-bootstrap/Toast'
+import ToastContainer from 'react-bootstrap/ToastContainer'
   
   
   function PatientForm({f,l,g,t,b}) {
@@ -17,6 +19,8 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
       const [gender, setGender] = useState(g || "")
       const [telecom, setTelecom] = useState(t || "")
       const [birth, setBirth] = useState(b || "")
+      const [show, setShow] = useState(false)
+      const [show2, setShow2] = useState(false)
   
   
       const createPatient = async (containerUri, fetch) => {
@@ -168,6 +172,7 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
       }
   
       const handleSubmit = async (event) => {
+        try {
           event.preventDefault();
           //addPatient(Text);
           const patientResource = constructPatientResource(fname, lname, gender, telecom, birth)
@@ -186,6 +191,12 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
           setBirth("")
           setGender("")
           setTelecom("")
+          setShow(true)
+        } catch (error) {
+          setShow2(true)
+          console.log(error)
+        }
+          
       }
 
       return(
@@ -238,6 +249,21 @@ import { createSolidDataset, getSolidDataset, saveSolidDatasetAt, getUrlAll, get
               Save Profile
             </Button>
           </Form>  
+          
+      <ToastContainer position='top-end'>
+      <Toast show={show} onClose={() => setShow(false)} delay={5000} bg='success'>
+        <Toast.Header>
+          <strong className="me-auto">Sharing Completed!</strong>
+        </Toast.Header>
+        <Toast.Body>Your doctor can now view your observations!</Toast.Body>
+      </Toast>
+      <Toast show={show2} onClose={() => setShow2(false)} delay={5000} bg='danger' >
+        <Toast.Header>
+          <strong className="me-auto">Sharing Failed!</strong>
+        </Toast.Header>
+        <Toast.Body>Something is not working...</Toast.Body>
+      </Toast></ToastContainer>
+
         </Container>
       )
   }

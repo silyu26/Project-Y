@@ -1,7 +1,7 @@
 import { getSolidDataset, getThingAll } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { useEffect, useState } from "react";
-import { Container, Row, Modal, Button, Image } from "react-bootstrap";
+import { Container, Row, Modal, Button, Image, ToastContainer, Toast } from "react-bootstrap";
 import { Card } from "react-bootstrap";
 import dummy from "../dummy_img.jpg"
 import { MdEdit } from "react-icons/md";
@@ -140,8 +140,8 @@ UNION
         </Modal.Body>
       </Modal>
 
-      <Row>
-        <Card style={{ width: '14rem' }} className="text-center">
+      <Row className="text-center">
+        <Card style={{ width: '14rem' }}>
           <div className="justify-content-center"><Image src={dummy} roundedCircle style={{ width: "8rem" }} /></div>
           <hr />
           <Card.Body>
