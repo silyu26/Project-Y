@@ -66,10 +66,12 @@ const detailedAdvice = (affectedCriteria, trend) => {
                 return '#HighTemperature#';
             case 'mood':
                 return '#HighMood#';
-            case 'sleep time':
-                return '#HighSleepTime#';
+            case 'sleep':
+                return '#HighSleep#';
             case 'sport time':
                 return '#HighSportTime#';
+            case 'sport level':
+                return '#HighSportLevel#';
         }
     }
     else if (trend == "too low") {
@@ -90,10 +92,12 @@ const detailedAdvice = (affectedCriteria, trend) => {
                 return '#LowTemperature#';
             case 'mood':
                 return '#LowMood#';
-            case 'sleep time':
-                return '#LowSleepTime#';
+            case 'sleep':
+                return '#LowSleep#';
             case 'sport time':
                 return '#LowSportTime#';
+            case 'sport level':
+                return '#LowSportLevel#';
         }
     }
     return;
@@ -156,8 +160,8 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
     const [possibilities, setPossibilities] = useState("");
 
     const grammar = tracery.createGrammar({
-        AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
-        AffectedCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
+        AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
+        AffectedCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
         CorrelationSeverity: ['#VeryWeak', '#Weak#', '#Moderate#', '#Strong#', '#VeryStrong'],
         CorrelationDirection: ['#PositiveDirection#', '#NegativeDirection#'],
 
@@ -263,6 +267,7 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             `Consider strategies to strengthen your ${affectingCriteria} for improved control over your ${affectedCriteria}.`,
             `Implementing changes to boost your ${affectingCriteria} could lead to enhanced management of your ${affectedCriteria}.`,
         ],
+
         HighMovement: [
             'Excessive movement or strenuous activity without proper rest can result in fatigue, injuries, or muscle strain.'
         ],
@@ -287,11 +292,24 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
         HighMood: [
             'Extreme mood swings may suggest bipolar disorder or emotional instability.'
         ],
-        HighSleepTime: [
+        HighSleep: [
             'Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
         ],
         HighSportTime: [
-            'Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.'
+            'Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.',
+            'Exceesive physical activity has the potential for a negative impact on social and work-life balance.',
+            'Elevated stress levels and decreased immune function can be associated with excessive sport time.'
+        ],
+        HighSportLevel: [
+            'Overtraining can make you feel persistently tired and lead to a decline in performance, even when you are putting in more effort.',
+            'Pushing your body too hard in sports increases the risk of getting hurt, from strains to long-lasting injuries due to repetitive stress.',
+            'Overdoing it in sports may bring about stress, irritability, mood swings, and make it harder to find motivation for physical activities.',
+            'Excessive training might disrupt your sleep, making it challenging to fall asleep or stay asleep, and leaving you feeling less rested.',
+            'Training too intensely can mess with your hormones, potentially causing irregular menstrual cycles in females and other hormonal imbalances.',
+            'Overtraining weakens your immune system, making you more susceptible to illnesses and lengthening the time it takes to recover.',
+            'Going beyond your limits may lead to not getting enough essential nutrients, affecting your overall health.',
+            'Balancing social life and training can be challenging, potentially straining relationships and causing neglect of other important life responsibilities.',
+            'Constant fatigue from overtraining might result in a plateau or decline in your athletic performance and physical abilities.'
         ],
         LowMovement: [
             'Lack of movement may lead to stiffness, muscle atrophy, and decreased joint flexibility.'
@@ -317,11 +335,20 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
         LowMood: [
             'Persistent low mood may indicate depression or other mental health concerns.'
         ],
-        LowSleepTime: [
+        LowSleep: [
             'Insufficient sleep can lead to fatigue, impaired cognitive function, and increased susceptibility to illness.'
         ],
         LowSportTime: [
-            'Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.'
+            'Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.',
+            'Insufficient sport time may result in reduced cardiovascular fitness and endurance.',
+            'Inadequate can increase the risk of weight gain and obesity.',
+            'Insufficient sport time may lead to lowered mood and increased stress levels.'
+        ],
+        LowSportLevel: [
+            'Light activity may not burn enough calories, potentially hindering weight management efforts.',
+            'Progress in improving overall fitness levels may be slower without adequate sport intensity.',
+            'The body may not be effectively challenged with low level of sport, reducing the potential for optimal health benefits.',
+            'Light activity may not provide enough stimulation to positively impact mood and mental well-being.'
         ]
     });
 

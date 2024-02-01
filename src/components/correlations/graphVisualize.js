@@ -6,7 +6,10 @@ const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
     { value: 'temperature', label: 'Skin Temperature' },
     { value: 'hydration', label: 'Hydration' },
-    { value: 'sport', label: 'Sport' }
+    { value: 'sport time', label: 'Sport Time' },
+    { value: 'sport level', label: 'Sport Intensity' },
+    { value: 'mood', label: 'Mood' },
+    { value: 'sleep', label: 'Sleep Time' }
     // Add more health markers as needed
 ];
 

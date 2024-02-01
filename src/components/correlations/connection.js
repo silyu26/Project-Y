@@ -1,18 +1,20 @@
 import { useSession } from "@inrupt/solid-ui-react";
 import { getSolidDataset, getFile } from "@inrupt/solid-client";
 import { useEffect, useState } from "react";
-import { checkHeartRateStatus, checkTemperatureStatus, checkHydrationStatus } from "../../utils/normalRanges";
+import { checkStatus } from "../../utils/normalRanges";
 import CorrelationMatrixComponent from "./matrix";
 import GraphVisualizeComponent from "./graphVisualize";
 import { Container, Row } from "react-bootstrap";
 import { Status } from "../../utils/normalRanges";
 import Goals from "../../pages/goals";
 import { parseNumberFromString } from "../../utils/parser";
+import { isSameDate } from "../../utils/time";
 
 const PodConnectionSuggestion = () => {
 
   const { session } = useSession()
   const [hrSources, setHrSources] = useState([])
+  const [manualDataset, setManualDataset] = useState(null)
   const [dataset, setDataset] = useState(null)
   const [heartrateArr, setHeartrateArr] = useState(null)
   const [bodyTempArr, setBodyTempArr] = useState(null)
@@ -24,7 +26,7 @@ const PodConnectionSuggestion = () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
         console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset(process.env.REACT_APP_FHIR_DATA_URL+"2024-1-22/", { fetch: session.fetch })
+        const hrDataset = await getSolidDataset(process.env.REACT_APP_FHIR_DATA_URL + "2024-1-22/", { fetch: session.fetch })
         //console.log("HR dataset",hrDataset) 
         const currentDate2 = new Date()
         console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
@@ -54,12 +56,40 @@ const PodConnectionSuggestion = () => {
   }, [session])
 
   useEffect(() => {
+    const getManualData = async () => {
+      const queryObj = async (filename) => {
+        const file = await getFile(`${process.env.REACT_APP_FHIR_DATA_URL}2024-01-22/manual/${filename}.json`, { fetch: session.fetch });
+        if (file) {
+          const obj = JSON.parse(await file.text());
+          return obj;
+        }
+      };
+      const manualDataIds = ['Mood Evening', 'Mood Morning', 'Sleep length', 'Sports activity time', 'Sports level of effort'];
+      const result = {};
+      manualDataIds.forEach(id => {
+        var val = queryObj(id);
+        if (val) {
+          result[id] = val.value;
+          result.timestamp = val.timestamp;
+        }
+      });
+      setManualDataset(result);
+    }
+    getManualData();
+  }, [session])
+
+  useEffect(() => {
     const queryObj = async () => {
       try {
         let hrArr = []
         let tempArr = []
         let hydArr = []
         let activeArr = []
+        let sportLevelArr = []
+        let sportTimeArr = []
+        let moodArr = []
+        let sleepArr = []
+
         if (hrSources.length > 0) {
           const currentDate3 = new Date()
           console.log('Start getting obj:', currentDate3.toLocaleTimeString())
@@ -83,43 +113,114 @@ const PodConnectionSuggestion = () => {
           console.log('Finish getting obj:', currentDate4.toLocaleTimeString())
 
           objArr.forEach(obj => {
+            const time = new Date(obj.measurement.timestamp);
+            const manualTime = new Date(manualDataset.timestamp);
+
+            if (isSameDate(time, manualTime)) {
+              if (time.getHours() <= 11) {
+                const v = parseNumberFromString(manualDataset('Mood Morning'));
+                const moodObj = {
+                  value: v,
+                  abnormal: checkStatus("mood", v),
+                  timestamp: time.toISOString().split('T')[0]
+                }
+                moodArr.push(moodObj)
+              }
+              else {
+                const v = parseNumberFromString(manualDataset('Mood Evening'));
+                const moodObj = {
+                  value: v,
+                  abnormal: checkStatus("mood", v),
+                  timestamp: time.toISOString().split('T')[0]
+                }
+                moodArr.push(moodObj)
+              }
+
+              const sportLevel = {
+                value: parseNumberFromString(manualDataset('Sports level of effort')),
+                abnormal: checkStatus("sportLevel", manualDataset('Sports level of effort')),
+                timestamp: time.toISOString().split('T')[0]
+              }
+              const sportTime = {
+                value: parseNumberFromString(manualDataset('Sports activity time')),
+                abnormal: checkStatus("sportTime", manualDataset('Sports activity time')),
+                timestamp: time.toISOString().split('T')[0]
+              }
+              const sleep = {
+                value: parseNumberFromString(manualDataset('Sleep length')),
+                abnormal: checkStatus("sleep", manualDataset('Sleep length')),
+                timestamp: time.toISOString().split('T')[0]
+              }
+              sportLevelArr.push(sportLevel)
+              sportTimeArr.push(sportTime)
+              sleepArr.push(sleep)
+            }
+
             const heartrateObj = {
               value: parseNumberFromString(obj.measurement.heartrate),
-              abnormal: checkHeartRateStatus(obj.measurement.heartrate),
-              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+              abnormal: checkStatus("heartRate", obj.measurement.heartrate),
+              timestamp: time.toISOString().split('T')[0]
             }
             const bodyTemperatureObj = {
               value: parseNumberFromString(obj.measurement.temperature),
-              abnormal: checkTemperatureStatus(obj.measurement.temperature),
-              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+              abnormal: checkStatus("temperatureCelsius", obj.measurement.temperature),
+              timestamp: time.toISOString().split('T')[0]
             }
             const hydrationObj = {
               value: parseNumberFromString(obj.measurement.humidity),
-              abnormal: checkHydrationStatus(obj.measurement.temperature),
-              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+              abnormal: checkStatus("hydration", obj.measurement.temperature),
+              timestamp: time.toISOString().split('T')[0]
             }
-            const sportObj = {
+            const activeObj = {
               value: parseNumberFromString(obj.measurement.doingsport),
               abnormal: Status.NORMAL,
-              timestamp: new Date(obj.measurement.timestamp).toISOString().split('T')[0]
+              timestamp: time.toISOString().split('T')[0]
             }
             hrArr.push(heartrateObj)
             tempArr.push(bodyTemperatureObj)
             hydArr.push(hydrationObj)
-            activeArr.push(sportObj)
+            activeArr.push(activeObj)
           })
         }
         hrArr.sort((a, b) => a.timestamp - b.timestamp)
         tempArr.sort((a, b) => a.timestamp - b.timestamp)
         hydArr.sort((a, b) => a.timestamp - b.timestamp)
         activeArr.sort((a, b) => a.timestamp - b.timestamp)
+        sportLevelArr.sort((a, b) => a.timestamp - b.timestamp)
+        sportTimeArr.sort((a, b) => a.timestamp - b.timestamp)
+        moodArr.sort((a, b) => a.timestamp - b.timestamp)
+        sleepArr.sort((a, b) => a.timestamp - b.timestamp)
 
 
         console.log("heart rate object array", hrArr)
         console.log("body temp object array", tempArr)
         setBodyTempArr(tempArr)
         setHeartrateArr(hrArr)
-        const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr, "sport": activeArr }
+        const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr }
+
+        if (sportLevelArr.length == hrArr.length) {
+          activeArr.forEach((value, index) => {
+            if(value!=1){
+              sportLevelArr.splice(index, 1, 0);
+            }
+          });
+          temp["sport level"] = sportLevelArr;
+        }
+        if (sportTimeArr.length == hrArr.length) {
+          activeArr.forEach((value, index) => {
+            if(value!=1){
+              sportTimeArr.splice(index, 1, 0);
+            }
+          });
+          temp["sport time"] = sportTimeArr;
+        }
+        if (moodArr.length == hrArr.length) {
+          temp["mood"] = moodArr;
+        }
+        if (sleepArr.length == hrArr.length) {
+          temp["sleep"] = sleepArr;
+        }
+
         setQueriedDataset(temp)
         console.log(new Date(), "Done creating the data objects in heartRate.js");
         console.log(new Date(), temp);
@@ -128,7 +229,7 @@ const PodConnectionSuggestion = () => {
       }
     }
     queryObj()
-  }, [hrSources, session])
+  }, [hrSources, session, manualDataset])
 
   // Example: conditionally render different components based on the route
   const renderContent = () => {
@@ -148,15 +249,15 @@ const PodConnectionSuggestion = () => {
   };
 
   return (
-    
-      <Container>
+
+    <Container>
       {
         queriedDataset ?
           renderContent()
           :
           <p>Loading</p>
       }
-      </Container>
+    </Container>
 
   )
 }

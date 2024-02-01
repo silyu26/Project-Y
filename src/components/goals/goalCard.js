@@ -27,8 +27,10 @@ const getDescription = (attribute) => {
             return 'Paying attention to mood helps in managing stress and mental well-being.';
         case 'Sleep':
             return 'Quality sleep is crucial for overall health and cognitive function.';
-        case 'Sport':
-            return 'Engaging in sports activities contributes to physical fitness and mental well-being.';
+        case 'Sport Time':
+            return 'Engaging in sports activities regularly contributes to physical fitness and mental well-being.';
+        case 'Sport Intensity':
+            return 'Adjusting the challenge level of sport ensures effective and beneficial workouts.';
         default:
             return '';
     }
@@ -50,8 +52,10 @@ const getDisplayForGraph = (key) => {
             return { value: 'mood', label: 'Mood' };
         case 'sleep':
             return { value: 'sleep', label: 'Sleep' };
-        case 'sport':
-            return { value: 'sport', label: 'Sport' };
+        case 'sport time':
+            return { value: 'sport time', label: 'Sport Time' };
+        case 'sport level':
+            return { value: 'sport level', label: 'Sport Intensity' };
         default:
             return null;
 

@@ -3,7 +3,6 @@ import { Container, Modal } from "react-bootstrap";
 import { MdEdit } from "react-icons/md";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import "./goal.css"
-import { getSolidDataset } from "@inrupt/solid-client"
 import { overwriteFile } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { getFile } from "@inrupt/solid-client";
@@ -21,9 +20,10 @@ const GoalComponent = ({ healthData }) => {
     const [heartRate, setHeartRate] = useState(null);
     const [mood, setMood] = useState(null);
     const [sleep, setSleep] = useState(null);
-    const [sport, setSport] = useState(null);
+    const [sportTime, setSportTime] = useState(null);
+    const [sportLevel, setSportLevel] = useState(null);
     const [initiated, setInitiated] = useState(false);
-    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygen saturation', 'heart rate', 'mood', 'sleep', 'sport'];
+    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygen saturation', 'heart rate', 'mood', 'sleep', 'sport time', 'sport level'];
     const getDefaultLabel = (goalId) => {
         switch (goalId) {
             case 'respiration':
@@ -40,8 +40,10 @@ const GoalComponent = ({ healthData }) => {
                 return 'Mood';
             case 'sleep':
                 return 'Sleep';
-            case 'sport':
-                return 'Sport';
+            case 'sport time':
+                return 'Sport Time';
+            case 'sport level':
+                return 'Sport Intensity';
             default:
                 return '';
         }
@@ -152,8 +154,11 @@ const GoalComponent = ({ healthData }) => {
             case 'sleep':
                 setSleep(goal);
                 break;
-            case 'sport':
-                setSport(goal);
+            case 'sport time':
+                setSportTime(goal);
+                break;
+            case 'sport level':
+                setSportLevel(goal);
                 break;
             default:
                 break;
@@ -185,8 +190,10 @@ const GoalComponent = ({ healthData }) => {
                 return mood;
             case 'sleep':
                 return sleep;
-            case 'sport':
-                return sport;
+            case 'sport time':
+                return sportTime;
+            case 'sport level':
+                return sportLevel;
             default:
                 return null;
         }
