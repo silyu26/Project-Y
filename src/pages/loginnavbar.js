@@ -35,7 +35,7 @@ function Loginnavbar() {
               <Row className="text-center">
                 <div className="message logged-in">
                   <LogoutButton >
-                    <Button variant="outline-warning">Log Out</Button>
+                    <Button variant="outline-warning" onClick={()=>window.location.reload()}>Log Out</Button>
                   </LogoutButton>
                 </div>
               </Row>

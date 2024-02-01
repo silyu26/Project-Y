@@ -340,14 +340,12 @@ const Share = () => {
       <Toast show={show} onClose={() => setShow(false)} delay={5000} bg='success'>
         <Toast.Header>
           <strong className="me-auto">Sharing Completed!</strong>
-          <small>1 mins ago</small>
         </Toast.Header>
         <Toast.Body>Your doctor can now view your observations!</Toast.Body>
       </Toast>
       <Toast show={show2} onClose={() => setShow2(false)} delay={5000} bg='danger' >
         <Toast.Header>
           <strong className="me-auto">Sharing Failed!</strong>
-          <small>1 mins ago</small>
         </Toast.Header>
         <Toast.Body>Something is not working...</Toast.Body>
       </Toast></ToastContainer>
