@@ -13,27 +13,21 @@ import GoalCard from "./goalCard";
 const GoalComponent = ({ healthData }) => {
     const { session } = useSession();
     const [modalOpen, setModalOpen] = useState(false);
-    const [respiration, setRespiration] = useState(null);
     const [hydration, setHydration] = useState(null);
     const [temperature, setTemperature] = useState(null);
-    const [oxygenSaturation, setOxygenSaturation] = useState(null);
     const [heartRate, setHeartRate] = useState(null);
     const [mood, setMood] = useState(null);
     const [sleep, setSleep] = useState(null);
     const [sportTime, setSportTime] = useState(null);
     const [sportLevel, setSportLevel] = useState(null);
     const [initiated, setInitiated] = useState(false);
-    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygen saturation', 'heart rate', 'mood', 'sleep', 'sport time', 'sport level'];
+    const goalIds = ['hydration', 'temperature', 'heart rate', 'mood', 'sleep', 'sport time', 'sport level'];
     const getDefaultLabel = (goalId) => {
         switch (goalId) {
-            case 'respiration':
-                return 'Respiration';
             case 'hydration':
                 return 'Hydration';
             case 'temperature':
                 return 'Temperature';
-            case 'oxygen saturation':
-                return 'Oxygen Saturation';
             case 'heart rate':
                 return 'Heart Rate';
             case 'mood':
@@ -133,17 +127,11 @@ const GoalComponent = ({ healthData }) => {
 
     const setGoalState = (goal, sort, updateGoals) => {
         switch (goal.id) {
-            case 'respiration':
-                setRespiration(goal);
-                break;
             case 'hydration':
                 setHydration(goal);
                 break;
             case 'temperature':
                 setTemperature(goal);
-                break;
-            case 'oxygen saturation':
-                setOxygenSaturation(goal);
                 break;
             case 'heart rate':
                 setHeartRate(goal);
@@ -176,14 +164,10 @@ const GoalComponent = ({ healthData }) => {
 
     const getGoalState = (goalId) => {
         switch (goalId) {
-            case 'respiration':
-                return respiration;
             case 'hydration':
                 return hydration;
             case 'temperature':
                 return temperature;
-            case 'oxygen saturation':
-                return oxygenSaturation;
             case 'heart rate':
                 return heartRate;
             case 'mood':

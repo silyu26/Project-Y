@@ -51,31 +51,33 @@ const PodConnectionSuggestion = () => {
       } catch (error) {
         console.log("error!", error)
       }
-    }
-    getHeartrateSources()
-  }, [session])
+    };
 
-  useEffect(() => {
     const getManualData = async () => {
-      const queryObj = async (filename) => {
-        const file = await getFile(`${process.env.REACT_APP_FHIR_DATA_URL}2024-01-22/manual/${filename}.json`, { fetch: session.fetch });
+      const manualDataIds = ['Mood Evening', 'Mood Morning', 'Sleep length', 'Sports activity time', 'Sports level of effort'];
+      const promises = manualDataIds.map(async (filename) => {
+        const file = await getFile(`${process.env.REACT_APP_FHIR_DATA_URL}2024-02-02/manual/${filename}.json`, { fetch: session.fetch });
         if (file) {
           const obj = JSON.parse(await file.text());
           return obj;
         }
-      };
-      const manualDataIds = ['Mood Evening', 'Mood Morning', 'Sleep length', 'Sports activity time', 'Sports level of effort'];
+      });
+
+      const objArr = await Promise.all(promises);
       const result = {};
-      manualDataIds.forEach(id => {
-        var val = queryObj(id);
-        if (val) {
-          result[id] = val.value;
-          result.timestamp = val.timestamp;
+
+      objArr.forEach(obj => {
+        if (obj) {
+          result[obj.id] = obj.value;
+          result.timestamp = obj.timestamp;
         }
       });
       setManualDataset(result);
-    }
+      
+    };
+
     getManualData();
+    getHeartrateSources();
   }, [session])
 
   useEffect(() => {
@@ -118,7 +120,7 @@ const PodConnectionSuggestion = () => {
 
             if (isSameDate(time, manualTime)) {
               if (time.getHours() <= 11) {
-                const v = parseNumberFromString(manualDataset('Mood Morning'));
+                const v = parseNumberFromString(manualDataset['Mood Morning']);
                 const moodObj = {
                   value: v,
                   abnormal: checkStatus("mood", v),
@@ -127,7 +129,7 @@ const PodConnectionSuggestion = () => {
                 moodArr.push(moodObj)
               }
               else {
-                const v = parseNumberFromString(manualDataset('Mood Evening'));
+                const v = parseNumberFromString(manualDataset['Mood Evening']);
                 const moodObj = {
                   value: v,
                   abnormal: checkStatus("mood", v),
@@ -137,18 +139,18 @@ const PodConnectionSuggestion = () => {
               }
 
               const sportLevel = {
-                value: parseNumberFromString(manualDataset('Sports level of effort')),
-                abnormal: checkStatus("sportLevel", manualDataset('Sports level of effort')),
+                value: parseNumberFromString(manualDataset['Sports level of effort']),
+                abnormal: checkStatus("sportLevel", manualDataset['Sports level of effort']),
                 timestamp: time.toISOString().split('T')[0]
               }
               const sportTime = {
-                value: parseNumberFromString(manualDataset('Sports activity time')),
-                abnormal: checkStatus("sportTime", manualDataset('Sports activity time')),
+                value: parseNumberFromString(manualDataset['Sports activity time']),
+                abnormal: checkStatus("sportTime", manualDataset['Sports activity time']),
                 timestamp: time.toISOString().split('T')[0]
               }
               const sleep = {
-                value: parseNumberFromString(manualDataset('Sleep length')),
-                abnormal: checkStatus("sleep", manualDataset('Sleep length')),
+                value: parseNumberFromString(manualDataset['Sleep length']),
+                abnormal: checkStatus("sleep", manualDataset['Sleep length']),
                 timestamp: time.toISOString().split('T')[0]
               }
               sportLevelArr.push(sportLevel)
@@ -200,7 +202,7 @@ const PodConnectionSuggestion = () => {
 
         if (sportLevelArr.length == hrArr.length) {
           activeArr.forEach((value, index) => {
-            if(value!=1){
+            if (value != 1) {
               sportLevelArr.splice(index, 1, 0);
             }
           });
@@ -208,7 +210,7 @@ const PodConnectionSuggestion = () => {
         }
         if (sportTimeArr.length == hrArr.length) {
           activeArr.forEach((value, index) => {
-            if(value!=1){
+            if (value != 1) {
               sportTimeArr.splice(index, 1, 0);
             }
           });
