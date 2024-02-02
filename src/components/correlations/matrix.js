@@ -80,7 +80,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
             <hr />
             <br />
 
-            <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh' }}>
+            <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh', position: 'relative', zIndex: 1 }}>
                 <label>Select Health Marker:</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <Select
@@ -101,7 +101,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                     </div>
                 </div>
             </section >
-            <section className="suggestions-list">
+            <section className="suggestions-list" style={{ position: 'relative', zIndex: 0 }}>
                 {loading ? (
                     <div className='text-center'>
                         <Spinner variant='info' animation="border" />
