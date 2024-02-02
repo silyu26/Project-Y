@@ -201,17 +201,17 @@ const PodConnectionSuggestion = () => {
         const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr }
 
         if (sportLevelArr.length == hrArr.length) {
-          activeArr.forEach((value, index) => {
-            if (value != 1) {
-              sportLevelArr.splice(index, 1, 0);
+          activeArr.forEach((obj, index) => {
+            if (obj.value != 1) {
+              sportLevelArr[index].value = 0;
             }
           });
           temp["sport level"] = sportLevelArr;
         }
         if (sportTimeArr.length == hrArr.length) {
-          activeArr.forEach((value, index) => {
-            if (value != 1) {
-              sportTimeArr.splice(index, 1, 0);
+          activeArr.forEach((obj, index) => {
+            if (obj.value != 1) {
+              sportTimeArr[index].value = 0;
             }
           });
           temp["sport time"] = sportTimeArr;

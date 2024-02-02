@@ -112,7 +112,7 @@ const GoalCard = ({ goal, healthData }) => {
                             correlation.map((item, index) => (
                                 <Carousel.Item key={index}>
                                     <div style={{ padding: '0px 100px 50px 100px' }}>
-                                        <h5>Correlation with {item.affectingCriterionKey}:</h5>
+                                        <h5>Correlation with {item.affectingCriterionKey} : {item.correlationCoefficient}</h5>
                                         <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
 
                                         <GraphComponent

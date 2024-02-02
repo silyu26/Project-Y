@@ -15,7 +15,7 @@ const mapCorrelationSeverity = (correlation) => {
     if (absCor >= 0.6 && absCor < 0.8) return 'strong';
     if (absCor >= 0.4 && absCor < 0.6) return 'moderate';
     if (absCor >= 0.2 && absCor < 0.4) return 'weak';
-    if (absCor >= 0 && absCor < 0.2) return 'very weak';
+    if (absCor > 0 && absCor < 0.2) return 'very weak';
     return 'none';
 };
 
