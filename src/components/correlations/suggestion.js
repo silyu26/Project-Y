@@ -165,8 +165,8 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
     const [possibilities, setPossibilities] = useState("");
 
     const grammar = tracery.createGrammar({
-        AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
-        AffectedCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
+        AffectingCriteria: ['hydration', 'body temperature', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
+        AffectedCriteria: ['hydration', 'body temperature', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
         CorrelationSeverity: ['#VeryWeak', '#Weak#', '#Moderate#', '#Strong#', '#VeryStrong'],
         CorrelationDirection: ['#PositiveDirection#', '#NegativeDirection#'],
 

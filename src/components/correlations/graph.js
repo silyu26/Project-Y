@@ -102,6 +102,8 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                             }));
                         },
                     },
+                    onClick: function () {
+                    }
                 },
                 tooltip: {
                     callbacks: {
