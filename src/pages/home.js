@@ -2,41 +2,24 @@
 import React from 'react';
 import { useSession } from "@inrupt/solid-ui-react";
 import { Link } from 'react-router-dom'; // If you're using React Router for navigation
-import PodConnectionSuggestion from '../components/correlations/connection';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FcComboChart } from "react-icons/fc";
 import { FcPrivacy } from "react-icons/fc";
 import { FcExport } from "react-icons/fc";
-import { useState, useEffect } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { FaRegFaceSmileWink } from "react-icons/fa6";
 
 
 // Dummy data for featured health correlations
 const featuredCorrelations = [
-  { title: 'Sleep vs. Mood', description: 'Explore the relationship between sleep duration and your mood.' },
-  { title: 'Heart Rate vs. Exercise', description: 'See how your heart rate correlates with different types of exercise.' },
-  // Add more featured correlations as needed
+  { title: 'Sleep vs. Mood', description: 'Discover the intricate relationship between sleep patterns and emotional well-being.' },
+  { title: 'Heart Rate vs. Sleep', description: 'Explore how variations in heart rate can influence the quality of sleep.' },
+  { title: 'Hydration vs. Temperature', description: 'Understand the impact of hydration levels in response to changes in ambient temperature.' },
+  { title: 'Sport Intensity vs. Sleep', description: 'Examine how the intensity of physical activity contributes to variations in sleep quality.' },
 ];
 
 const Home = () => {
 
   const { session } = useSession()
-  const options = ['Hydration', 'Temperature', 'Heart Rate', 'Mood', 'Sleep', 'Sport Time', 'Sport Intensity'];
-  const [selectedOption1, setSelectedOption1] = useState(options[0]);
-  const [selectedOption2, setSelectedOption2] = useState(options[1]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      // Randomly pick a new value for each button
-      const randomIndex1 = Math.floor(Math.random() * options.length);
-      const randomIndex2 = (randomIndex1 + 1) % options.length; // Ensure values are different
-      setSelectedOption1(options[randomIndex1]);
-      setSelectedOption2(options[randomIndex2]);
-    }, 3000); // Change the value every 3 seconds (adjust as needed)
-
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, [options]);
-
 
   return (
     <div className="homepage-container">
@@ -51,34 +34,15 @@ const Home = () => {
         <Row><h4>Featured Correlations</h4></Row>
         <br />
         <Row>
-        <Col><FcComboChart /> Explore the correlation between different criteria</Col>
-        <Col><Dropdown variant="dark">
-              <Dropdown.Toggle id="dropdown-button-1">
-                {selectedOption1}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                {options.map((option) => (
-                  <Dropdown.Item key={option} onClick={() => setSelectedOption1(option)}>
-                    {option}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            vs.
-            <Dropdown>
-              <Dropdown.Toggle id="dropdown-button-2">
-                {selectedOption2}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                {options.map((option) => (
-                  <Dropdown.Item key={option} onClick={() => setSelectedOption2(option)}>
-                    {option}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown></Col>    
+          {featuredCorrelations.map((correlation, index) => (
+            <Col key={index}><div className="correlation-item">
+              <h6><FcComboChart /> {correlation.title}</h6>
+              <p style={{ fontStyle: 'italic' }}>{correlation.description}</p>
+            </div></Col>
+          ))}
+          <Col xs="auto" className="d-flex flex-column align-items-end align-self-end">
+            And more <FaRegFaceSmileWink />
+          </Col>
         </Row>
         <br />
 
