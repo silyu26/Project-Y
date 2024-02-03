@@ -19,6 +19,20 @@ const healthMarkers = [
     // Add more health markers as needed
 ];
 
+const getLabel = (value) => {
+    const labelMap = {
+      'heart rate': 'Heart Rate',
+      'temperature': 'Body Temperature',
+      'hydration': 'Hydration',
+      'sport time': 'Sport Time',
+      'sport level': 'Sport Intensity',
+      'mood': 'Mood',
+      'sleep': 'Sleep Time'
+      // Add more mappings as needed
+    };
+    return labelMap[value] || value;
+  };
+
 const thresholds = {
     min: 0,
     max: 1,
@@ -112,7 +126,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         {getSuggestions(correlationMatrix, selectedMarker.value, threshold).map((item, index) => (
                             <Carousel.Item key={index}>
                                 <div style={{ padding: '50px 150px 50px 150px' }}>
-                                    <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
+                                    <h5>Possible effect of {selectedMarker.label} on {getLabel(item.affectedCriterionKey)}:</h5>
                                     <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
                                 </div>
                             </Carousel.Item>

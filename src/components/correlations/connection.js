@@ -8,7 +8,6 @@ import { Container, Row, Col, Button, Modal, Toast, ToastContainer } from "react
 import { Status } from "../../utils/normalRanges";
 import Goals from "../../pages/goals";
 import { parseNumberFromString } from "../../utils/parser";
-import { isSameDate } from "../../utils/time";
 import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
 import { FaRegFaceSmileWink } from "react-icons/fa6";
@@ -56,22 +55,7 @@ const PodConnectionSuggestion = () => {
   const getObjFromUrl = async (url) => {
 
     let sources = []
-    let datasets;
-
-    try {
-      datasets = await getSolidDataset(url, { fetch: session.fetch });
-    } catch (error) {
-      // Check if the error is a NotFoundError
-      if (error.name === "NotFoundError") {
-        console.error("Resource not found:", error);
-        console.log("still get here?")
-        // Handle or log the error as needed
-      } else {
-        console.error("Error fetching dataset:", error);
-        // Handle or log other errors
-      }
-      return null;
-    }
+    let datasets = await getSolidDataset(url, { fetch: session.fetch });
 
     for (const key in datasets.graphs.default) {
       const value = datasets.graphs.default[key]
@@ -84,10 +68,18 @@ const PodConnectionSuggestion = () => {
       return JSON.parse(await file.text())
     })
     const objArr = await Promise.all(promises);
-    if (url.substring("manual")) {
-      setHasManualData(true);
-    }
     return objArr;
+  };
+
+  const getManualObjFromUrl = async (url) => {
+    let datasets = await getSolidDataset(url, { fetch: session.fetch });
+    if (datasets.graphs.default.hasOwnProperty(`${url}manual/`)) {
+      setHasManualData(true);
+      return getObjFromUrl(`${url}manual/`)
+    }
+    else {
+      return null;
+    }
   };
 
   const createObj = (type, value, timestamp) => {
@@ -124,7 +116,7 @@ const PodConnectionSuggestion = () => {
 
         for (const url of urls) {
           const contObjArr = await getObjFromUrl(url);
-          const manualObjArr = await getObjFromUrl(`${url}manual/`);
+          const manualObjArr = await getManualObjFromUrl(url);
 
           contObjArr.forEach(obj => {
             const time = new Date(obj.measurement.timestamp);
@@ -137,29 +129,29 @@ const PodConnectionSuggestion = () => {
 
             if (hasManualData && manualObjArr && manualObjArr.length > 0) {
               manualObjArr.forEach(manualObj => {
-                if (isSameDate(time, new Date(manualObj.timestamp))) {
-                  switch (manualObj.id) {
-                    case "Mood Morning":
-                    case "Mood Evening":
-                      moodArr.push(createObj("mood", manualObj.value, timeString));
-                      break;
-                    case "Sports level of effort":
-                      sportLevelArr.push(createObj("sportLevel", manualObj.value, timeString));
-                      break;
-                    case "Sports activity time":
-                      sportTimeArr.push(createObj("sportTime", manualObj.value, timeString));
-                      break;
-                    case "Sleep length":
-                      sleepArr.push(createObj("sleep", manualObj.value, timeString));
-                      break;
-                  }
+                switch (manualObj.id) {
+                  case "Mood Morning":
+                  case "Mood Evening":
+                    moodArr.push(createObj("mood", manualObj.value, timeString));
+                    break;
+                  case "Sports level of effort":
+                    sportLevelArr.push(createObj("sportLevel", manualObj.value, timeString));
+                    break;
+                  case "Sports activity time":
+                    sportTimeArr.push(createObj("sportTime", manualObj.value, timeString));
+                    break;
+                  case "Sleep length":
+                    sleepArr.push(createObj("sleep", manualObj.value, timeString));
+                    break;
                 }
               });
 
               //if manual data not available: either sample or mock
               [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
-                const latestObj = manualArray.length === hrArr.length - 1 && manualArray.length > 0 ? manualArray.slice(-1)[0] : { value: 0, abnormal: Status.UNDEF, timestamp: timeString };
-                manualArray.push(latestObj);
+                const mockObj = manualArray.length === hrArr.length - 1 && manualArray.length > 0 ?
+                  { value: manualArray.slice(-1).value, abnormal: Status.UNDEF, timestamp: timeString }
+                  : { value: 0, abnormal: Status.UNDEF, timestamp: timeString };
+                manualArray.push(mockObj);
               });
             } else {
               [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
