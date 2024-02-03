@@ -33,25 +33,41 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
         const colors = dataset[selectedY.value].map((entry) => {
             switch (entry.abnormal) {
                 case Status.TOO_HIGH:
-                    return 'red';
+                    return '#FF7C7C';
                 case Status.TOO_LOW:
-                    return 'blue';
+                    return '#6492E3';
+                case Status.UNDEF:
+                    return '#C3C3C3';
                 default:
-                    return 'green';
+                    return '#60C462';
             }
         });
 
+        const uniqueColors = Array.from(new Set(colors));
+        const legendLabels = (color) => {
+            switch (color) {
+                case '#FF7C7C':
+                    return 'Too High';
+                case '#6492E3':
+                    return 'Too Low';
+                case '#C3C3C3':
+                    return 'Missing data';
+                case '#60C462':
+                    return 'Normal';
+                default:
+                    return 'Undefined';
+            }
+        };
 
         const chartData = {
             datasets: [
                 {
                     label: `Impact of ${selectedX.label} on ${selectedY.label}`,
                     data: xValues.map((timestamp, index) => ({
-                        //x: new Date(timestamp),
                         x: timestamp,
                         y: yValues[index],
-                        backgroundColor: colors[index],
                     })),
+                    backgroundColor: colors,
                 },
             ],
         };
@@ -71,13 +87,31 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                     },
                 },
             },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        color: 'black',
+                        usePointStyle: false,
+                        pointStyle: 'rect',
+                        generateLabels: function (_chart) {
+                            return uniqueColors.map(color => ({
+                                text: legendLabels(color),
+                                fillStyle: color,
+                                hidden: false,
+                            }));
+                        },
+                    },
+                },
+            },
         };
 
         const newChart = new Chart(ctx, {
             type: type.value,
             data: chartData,
             options: chartOptions,
-        })
+        });
 
         // Make sure to clean up the chart when the component is unmounted
         return () => {
@@ -86,6 +120,7 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
             }
         };
     }, [dataset, selectedX, selectedY, type]);
+
 
     return (
         <div>

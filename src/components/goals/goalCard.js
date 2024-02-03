@@ -4,7 +4,9 @@ import { Carousel } from "react-bootstrap";
 
 import GraphComponent from "../correlations/graph";
 import { findCorrelationsFromData } from "../correlations/suggestion";
+import { SuggestionComponent } from "../correlations/suggestion";
 import "./goal.css";
+import { FaFaceGrinBeamSweat } from "react-icons/fa6";
 
 const getDescription = (attribute) => {
     switch (attribute) {
@@ -26,8 +28,10 @@ const getDescription = (attribute) => {
             return 'Paying attention to mood helps in managing stress and mental well-being.';
         case 'Sleep':
             return 'Quality sleep is crucial for overall health and cognitive function.';
-        case 'Sport':
-            return 'Engaging in sports activities contributes to physical fitness and mental well-being.';
+        case 'Sport Time':
+            return 'Engaging in sports activities regularly contributes to physical fitness and mental well-being.';
+        case 'Sport Intensity':
+            return 'Adjusting the challenge level of sport ensures effective and beneficial workouts.';
         default:
             return '';
     }
@@ -49,8 +53,10 @@ const getDisplayForGraph = (key) => {
             return { value: 'mood', label: 'Mood' };
         case 'sleep':
             return { value: 'sleep', label: 'Sleep' };
-        case 'sport':
-            return { value: 'sport', label: 'Sport' };
+        case 'sport time':
+            return { value: 'sport time', label: 'Sport Time' };
+        case 'sport level':
+            return { value: 'sport level', label: 'Sport Intensity' };
         default:
             return null;
 
@@ -102,25 +108,25 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Carousel data-bs-theme="dark" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-                        {correlation &&
-                            correlation.map((correlationItem, index) => (
-                                <Carousel.Item key={index}>
-                                    <div style={{ padding: '0px 100px 50px 100px' }}>
-                                        <h5>Correlation with {correlationItem.affectingCriterionKey}:</h5>
-                                        <i>{correlationItem.suggestion}</i>
+                    {correlation && correlation.length > 0 ? (
+                        <Carousel data-bs-theme="dark" interval={null} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                            {correlation.map((item, index) => (
+                                    <Carousel.Item key={index}>
+                                        <div style={{ padding: '0px 100px 50px 100px' }}>
+                                            <h5>Correlation with {item.affectingCriterionKey}:</h5>
+                                            <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
 
-                                        <GraphComponent
-                                            dataset={healthData}
-                                            selectedX={getDisplayForGraph(correlationItem.affectingCriterionKey)}
-                                            selectedY={getDisplayForGraph(goal.id)}
-                                            type={{ value: 'scatter', label: 'Scatter' }}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </div>
-                                </Carousel.Item>
-                            ))}
-                    </Carousel>
+                                            <GraphComponent
+                                                dataset={healthData}
+                                                selectedX={getDisplayForGraph(item.affectingCriterionKey)}
+                                                selectedY={getDisplayForGraph(goal.id)}
+                                                type={{ value: 'scatter', label: 'Scatter' }}
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                    </Carousel.Item>
+                                ))}
+                        </Carousel>) : (<p className='text-center' style={{ fontStyle: 'italic' }}>No correlation found for your goal! <FaFaceGrinBeamSweat /></p>)}
                 </Modal.Body>
 
             </Modal>

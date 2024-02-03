@@ -3,7 +3,6 @@ import { Container, Modal } from "react-bootstrap";
 import { MdEdit } from "react-icons/md";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import "./goal.css"
-import { getSolidDataset } from "@inrupt/solid-client"
 import { overwriteFile } from "@inrupt/solid-client";
 import { useSession } from "@inrupt/solid-ui-react";
 import { getFile } from "@inrupt/solid-client";
@@ -14,34 +13,31 @@ import GoalCard from "./goalCard";
 const GoalComponent = ({ healthData }) => {
     const { session } = useSession();
     const [modalOpen, setModalOpen] = useState(false);
-    const [respiration, setRespiration] = useState(null);
     const [hydration, setHydration] = useState(null);
     const [temperature, setTemperature] = useState(null);
-    const [oxygenSaturation, setOxygenSaturation] = useState(null);
     const [heartRate, setHeartRate] = useState(null);
     const [mood, setMood] = useState(null);
     const [sleep, setSleep] = useState(null);
-    const [sport, setSport] = useState(null);
+    const [sportTime, setSportTime] = useState(null);
+    const [sportLevel, setSportLevel] = useState(null);
     const [initiated, setInitiated] = useState(false);
-    const goalIds = ['respiration', 'hydration', 'temperature', 'oxygen saturation', 'heart rate', 'mood', 'sleep', 'sport'];
+    const goalIds = ['hydration', 'temperature', 'heart rate', 'mood', 'sleep', 'sport time', 'sport level'];
     const getDefaultLabel = (goalId) => {
         switch (goalId) {
-            case 'respiration':
-                return 'Respiration';
             case 'hydration':
                 return 'Hydration';
             case 'temperature':
                 return 'Temperature';
-            case 'oxygen saturation':
-                return 'Oxygen Saturation';
             case 'heart rate':
                 return 'Heart Rate';
             case 'mood':
                 return 'Mood';
             case 'sleep':
                 return 'Sleep';
-            case 'sport':
-                return 'Sport';
+            case 'sport time':
+                return 'Sport Time';
+            case 'sport level':
+                return 'Sport Intensity';
             default:
                 return '';
         }
@@ -131,17 +127,11 @@ const GoalComponent = ({ healthData }) => {
 
     const setGoalState = (goal, sort, updateGoals) => {
         switch (goal.id) {
-            case 'respiration':
-                setRespiration(goal);
-                break;
             case 'hydration':
                 setHydration(goal);
                 break;
             case 'temperature':
                 setTemperature(goal);
-                break;
-            case 'oxygen saturation':
-                setOxygenSaturation(goal);
                 break;
             case 'heart rate':
                 setHeartRate(goal);
@@ -152,8 +142,11 @@ const GoalComponent = ({ healthData }) => {
             case 'sleep':
                 setSleep(goal);
                 break;
-            case 'sport':
-                setSport(goal);
+            case 'sport time':
+                setSportTime(goal);
+                break;
+            case 'sport level':
+                setSportLevel(goal);
                 break;
             default:
                 break;
@@ -171,22 +164,20 @@ const GoalComponent = ({ healthData }) => {
 
     const getGoalState = (goalId) => {
         switch (goalId) {
-            case 'respiration':
-                return respiration;
             case 'hydration':
                 return hydration;
             case 'temperature':
                 return temperature;
-            case 'oxygen saturation':
-                return oxygenSaturation;
             case 'heart rate':
                 return heartRate;
             case 'mood':
                 return mood;
             case 'sleep':
                 return sleep;
-            case 'sport':
-                return sport;
+            case 'sport time':
+                return sportTime;
+            case 'sport level':
+                return sportLevel;
             default:
                 return null;
         }
