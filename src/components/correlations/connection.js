@@ -19,7 +19,6 @@ const PodConnectionSuggestion = () => {
 
   const { session } = useSession()
   const [hrSources, setHrSources] = useState([])
-  const [manualDataset, setManualDataset] = useState(null)
   const [dataset, setDataset] = useState(null)
   const [heartrateArr, setHeartrateArr] = useState(null)
   const [bodyTempArr, setBodyTempArr] = useState(null)
@@ -55,7 +54,7 @@ const PodConnectionSuggestion = () => {
   }, [])
 
 
-  useEffect(() => {
+  /**useEffect(() => {
     const getHeartrateSources = async () => {
       try {  //  change following url to the pod container of heartrate and body temperature  fhir/
         const currentDate1 = new Date()
@@ -112,7 +111,25 @@ const PodConnectionSuggestion = () => {
 
     getManualData();
     getHeartrateSources();
-  }, [session])
+  }, [session])*/
+
+
+  const getObjFromUrl = async (url) => {
+    let sources = []
+    const datasets = await getSolidDataset(url, { fetch: session.fetch })
+    for (const key in datasets.graphs.default) {
+      const value = datasets.graphs.default[key]
+      if (!isContainer(value.url)) {
+        sources.push(value.url)
+      }
+    }
+    const promises = sources.map(async (source) => {
+      const file = await getFile(source, { fetch: session.fetch })
+      return JSON.parse(await file.text())
+    })
+    const objArr = await Promise.all(promises);
+    return objArr;
+  };
 
   useEffect(() => {
     const queryObj = async () => {
@@ -128,88 +145,108 @@ const PodConnectionSuggestion = () => {
 
         if (urls.length > 0) {
           for (const url of urls) {
-            let sources = []
-            const datasets = await getSolidDataset(url, { fetch: session.fetch })
-            for (const key in datasets.graphs.default) {
-              const value = datasets.graphs.default[key]
-              if (!isContainer(value.url)) {
-                sources.push(value.url)
-              }
-            }
-            const promises = sources.map(async (source) => {
-              const file = await getFile(source, { fetch: session.fetch })
-              return JSON.parse(await file.text())
-            })
-            const objArr = await Promise.all(promises)
 
-            objArr.forEach(obj => {
+            const contObjArr = await getObjFromUrl(url);
+            const manualObjArr = await getObjFromUrl(`${url}manual/`);
+
+
+            console.log(contObjArr)
+            contObjArr.forEach(obj => {
               const time = new Date(obj.measurement.timestamp);
-              const manualTime = new Date(manualDataset.timestamp);
+              const timeString = time.toISOString().split('T')[0];
 
-              if (isSameDate(time, manualTime)) {
-                if (time.getHours() <= 11) {
-                  const v = parseNumberFromString(manualDataset['Mood Morning']);
-                  const moodObj = {
-                    value: v,
-                    abnormal: checkStatus("mood", v),
-                    timestamp: time.toISOString().split('T')[0]
+              //add all available manual data
+              manualObjArr.forEach(manualObj => {
+                if (isSameDate(time, new Date(manualObj.timestamp))) {
+                  switch (manualObj.id) {
+                    case "Mood Morning":
+                      if (time.getHours() <= 11) {
+                        const moodObj = {
+                          value: parseNumberFromString(manualObj.value),
+                          abnormal: checkStatus("mood", manualObj.value),
+                          timestamp: timeString
+                        }
+                        moodArr.push(moodObj);
+                      }
+                      break;
+                    case "Mood Evening":
+                      if (time.getHours() > 11) {
+                        const moodObj = {
+                          value: parseNumberFromString(manualObj.value),
+                          abnormal: checkStatus("mood", manualObj.value),
+                          timestamp: timeString
+                        }
+                        moodArr.push(moodObj);
+                      }
+                      break;
+                    case "Sports level of effort":
+                      sportLevelArr.push({
+                        value: parseNumberFromString(manualObj.value),
+                        abnormal: checkStatus("sportLevel", manualObj.value),
+                        timestamp: timeString
+                      });
+                      break;
+                    case "Sports activity time":
+                      sportTimeArr.push({
+                        value: parseNumberFromString(manualObj.value),
+                        abnormal: checkStatus("sportTime", manualObj.value),
+                        timestamp: timeString
+                      });
+                      break;
+                    case "Sleep length":
+                      sleepArr.push({
+                        value: parseNumberFromString(manualObj.value),
+                        abnormal: checkStatus("sleep", manualObj.value),
+                        timestamp: timeString
+                      });
+                      break;
                   }
-                  moodArr.push(moodObj)
                 }
-                else {
-                  const v = parseNumberFromString(manualDataset['Mood Evening']);
-                  const moodObj = {
-                    value: v,
-                    abnormal: checkStatus("mood", v),
-                    timestamp: time.toISOString().split('T')[0]
-                  }
-                  moodArr.push(moodObj)
-                }
-
-                const sportLevel = {
-                  value: parseNumberFromString(manualDataset['Sports level of effort']),
-                  abnormal: checkStatus("sportLevel", manualDataset['Sports level of effort']),
-                  timestamp: time.toISOString().split('T')[0]
-                }
-                const sportTime = {
-                  value: parseNumberFromString(manualDataset['Sports activity time']),
-                  abnormal: checkStatus("sportTime", manualDataset['Sports activity time']),
-                  timestamp: time.toISOString().split('T')[0]
-                }
-                const sleep = {
-                  value: parseNumberFromString(manualDataset['Sleep length']),
-                  abnormal: checkStatus("sleep", manualDataset['Sleep length']),
-                  timestamp: time.toISOString().split('T')[0]
-                }
-                sportLevelArr.push(sportLevel)
-                sportTimeArr.push(sportTime)
-                sleepArr.push(sleep)
-              }
+              });
 
               const heartrateObj = {
                 value: parseNumberFromString(obj.measurement.heartrate),
                 abnormal: checkStatus("heartRate", obj.measurement.heartrate),
-                timestamp: time.toISOString().split('T')[0]
+                timestamp: timeString
               }
               const bodyTemperatureObj = {
                 value: parseNumberFromString(obj.measurement.temperature),
                 abnormal: checkStatus("temperatureCelsius", obj.measurement.temperature),
-                timestamp: time.toISOString().split('T')[0]
+                timestamp: timeString
               }
               const hydrationObj = {
                 value: parseNumberFromString(obj.measurement.humidity),
                 abnormal: checkStatus("hydration", obj.measurement.temperature),
-                timestamp: time.toISOString().split('T')[0]
+                timestamp: timeString
               }
               const activeObj = {
                 value: parseNumberFromString(obj.measurement.doingsport),
                 abnormal: Status.NORMAL,
-                timestamp: time.toISOString().split('T')[0]
+                timestamp: timeString
               }
               hrArr.push(heartrateObj)
               tempArr.push(bodyTemperatureObj)
               hydArr.push(hydrationObj)
               activeArr.push(activeObj)
+
+              //check if any manual data not available
+              /**[sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
+                if (manualArray.length == hrArr.length - 1 && manualArray.length > 0) {
+                  //sample latest object
+                  manualArray.push({
+                    value: manualArray.slice(-1).value,
+                    abnormal: Status.UNDEF,
+                    timestamp: timeString
+                  });
+                }
+                else {
+                  manualArray.push({
+                    value: 0,
+                    abnormal: Status.UNDEF,
+                    timestamp: timeString
+                  });
+                }
+              });*/
             })
           }
         }
@@ -260,7 +297,7 @@ const PodConnectionSuggestion = () => {
       }
     }
     queryObj()
-  }, [urls, session, manualDataset])
+  }, [urls, session])
 
   const shareData = () => {
     try {

@@ -2,6 +2,7 @@ const Status = {
     TOO_HIGH: 1,
     TOO_LOW: -1,
     NORMAL: 0,
+    UNDEF: 2,
 };
 
 const normalRanges = {

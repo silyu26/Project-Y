@@ -36,6 +36,8 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                     return '#FF7C7C';
                 case Status.TOO_LOW:
                     return '#6492E3';
+                case Status.UNDEF:
+                    return '#C3C3C3';
                 default:
                     return '#60C462';
             }
