@@ -93,14 +93,21 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                     position: 'bottom',
                     labels: {
                         color: 'black',
-                        usePointStyle: false,
-                        pointStyle: 'rect',
+                        usePointStyle: true,
                         generateLabels: function (_chart) {
                             return uniqueColors.map(color => ({
                                 text: legendLabels(color),
                                 fillStyle: color,
                                 hidden: false,
                             }));
+                        },
+                    },
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const timestamp = dataset[selectedY.value][context.dataIndex].timestamp;
+                            return `${selectedY.value} at ${timestamp}: ${context.dataset.data[context.dataIndex].y}`;
                         },
                     },
                 },
