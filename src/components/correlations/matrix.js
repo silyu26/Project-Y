@@ -65,9 +65,9 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
     }, [criteriaData]);
 
-    const getSuggestions = (suggestionObj, affectingCriterionKey) => {
-        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey)
-            .sort((a, b) => b.correlationCoefficient - a.correlationCoefficient);;
+    const getSuggestions = (suggestionObj, affectingCriterionKey, threshold) => {
+        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey && Math.abs(value.correlationCoefficient) >= threshold)
+            .sort((a, b) => b.correlationCoefficient - a.correlationCoefficient);
     };
 
     return (
@@ -100,16 +100,16 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <label style={{ marginRight: '10px' }}>Correlation Threshold:</label>
                     </div>
                 </div>
-            </section >
+            </section>
             <section className="suggestions-list" style={{ position: 'relative', zIndex: 0 }}>
                 {loading ? (
                     <div className='text-center'>
                         <Spinner variant='info' animation="border" />
                         <p>Loading Suggestions...</p>
                     </div>
-                ) : (
+                ) : getSuggestions(correlationMatrix, selectedMarker.value, threshold).length > 0 ? (
                     <Carousel data-bs-theme="dark" interval={null} indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
+                        {getSuggestions(correlationMatrix, selectedMarker.value, threshold).map((item, index) => (
                             <Carousel.Item key={index}>
                                 <div style={{ padding: '50px 150px 50px 150px' }}>
                                     <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
@@ -118,9 +118,14 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                             </Carousel.Item>
                         ))}
                     </Carousel>
+                ) : (
+                    <div className="text-center">
+                        <p>No correlation found for this health marker.</p>
+                    </div>
                 )}
             </section>
-        </div >
+        </div>
+
     );
 };
 

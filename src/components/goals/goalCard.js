@@ -107,25 +107,27 @@ const GoalCard = ({ goal, healthData }) => {
                     <Modal.Title>{goal.label} Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Carousel data-bs-theme="dark" interval={null} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-                        {correlation &&
-                            correlation.map((item, index) => (
-                                <Carousel.Item key={index}>
-                                    <div style={{ padding: '0px 100px 50px 100px' }}>
-                                        <h5>Correlation with {item.affectingCriterionKey} : {item.correlationCoefficient}</h5>
-                                        <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
+                    {correlation && correlation.length > 0 ? (
+                        <Carousel data-bs-theme="dark" interval={null} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                            {correlation.map((item, index) => (
+                                    <Carousel.Item key={index}>
+                                        <div style={{ padding: '0px 100px 50px 100px' }}>
+                                            <h5>Correlation with {item.affectingCriterionKey}:</h5>
+                                            <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
 
-                                        <GraphComponent
-                                            dataset={healthData}
-                                            selectedX={getDisplayForGraph(item.affectingCriterionKey)}
-                                            selectedY={getDisplayForGraph(goal.id)}
-                                            type={{ value: 'scatter', label: 'Scatter' }}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </div>
-                                </Carousel.Item>
-                            ))}
-                    </Carousel>
+                                            <GraphComponent
+                                                dataset={healthData}
+                                                selectedX={getDisplayForGraph(item.affectingCriterionKey)}
+                                                selectedY={getDisplayForGraph(goal.id)}
+                                                type={{ value: 'scatter', label: 'Scatter' }}
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                    </Carousel.Item>
+                                ))}
+                        </Carousel>) : (<div className="text-center">
+                            <p>No correlation found for your goal.</p>
+                        </div>)}
                 </Modal.Body>
 
             </Modal>

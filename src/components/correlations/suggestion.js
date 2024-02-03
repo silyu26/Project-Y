@@ -141,6 +141,10 @@ const findCorrelationsFromData = (healthData, goalId) => {
             const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
             const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
 
+            if (correlationCoefficient === undefined || correlationCoefficient === null || correlationCoefficient==0 || isNaN(correlationCoefficient)) {
+                return;
+            }
+
             correlations.push({
                 correlationCoefficient,
                 affectingCriterionKey,
@@ -385,6 +389,8 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
 
     }, [corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal]);
 
+
+    
 
     return (
         <Container>
