@@ -51,7 +51,7 @@ const GraphVisualizeComponent = ({ criteriaData }) => {
             <br />
             <header>
                 <h2 className='text-center'>Correlation graph</h2>
-                <p className='text-center' style={{ fontStyle: 'italic' }}>Browse how different parts of your health data correlate to each other.</p>
+                <p className='text-center' style={{ fontStyle: 'italic' }}>Browse how different parts of your health data correlate to each other. Click the button at the bottom to start.</p>
             </header>
             <hr />
             <br />
