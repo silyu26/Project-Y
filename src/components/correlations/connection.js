@@ -20,8 +20,6 @@ const PodConnectionSuggestion = () => {
   const { session } = useSession()
   const [hrSources, setHrSources] = useState([])
   const [dataset, setDataset] = useState(null)
-  const [heartrateArr, setHeartrateArr] = useState(null)
-  const [bodyTempArr, setBodyTempArr] = useState(null)
   const [queriedDataset, setQueriedDataset] = useState(null)
   const [containers, setContainers] = useState([])
   const [validContainer, setValidContainer] = useState([])
@@ -30,6 +28,7 @@ const PodConnectionSuggestion = () => {
   const [urls2, setUrls2] = useState([])
   const [show, setShow] = useState(false)
   const [show2, setShow2] = useState(false)
+  const [hasManualData, setHasManualData] = useState(false)
 
   useEffect(() => {
     const getAllContainers = async () => {
@@ -54,69 +53,26 @@ const PodConnectionSuggestion = () => {
   }, [])
 
 
-  /**useEffect(() => {
-    const getHeartrateSources = async () => {
-      try {  //  change following url to the pod container of heartrate and body temperature  fhir/
-        const currentDate1 = new Date()
-        console.log('Starting getting datasets:', currentDate1.toLocaleTimeString())
-        const hrDataset = await getSolidDataset(process.env.REACT_APP_FHIR_DATA_URL + "2024-1-22/", { fetch: session.fetch })
-        //console.log("HR dataset",hrDataset) 
-        const currentDate2 = new Date()
-        console.log('Finish getting datasets:', currentDate2.toLocaleTimeString())
-        console.log("All Files", hrDataset)
-        setDataset(hrDataset)
-
-        let sources = []
-        for (const key in hrDataset.graphs.default) {
-          if (hrDataset.graphs.default.hasOwnProperty(key)) { // change following url to match the new pattern     /^https:\/\/lab\.wirtz\.tech\/fhir\/
-            // const pattern = /^https:\/\/88.99.95.51:3000\/Test2\/data_2023-12-18.*.ttl$/
-            const pattern = /^http:\/\/88.99.95.51:4000\/temporal_pod\/2024-1-22\/data_2024-01-22T.*.json$/
-            // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2023-12-18.*.ttl$/
-            // const pattern = /^https:\/\/lab.wirtz.tech\/fhir\/data_2024-01-11T16-25-3.*.json$/
-            const value = hrDataset.graphs.default[key]
-            if (pattern.test(value.url)) {
-              sources.push(value.url)
-            }
-          }
-        }
-        console.log("sources", sources)
-        setHrSources(sources)
-      } catch (error) {
-        console.log("error!", error)
-      }
-    };
-
-    const getManualData = async () => {
-      const manualDataIds = ['Mood Evening', 'Mood Morning', 'Sleep length', 'Sports activity time', 'Sports level of effort'];
-      const promises = manualDataIds.map(async (filename) => {
-        const file = await getFile(`${process.env.REACT_APP_FHIR_DATA_URL}2024-02-02/manual/${filename}.json`, { fetch: session.fetch });
-        if (file) {
-          const obj = JSON.parse(await file.text());
-          return obj;
-        }
-      });
-
-      const objArr = await Promise.all(promises);
-      const result = {};
-
-      objArr.forEach(obj => {
-        if (obj) {
-          result[obj.id] = obj.value;
-          result.timestamp = obj.timestamp;
-        }
-      });
-      setManualDataset(result);
-
-    };
-
-    getManualData();
-    getHeartrateSources();
-  }, [session])*/
-
-
   const getObjFromUrl = async (url) => {
+
     let sources = []
-    const datasets = await getSolidDataset(url, { fetch: session.fetch })
+    let datasets;
+
+    try {
+      datasets = await getSolidDataset(url, { fetch: session.fetch });
+    } catch (error) {
+      // Check if the error is a NotFoundError
+      if (error.name === "NotFoundError") {
+        console.error("Resource not found:", error);
+        console.log("still get here?")
+        // Handle or log the error as needed
+      } else {
+        console.error("Error fetching dataset:", error);
+        // Handle or log other errors
+      }
+      return null;
+    }
+
     for (const key in datasets.graphs.default) {
       const value = datasets.graphs.default[key]
       if (!isContainer(value.url)) {
@@ -128,176 +84,116 @@ const PodConnectionSuggestion = () => {
       return JSON.parse(await file.text())
     })
     const objArr = await Promise.all(promises);
+    if (url.substring("manual")) {
+      setHasManualData(true);
+    }
     return objArr;
+  };
+
+  const createObj = (type, value, timestamp) => {
+    return {
+      value: parseNumberFromString(value),
+      abnormal: checkStatus(type, value),
+      timestamp: timestamp
+    };
+  };
+
+  //filter manual data with automatic data from emotibits (sport)
+  const handleSpecialCases = (temp, hrArr, activeArr) => {
+    if (temp["sport level"] && temp["sport level"].length === hrArr.length) {
+      activeArr.forEach((obj, index) => {
+        if (obj.value !== 1) {
+          temp["sport level"][index].value = 0;
+        }
+      });
+    }
+
+    if (temp["sport time"] && temp["sport time"].length === hrArr.length) {
+      activeArr.forEach((obj, index) => {
+        if (obj.value !== 1) {
+          temp["sport time"][index].value = 0;
+        }
+      });
+    }
   };
 
   useEffect(() => {
     const queryObj = async () => {
       try {
-        let hrArr = []
-        let tempArr = []
-        let hydArr = []
-        let activeArr = []
-        let sportLevelArr = []
-        let sportTimeArr = []
-        let moodArr = []
-        let sleepArr = []
+        const [hrArr, tempArr, hydArr, activeArr, sportLevelArr, sportTimeArr, moodArr, sleepArr] = Array.from({ length: 8 }, () => []);
 
-        if (urls.length > 0) {
-          for (const url of urls) {
+        for (const url of urls) {
+          const contObjArr = await getObjFromUrl(url);
+          const manualObjArr = await getObjFromUrl(`${url}manual/`);
 
-            const contObjArr = await getObjFromUrl(url);
-            const manualObjArr = await getObjFromUrl(`${url}manual/`);
+          contObjArr.forEach(obj => {
+            const time = new Date(obj.measurement.timestamp);
+            const timeString = time.toISOString().split('T')[0];
 
+            hrArr.push(createObj("heartRate", obj.measurement.heartrate, timeString));
+            tempArr.push(createObj("temperatureCelsius", obj.measurement.temperature, timeString));
+            hydArr.push(createObj("hydration", obj.measurement.humidity, timeString));
+            activeArr.push(createObj("doingsport", obj.measurement.doingsport, timeString));
 
-            console.log(contObjArr)
-            contObjArr.forEach(obj => {
-              const time = new Date(obj.measurement.timestamp);
-              const timeString = time.toISOString().split('T')[0];
-
-              //add all available manual data
+            if (hasManualData && manualObjArr && manualObjArr.length > 0) {
               manualObjArr.forEach(manualObj => {
                 if (isSameDate(time, new Date(manualObj.timestamp))) {
                   switch (manualObj.id) {
                     case "Mood Morning":
-                      if (time.getHours() <= 11) {
-                        const moodObj = {
-                          value: parseNumberFromString(manualObj.value),
-                          abnormal: checkStatus("mood", manualObj.value),
-                          timestamp: timeString
-                        }
-                        moodArr.push(moodObj);
-                      }
-                      break;
                     case "Mood Evening":
-                      if (time.getHours() > 11) {
-                        const moodObj = {
-                          value: parseNumberFromString(manualObj.value),
-                          abnormal: checkStatus("mood", manualObj.value),
-                          timestamp: timeString
-                        }
-                        moodArr.push(moodObj);
-                      }
+                      moodArr.push(createObj("mood", manualObj.value, timeString));
                       break;
                     case "Sports level of effort":
-                      sportLevelArr.push({
-                        value: parseNumberFromString(manualObj.value),
-                        abnormal: checkStatus("sportLevel", manualObj.value),
-                        timestamp: timeString
-                      });
+                      sportLevelArr.push(createObj("sportLevel", manualObj.value, timeString));
                       break;
                     case "Sports activity time":
-                      sportTimeArr.push({
-                        value: parseNumberFromString(manualObj.value),
-                        abnormal: checkStatus("sportTime", manualObj.value),
-                        timestamp: timeString
-                      });
+                      sportTimeArr.push(createObj("sportTime", manualObj.value, timeString));
                       break;
                     case "Sleep length":
-                      sleepArr.push({
-                        value: parseNumberFromString(manualObj.value),
-                        abnormal: checkStatus("sleep", manualObj.value),
-                        timestamp: timeString
-                      });
+                      sleepArr.push(createObj("sleep", manualObj.value, timeString));
                       break;
                   }
                 }
               });
 
-              const heartrateObj = {
-                value: parseNumberFromString(obj.measurement.heartrate),
-                abnormal: checkStatus("heartRate", obj.measurement.heartrate),
-                timestamp: timeString
-              }
-              const bodyTemperatureObj = {
-                value: parseNumberFromString(obj.measurement.temperature),
-                abnormal: checkStatus("temperatureCelsius", obj.measurement.temperature),
-                timestamp: timeString
-              }
-              const hydrationObj = {
-                value: parseNumberFromString(obj.measurement.humidity),
-                abnormal: checkStatus("hydration", obj.measurement.temperature),
-                timestamp: timeString
-              }
-              const activeObj = {
-                value: parseNumberFromString(obj.measurement.doingsport),
-                abnormal: Status.NORMAL,
-                timestamp: timeString
-              }
-              hrArr.push(heartrateObj)
-              tempArr.push(bodyTemperatureObj)
-              hydArr.push(hydrationObj)
-              activeArr.push(activeObj)
-
-              //check if any manual data not available
-              /**[sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
-                if (manualArray.length == hrArr.length - 1 && manualArray.length > 0) {
-                  //sample latest object
-                  manualArray.push({
-                    value: manualArray.slice(-1).value,
-                    abnormal: Status.UNDEF,
-                    timestamp: timeString
-                  });
-                }
-                else {
-                  manualArray.push({
-                    value: 0,
-                    abnormal: Status.UNDEF,
-                    timestamp: timeString
-                  });
-                }
-              });*/
-            })
-          }
-        }
-        hrArr.sort((a, b) => a.timestamp - b.timestamp)
-        tempArr.sort((a, b) => a.timestamp - b.timestamp)
-        hydArr.sort((a, b) => a.timestamp - b.timestamp)
-        activeArr.sort((a, b) => a.timestamp - b.timestamp)
-        sportLevelArr.sort((a, b) => a.timestamp - b.timestamp)
-        sportTimeArr.sort((a, b) => a.timestamp - b.timestamp)
-        moodArr.sort((a, b) => a.timestamp - b.timestamp)
-        sleepArr.sort((a, b) => a.timestamp - b.timestamp)
-
-
-        console.log("heart rate object array", hrArr)
-        console.log("body temp object array", tempArr)
-        setBodyTempArr(tempArr)
-        setHeartrateArr(hrArr)
-        const temp = { "temperature": tempArr, "heart rate": hrArr, "hydration": hydArr }
-
-        if (sportLevelArr.length == hrArr.length) {
-          activeArr.forEach((obj, index) => {
-            if (obj.value != 1) {
-              sportLevelArr[index].value = 0;
+              //if manual data not available: either sample or mock
+              [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
+                const latestObj = manualArray.length === hrArr.length - 1 && manualArray.length > 0 ? manualArray.slice(-1)[0] : { value: 0, abnormal: Status.UNDEF, timestamp: timeString };
+                manualArray.push(latestObj);
+              });
+            } else {
+              [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
+                manualArray.push({ value: 0, abnormal: Status.UNDEF, timestamp: timeString });
+              });
             }
           });
-          temp["sport level"] = sportLevelArr;
-        }
-        if (sportTimeArr.length == hrArr.length) {
-          activeArr.forEach((obj, index) => {
-            if (obj.value != 1) {
-              sportTimeArr[index].value = 0;
-            }
-          });
-          temp["sport time"] = sportTimeArr;
-        }
-        if (moodArr.length == hrArr.length) {
-          temp["mood"] = moodArr;
-        }
-        if (sleepArr.length == hrArr.length) {
-          temp["sleep"] = sleepArr;
         }
 
-        setQueriedDataset(temp)
+        [hrArr, tempArr, hydArr, activeArr, sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(arr => arr.sort((a, b) => a.timestamp - b.timestamp));
+
+        const temp = {
+          "temperature": tempArr,
+          "heart rate": hrArr,
+          "hydration": hydArr,
+          "sport level": sportLevelArr,
+          "sport time": sportTimeArr,
+          "mood": moodArr,
+          "sleep": sleepArr
+        };
+
+        handleSpecialCases(temp, hrArr, activeArr);
+        setQueriedDataset(temp);
+
         console.log(new Date(), "Done creating the data objects in heartRate.js");
-        console.log(new Date(), temp)
+        console.log(new Date(), temp);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
-    queryObj()
-  }, [urls, session])
+    };
+
+    queryObj();
+  }, [urls, session, hasManualData]);
+
 
   const shareData = () => {
     try {

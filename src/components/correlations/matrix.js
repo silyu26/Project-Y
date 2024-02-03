@@ -5,7 +5,7 @@ import 'rc-slider/assets/index.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { Carousel } from "react-bootstrap";
 import { SuggestionComponent, findCorrelationsFromData } from './suggestion';
-
+import { FaFaceGrinBeamSweat } from "react-icons/fa6";
 
 
 const healthMarkers = [
@@ -119,9 +119,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         ))}
                     </Carousel>
                 ) : (
-                    <div className="text-center">
-                        <p>No correlation found for this health marker.</p>
-                    </div>
+                    <p className='text-center' style={{ fontStyle: 'italic' }}>No correlation found for this health marker! <FaFaceGrinBeamSweat /></p>
                 )}
             </section>
         </div>

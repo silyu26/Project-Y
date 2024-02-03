@@ -6,6 +6,7 @@ import GraphComponent from "../correlations/graph";
 import { findCorrelationsFromData } from "../correlations/suggestion";
 import { SuggestionComponent } from "../correlations/suggestion";
 import "./goal.css";
+import { FaFaceGrinBeamSweat } from "react-icons/fa6";
 
 const getDescription = (attribute) => {
     switch (attribute) {
@@ -125,9 +126,7 @@ const GoalCard = ({ goal, healthData }) => {
                                         </div>
                                     </Carousel.Item>
                                 ))}
-                        </Carousel>) : (<div className="text-center">
-                            <p>No correlation found for your goal.</p>
-                        </div>)}
+                        </Carousel>) : (<p className='text-center' style={{ fontStyle: 'italic' }}>No correlation found for your goal! <FaFaceGrinBeamSweat /></p>)}
                 </Modal.Body>
 
             </Modal>

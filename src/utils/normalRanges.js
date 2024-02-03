@@ -11,8 +11,8 @@ const normalRanges = {
         max: 100,
     },
     temperatureCelsius: {
-        min: 25.5,
-        max: 26.5,
+        min: 35.5,
+        max: 36.9,
     },
     //TODO: what values to use here?
     hydration: {
@@ -46,6 +46,9 @@ const normalRanges = {
  * @returns - Status using enum (TOO_HIGH, TOO_LOW, NORMAL).
  */
 function checkStatus(attribute, value) {
+    if (attribute == "doingsport") {
+        return Status.NORMAL;
+    }
     const { min, max } = normalRanges[attribute];
 
     if (value > max) {

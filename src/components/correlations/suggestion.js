@@ -8,6 +8,7 @@ import { HiExclamation } from "react-icons/hi";
 import { Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
+
 // Map correlation values to severity levels
 const mapCorrelationSeverity = (correlation) => {
     var absCor = Math.abs(correlation);
