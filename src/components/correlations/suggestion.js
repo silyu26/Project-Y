@@ -283,38 +283,35 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             'Overhydration may result in electrolyte imbalances and, in severe cases, hyponatremia.'
         ],
         HighTemperature: [
-            'Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
+            'An unusually high body temperature has been recorded. An elevated body temperature could be a sign of hyperthermia, potentially resulting in symptoms like confusion, increased sweating, and, in severe instances, the risk of organ failure.'
         ],
         HighOxygenSaturation: [
             'Monitoring oxygen saturation is crucial for individuals with respiratory conditions like COPD or asthma.'
         ],
         HighHeartRate: [
-            `Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
-        ],
-        HighTemperature: [
-            'Low skin temperature may indicate poor circulation or exposure to cold conditions.'
+            `Elevated heart rate levels have been detected. Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
         ],
         HighMood: [
-            'Extreme mood swings may suggest bipolar disorder or emotional instability.'
+            'Abnormally high mood levels have been identified. Extreme mood swings may suggest bipolar disorder or emotional instability.'
         ],
         HighSleep: [
-            'Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
+            ' Abnormally extended sleep duration or disrupted sleep patterns have been observed. Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
         ],
         HighSportTime: [
-            'Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.',
-            'Exceesive physical activity has the potential for a negative impact on social and work-life balance.',
-            'Elevated stress levels and decreased immune function can be associated with excessive sport time.'
+            'There are indications of an unusually prolonged duration of sports activity. Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.',
+            'There are indications of an unusually prolonged duration of sports activity. Exceesive physical activity has the potential for a negative impact on social and work-life balance.',
+            'There are indications of an unusually prolonged duration of sports activity. Elevated stress levels and decreased immune function can be associated with excessive sport time.'
         ],
         HighSportLevel: [
-            'Overtraining can make you feel persistently tired and lead to a decline in performance, even when you are putting in more effort.',
-            'Pushing your body too hard in sports increases the risk of getting hurt, from strains to long-lasting injuries due to repetitive stress.',
-            'Overdoing it in sports may bring about stress, irritability, mood swings, and make it harder to find motivation for physical activities.',
-            'Excessive training might disrupt your sleep, making it challenging to fall asleep or stay asleep, and leaving you feeling less rested.',
-            'Training too intensely can mess with your hormones, potentially causing irregular menstrual cycles in females and other hormonal imbalances.',
-            'Overtraining weakens your immune system, making you more susceptible to illnesses and lengthening the time it takes to recover.',
-            'Going beyond your limits may lead to not getting enough essential nutrients, affecting your overall health.',
-            'Balancing social life and training can be challenging, potentially straining relationships and causing neglect of other important life responsibilities.',
-            'Constant fatigue from overtraining might result in a plateau or decline in your athletic performance and physical abilities.'
+            'We noticed a higher-than-normal intensity in sports activity. Overtraining can make you feel persistently tired and lead to a decline in performance, even when you are putting in more effort.',
+            'We noticed a higher-than-normal intensity in sports activity. Pushing your body too hard in sports increases the risk of getting hurt, from strains to long-lasting injuries due to repetitive stress.',
+            'We noticed a higher-than-normal intensity in sports activity. Overdoing it in sports may bring about stress, irritability, mood swings, and make it harder to find motivation for physical activities.',
+            'We noticed a higher-than-normal intensity in sports activity. Excessive training might disrupt your sleep, making it challenging to fall asleep or stay asleep, and leaving you feeling less rested.',
+            'We noticed a higher-than-normal intensity in sports activity. Training too intensely can mess with your hormones, potentially causing irregular menstrual cycles in females and other hormonal imbalances.',
+            'We noticed a higher-than-normal intensity in sports activity. Overtraining weakens your immune system, making you more susceptible to illnesses and lengthening the time it takes to recover.',
+            'We noticed a higher-than-normal intensity in sports activity. Going beyond your limits may lead to not getting enough essential nutrients, affecting your overall health.',
+            'We noticed a higher-than-normal intensity in sports activity. Balancing social life and training can be challenging, potentially straining relationships and causing neglect of other important life responsibilities.',
+            'We noticed a higher-than-normal intensity in sports activity. Constant fatigue from overtraining might result in a plateau or decline in your athletic performance and physical abilities.'
         ],
         LowMovement: [
             'Lack of movement may lead to stiffness, muscle atrophy, and decreased joint flexibility.'
@@ -323,37 +320,37 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             'Shallow breathing may lead to insufficient oxygen intake, causing fatigue and reduced cognitive function.'
         ],
         LowHydration: [
-            'Dehydration can lead to dizziness, fatigue, headaches, and impaired cognitive function.'
+            'We have identified unusually low hydration levels. Dehydration can lead to dizziness, fatigue, headaches, and impaired cognitive function.'
         ],
         LowTemperature: [
-            'Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
+            'We observed an abnormally low body temperature. Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
         ],
         LowOxygenSaturation: [
             'Low oxygen saturation levels can indicate respiratory or cardiovascular problems, leading to shortness of breath and fatigue.'
         ],
         LowHeartRate: [
-            `Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
+            `An unusually low heart rate has been detected. Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
         ],
         LowTemperature: [
             'Low skin temperature may indicate poor circulation or exposure to cold conditions.'
         ],
         LowMood: [
-            'Persistent low mood may indicate depression or other mental health concerns.'
+            'Abnormally low mood levels have been identified. Persistent low mood may indicate depression or other mental health concerns.'
         ],
         LowSleep: [
-            'Insufficient sleep can lead to fatigue, impaired cognitive function, and increased susceptibility to illness.'
+            'Abnormally low sleep duration or quality has been observed. Insufficient sleep can lead to fatigue, impaired cognitive function, and increased susceptibility to illness.'
         ],
         LowSportTime: [
-            'Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.',
-            'Insufficient sport time may result in reduced cardiovascular fitness and endurance.',
-            'Inadequate can increase the risk of weight gain and obesity.',
-            'Insufficient sport time may lead to lowered mood and increased stress levels.'
+            'There are indications of an unusually short duration of sports activity. Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.',
+            'There are indications of an unusually short duration of sports activity. Insufficient sport time may result in reduced cardiovascular fitness and endurance.',
+            'There are indications of an unusually short duration of sports activity. Inadequate can increase the risk of weight gain and obesity.',
+            'There are indications of an unusually short duration of sports activity. Insufficient sport time may lead to lowered mood and increased stress levels.'
         ],
         LowSportLevel: [
-            'Light activity may not burn enough calories, potentially hindering weight management efforts.',
-            'Progress in improving overall fitness levels may be slower without adequate sport intensity.',
-            'The body may not be effectively challenged with low level of sport, reducing the potential for optimal health benefits.',
-            'Light activity may not provide enough stimulation to positively impact mood and mental well-being.'
+            'We noticed a lower-than-normal intensity in sports activity. Light activity may not burn enough calories, potentially hindering weight management efforts.',
+            'We noticed a lower-than-normal intensity in sports activity. Progress in improving overall fitness levels may be slower without adequate sport intensity.',
+            'We noticed a lower-than-normal intensity in sports activity. The body may not be effectively challenged with low level of sport, reducing the potential for optimal health benefits.',
+            'We noticed a lower-than-normal intensity in sports activity. Light activity may not provide enough stimulation to positively impact mood and mental well-being.'
         ]
     });
 
