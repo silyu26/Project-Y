@@ -57,14 +57,6 @@ function Navigatebar() {
                   onHide={() => setConnectSensorModalShow(false)}
                   />
               </NavDropdown.Item>
-              <NavDropdown.Item> <span onClick={() => setCreateCorrelationModalShow(true)}>
-                Create Correlation
-                </span>
-                <Createcorrelation
-                  show={createCorrelationModalShow}
-                  onHide={() => setCreateCorrelationModalShow(false)}
-                  />
-              </NavDropdown.Item>
               </NavDropdown>
 
               <Nav.Link ><Link to="/pages/goals" className="no-ul"> Goals</Link></Nav.Link>
