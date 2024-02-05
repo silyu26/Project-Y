@@ -34,7 +34,7 @@ const Share = () => {
     universalAccess.setAgentAccess(
       resourceURL,         // Resource
       agentWebID,     // Agent
-      { read: toread, write: towrite, control: tocontrol, append: toappend, controlRead:true , controlWrite:true},          // Access object
+      { read: toread, write: towrite, control: tocontrol, append: toappend, controlRead:tocontrol , controlWrite:tocontrol},          // Access object
       { fetch: session.fetch }                         // fetch function from authenticated session
     ).then((newAccess) => {
       logAccessInfo(agentWebID, newAccess, resourceURL)
