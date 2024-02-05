@@ -18,8 +18,6 @@ const getDescription = (attribute) => {
             return 'Staying well-hydrated is crucial for various bodily functions.';
         case 'Body Temperature':
             return 'Maintaining a normal body temperature is crucial for physiological processes.';
-        case 'Oxygen Saturation':
-            return 'Adequate oxygen saturation levels are essential for proper organ function.';
         case 'Heart Rate':
             return 'A healthy heart rate depends on factors such as age, fitness level, and health conditions.';
         case 'Temperature':
@@ -45,8 +43,6 @@ const getDisplayForGraph = (key) => {
             return { value: 'hydration', label: 'Hydration' };
         case 'temperature':
             return { value: 'temperature', label: 'Temperature' };
-        case 'oxygen saturation':
-            return { value: 'oxygen saturation', label: 'Oxygen Saturation' };
         case 'heart rate':
             return { value: 'heart rate', label: 'Heart Rate' };
         case 'mood':
