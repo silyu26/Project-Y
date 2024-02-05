@@ -115,6 +115,47 @@ const PodConnectionSuggestion = () => {
         for (const url of urls) {
           const contObjArr = await getObjFromUrl(url);
           const manualObjArr = await getManualObjFromUrl(url);
+          let moodMorningObj;
+          let moodEveningObj;
+          let sportLevelObj;
+          let sportTimeObj;
+          let sleepObj;
+
+          if (manualObjArr && manualObjArr.length > 0) {
+            manualObjArr.forEach(manualObj => {
+              switch (manualObj.id) {
+                case "Mood Morning":
+                  moodMorningObj = createObj("mood", manualObj.value, "");
+                  break;
+                case "Mood Evening":
+                  moodEveningObj = createObj("mood", manualObj.value, "");
+                  break;
+                case "Sports level of effort":
+                  sportLevelObj = createObj("sportLevel", manualObj.value, "");
+                  break;
+                case "Sports activity time":
+                  sportTimeObj = createObj("sportTime", manualObj.value, "");
+                  break;
+                case "Sleep length":
+                  sleepObj = createObj("sleep", manualObj.value, "");
+                  break;
+              }
+            });
+          }
+
+          //mock or sample manual data object if needed
+          [{ obj: sportLevelObj, arr: sportLevelArr },
+          { obj: sportTimeObj, arr: sportTimeArr },
+          { obj: moodMorningObj, arr: moodArr },
+          { obj: moodEveningObj, arr: moodArr },
+          { obj: sleepObj, arr: sleepArr }].forEach(item => {
+            if (item.obj == undefined || item.obj == null || item.obj) {
+              const mockObj = item.arr > 0 ? { value: item.arr.slice(-1).value, abnormal: Status.UNDEF, timestamp: "" }
+                : { value: 0, abnormal: Status.UNDEF, timestamp: "" };
+              item.obj = mockObj;
+            }
+          });
+
 
           contObjArr.forEach(obj => {
             const time = new Date(obj.measurement.timestamp);
@@ -125,43 +166,14 @@ const PodConnectionSuggestion = () => {
             hydArr.push(createObj("hydration", obj.measurement.humidity, timeString));
             activeArr.push(createObj("doingsport", obj.measurement.doingsport, timeString));
 
-            if (manualObjArr && manualObjArr.length > 0) {
-              manualObjArr.forEach(manualObj => {
-                switch (manualObj.id) {
-                  case "Mood Morning":
-                    if(time.getHours()>=12){
-                      moodArr.push(createObj("mood", manualObj.value, timeString));
-                    }
-                    break;
-                  case "Mood Evening":
-                    if(time.getHours()<11){
-                      moodArr.push(createObj("mood", manualObj.value, timeString));
-                    }
-                    break;
-                  case "Sports level of effort":
-                    sportLevelArr.push(createObj("sportLevel", manualObj.value, timeString));
-                    break;
-                  case "Sports activity time":
-                    sportTimeArr.push(createObj("sportTime", manualObj.value, timeString));
-                    break;
-                  case "Sleep length":
-                    sleepArr.push(createObj("sleep", manualObj.value, timeString));
-                    break;
-                }
-              });
+            [{ obj: sportLevelObj, arr: sportLevelArr },
+            { obj: sportTimeObj, arr: sportTimeArr },
+            { obj: time.getHours() >= 12 ? moodEveningObj : moodMorningObj, arr: moodArr },
+            { obj: sleepObj, arr: sleepArr }].forEach(item => {
+              item.obj.timestamp = timeString;
+              item.arr.push(item.obj);
+            });
 
-              //if manual data not available: either sample or mock
-              [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
-                const mockObj = manualArray.length === hrArr.length - 1 && manualArray.length > 0 ?
-                  { value: manualArray.slice(-1).value, abnormal: Status.UNDEF, timestamp: timeString }
-                  : { value: 0, abnormal: Status.UNDEF, timestamp: timeString };
-                manualArray.push(mockObj);
-              });
-            } else {
-              [sportLevelArr, sportTimeArr, moodArr, sleepArr].forEach(manualArray => {
-                manualArray.push({ value: 0, abnormal: Status.UNDEF, timestamp: timeString });
-              });
-            }
           });
         }
 
