@@ -142,15 +142,16 @@ const PodConnectionSuggestion = () => {
               }
             });
           }
-
+          
           //mock or sample manual data object if needed
           [{ obj: sportLevelObj, arr: sportLevelArr },
           { obj: sportTimeObj, arr: sportTimeArr },
           { obj: moodMorningObj, arr: moodArr },
           { obj: moodEveningObj, arr: moodArr },
           { obj: sleepObj, arr: sleepArr }].forEach(item => {
-            if (item.obj == undefined || item.obj == null || item.obj) {
-              const mockObj = item.arr > 0 ? { value: item.arr.slice(-1).value, abnormal: Status.UNDEF, timestamp: "" }
+            if (item.obj === undefined || item.obj === null || !item.obj) {
+              const average = arr => arr.reduce((p, c) => p + c.value, 0) / arr.length;
+              const mockObj = item.arr.length > 0 ? { value: average(item.arr), abnormal: Status.UNDEF, timestamp: "" }
                 : { value: 0, abnormal: Status.UNDEF, timestamp: "" };
               item.obj = mockObj;
             }
