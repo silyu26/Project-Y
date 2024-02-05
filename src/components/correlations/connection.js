@@ -120,7 +120,7 @@ const PodConnectionSuggestion = () => {
 
           contObjArr.forEach(obj => {
             const time = new Date(obj.measurement.timestamp);
-            const timeString = time.toISOString().split('T')[0];
+            const timeString = time.getTime();
 
             hrArr.push(createObj("heartRate", obj.measurement.heartrate, timeString));
             tempArr.push(createObj("temperatureCelsius", obj.measurement.temperature, timeString));

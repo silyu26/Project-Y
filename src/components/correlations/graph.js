@@ -63,8 +63,8 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
             datasets: [
                 {
                     label: `Impact of ${selectedX.label} on ${selectedY.label}`,
-                    data: xValues.map((timestamp, index) => ({
-                        x: timestamp,
+                    data: xValues.map((val, index) => ({
+                        x: val,
                         y: yValues[index],
                     })),
                     backgroundColor: colors,
@@ -108,7 +108,7 @@ const GraphComponent = ({ dataset, selectedX, selectedY, type }) => {
                 tooltip: {
                     callbacks: {
                         label: function (context) {
-                            const timestamp = dataset[selectedY.value][context.dataIndex].timestamp;
+                            const timestamp = new Date(dataset[selectedY.value][context.dataIndex].timestamp).toUTCString();
                             return `${selectedY.value} at ${timestamp}: ${context.dataset.data[context.dataIndex].y}`;
                         },
                     },
