@@ -51,16 +51,10 @@ const selectAdvice = (correlationDirection, trendOfAbnormal) => {
 const detailedAdvice = (affectedCriteria, trend) => {
     if (trend == "too high") {
         switch (affectedCriteria) {
-            case 'movement':
-                return '#HighMovement#';
-            case 'respiration':
-                return '#HighRespiration#';
             case 'hydration':
                 return '#HighHydration#';
             case 'body temperature':
                 return '#HighTemperature#';
-            case 'oxygen saturation':
-                return '#HighOxygenSaturation#';
             case 'heart rate':
                 return '#HighHeartRate#';
             case 'temperature':
@@ -77,16 +71,10 @@ const detailedAdvice = (affectedCriteria, trend) => {
     }
     else if (trend == "too low") {
         switch (affectedCriteria) {
-            case 'movement':
-                return '#LowMovement#';
-            case 'respiration':
-                return '#LowRespiration#';
             case 'hydration':
                 return '#LowHydration#';
             case 'body temperature':
                 return '#LowTemperature#';
-            case 'oxygen saturation':
-                return '#LowOxygenSaturation#';
             case 'heart rate':
                 return '#LowHeartRate#';
             case 'temperature':
@@ -272,30 +260,20 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             `Consider strategies to strengthen your ${affectingCriteria} for improved control over your ${affectedCriteria}.`,
             `Implementing changes to boost your ${affectingCriteria} could lead to enhanced management of your ${affectedCriteria}.`,
         ],
-
-        HighMovement: [
-            'Excessive movement or strenuous activity without proper rest can result in fatigue, injuries, or muscle strain.'
-        ],
-        HighRespiration: [
-            'Rapid or labored breathing may indicate respiratory distress or underlying health issues.'
-        ],
         HighHydration: [
-            'Overhydration may result in electrolyte imbalances and, in severe cases, hyponatremia.'
+            'We have identified unusually high hydration levels. Overhydration may result in electrolyte imbalances and, in severe cases, hyponatremia.'
         ],
         HighTemperature: [
             'An unusually high body temperature has been recorded. An elevated body temperature could be a sign of hyperthermia, potentially resulting in symptoms like confusion, increased sweating, and, in severe instances, the risk of organ failure.'
         ],
-        HighOxygenSaturation: [
-            'Monitoring oxygen saturation is crucial for individuals with respiratory conditions like COPD or asthma.'
-        ],
         HighHeartRate: [
-            `Elevated heart rate levels have been detected. Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
+            `Elevated heart rate levels have been detected. An abnormally high heart rate (tachycardia) may suggest an issue with the heart's electrical system..`
         ],
         HighMood: [
             'Abnormally high mood levels have been identified. Extreme mood swings may suggest bipolar disorder or emotional instability.'
         ],
         HighSleep: [
-            ' Abnormally extended sleep duration or disrupted sleep patterns have been observed. Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
+            'Abnormally extended sleep duration or disrupted sleep patterns have been observed. Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
         ],
         HighSportTime: [
             'There are indications of an unusually prolonged duration of sports activity. Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.',
@@ -313,26 +291,17 @@ const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, t
             'We noticed a higher-than-normal intensity in sports activity. Balancing social life and training can be challenging, potentially straining relationships and causing neglect of other important life responsibilities.',
             'We noticed a higher-than-normal intensity in sports activity. Constant fatigue from overtraining might result in a plateau or decline in your athletic performance and physical abilities.'
         ],
-        LowMovement: [
-            'Lack of movement may lead to stiffness, muscle atrophy, and decreased joint flexibility.'
-        ],
-        LowRespiration: [
-            'Shallow breathing may lead to insufficient oxygen intake, causing fatigue and reduced cognitive function.'
-        ],
         LowHydration: [
             'We have identified unusually low hydration levels. Dehydration can lead to dizziness, fatigue, headaches, and impaired cognitive function.'
         ],
         LowTemperature: [
             'We observed an abnormally low body temperature. Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
         ],
-        LowOxygenSaturation: [
-            'Low oxygen saturation levels can indicate respiratory or cardiovascular problems, leading to shortness of breath and fatigue.'
-        ],
         LowHeartRate: [
             `An unusually low heart rate has been detected. Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
         ],
         LowTemperature: [
-            'Low skin temperature may indicate poor circulation or exposure to cold conditions.'
+            'We observed an abnormally low body temperature. Low skin temperature may indicate poor circulation or exposure to cold conditions.'
         ],
         LowMood: [
             'Abnormally low mood levels have been identified. Persistent low mood may indicate depression or other mental health concerns.'
