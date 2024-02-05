@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { getSolidDataset, saveSolidDatasetAt, createThing, addStringNoLocale, setThing, createSolidDataset } from '@inrupt/solid-client';
+import { useSession } from '@inrupt/solid-ui-react';
 
 const template = `
 
@@ -61,7 +62,8 @@ fhir:display [ fhir:v "Sleep, function (observable entity)" ]       ] )     ] )
 
 const solidURL = process.env.REACT_APP_SERVER_URL;
 
-async function createTTLFile(selectedAttribute, startDate, selectedValue, solidPodURL) {
+async function createTTLFile(selectedAttribute, startDate, selectedValue, solidPodURL, currentsession) {
+  
     // Define the file URL
     const fileURL = `${solidPodURL}manual/${selectedAttribute}/${startDate}.ttl`;
 
@@ -74,7 +76,7 @@ async function createTTLFile(selectedAttribute, startDate, selectedValue, solidP
     myDataset = setThing(myDataset, myThing);
 
     // Save the dataset back to the Pod
-    await saveSolidDatasetAt(fileURL, myDataset, { fetch: fetch.bind(window) });
+    await saveSolidDatasetAt(fileURL, myDataset, { fetch: currentsession });
 }
 
 
@@ -82,6 +84,7 @@ function Enterdata(props) {
   const [startDate, setStartDate] = useState(new Date());
   const [selectedAttribute, setSelectedAttribute] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
+  const { session } = useSession()
 
   const handleAttributeChange = (event) => {
     setSelectedAttribute(event.target.value);
@@ -145,7 +148,7 @@ function Enterdata(props) {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-      <Button onClick={() => {createTTLFile(selectedAttribute, startDate.toDateString() , selectedValue, solidURL)
+      <Button onClick={() => {createTTLFile(selectedAttribute, startDate.toDateString() , selectedValue, solidURL, session.fetch)
         .then(() => console.log("File created successfully"))
         .catch(err => console.error(err));
         alert("File created successfully with the following data: " + selectedAttribute + " " + startDate.toDateString() + " " + selectedValue);

@@ -5,59 +5,14 @@ import { useSession } from '@inrupt/solid-ui-react';
 import { fetch } from '@inrupt/solid-client-authn-browser';
 import { getSolidDatasetWithAcl, getSolidDataset, hasResourceAcl, createAclFromFallbackAcl,
    isContainer, saveAclFor, overwriteFile, setAgentResourceAccess,
-   hasFallbackAcl, getResourceAcl, hasAccessibleAcl, getFile } from "@inrupt/solid-client";
+   hasFallbackAcl, getResourceAcl, hasAccessibleAcl, getFile, createAcl, setAgentDefaultAccess, universalAccess } from "@inrupt/solid-client";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { FaRegFaceSmileWink } from "react-icons/fa6";
 
 const animatedComponents = makeAnimated()
 
-async function setAccess(resourceURL, agentWebID, toread, towrite, toappend, tocontrol) {
-  console.log("Resource URL:", resourceURL);
-    if (!resourceURL) {
-      throw new Error("Resource URL is undefined or invalid.");
-    }
 
-  try {
-    // Fetch the SolidDataset and its associated ACLs, if available:
-    const myDatasetWithAcl = await getSolidDatasetWithAcl(resourceURL);
-
-    // Obtain the SolidDataset's own ACL, if available,
-    // or initialise a new one, if possible:
-    let resourceAcl;
-    if (!hasResourceAcl(myDatasetWithAcl)) {
-      if (!hasAccessibleAcl(myDatasetWithAcl)) {
-        throw new Error(
-          "The current user does not have permission to change access rights to this Resource."
-        );
-      }
-      if (!hasFallbackAcl(myDatasetWithAcl)) {
-        throw new Error(
-          "The current user does not have permission to see who currently has access to this Resource."
-        );
-        // Alternatively, initialise a new empty ACL as follows,
-        // but be aware that if you do not give someone Control access,
-        // **nobody will ever be able to change Access permissions in the future**:
-        // resourceAcl = createAcl(myDatasetWithAcl);
-      }
-      resourceAcl = createAclFromFallbackAcl(myDatasetWithAcl);
-    } else {
-      resourceAcl = getResourceAcl(myDatasetWithAcl);
-    }
-
-    // Give someone Control access to the given Resource:
-    const updatedAcl = setAgentResourceAccess(
-      resourceAcl,
-      agentWebID,
-      { read: toread, append: toappend, write: towrite, control: tocontrol }
-    );
-
-    // Now save the ACL:
-    await saveAclFor(myDatasetWithAcl, updatedAcl);
-  } catch (error) {
-    console.error("Error setting access:", error);
-  }
-}
 
 const Share = () => {
 
@@ -73,6 +28,27 @@ const Share = () => {
   const [writeAccess, setWriteAccess] = useState(false);
   const [appendAccess, setAppendAccess] = useState(false);
   const [controlAccess, setControlAccess] = useState(false);
+
+  async function setAccess(resourceURL, agentWebID, toread, towrite, toappend, tocontrol) {
+    console.log("Auth Session", session.fetch)
+    universalAccess.setAgentAccess(
+      resourceURL,         // Resource
+      agentWebID,     // Agent
+      { read: toread, write: towrite, control: tocontrol, append: toappend, controlRead:true , controlWrite:true},          // Access object
+      { fetch: session.fetch }                         // fetch function from authenticated session
+    ).then((newAccess) => {
+      logAccessInfo(agentWebID, newAccess, resourceURL)
+    });
+    
+    function logAccessInfo(agent, agentAccess, resource) {
+      console.log(`For resource::: ${resource}`);
+      if (agentAccess === null) {
+        console.log(`Could not load ${agent}'s access details.`);
+      } else {
+        console.log(`${agent}'s Access:: ${JSON.stringify(agentAccess)}`);
+      }
+    }
+  }
 
   useEffect(() => {
     const getAllContainers = async() => {
