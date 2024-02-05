@@ -1,19 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { findCorrelationsFromData } from './suggestion';
 import Select from 'react-select';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { Carousel } from "react-bootstrap";
+import { SuggestionComponent, findCorrelationsFromData } from './suggestion';
+import { FaFaceGrinBeamSweat } from "react-icons/fa6";
 
 
 const healthMarkers = [
     { value: 'heart rate', label: 'Heart Rate' },
     { value: 'temperature', label: 'Body Temperature' },
     { value: 'hydration', label: 'Hydration' },
-    { value: 'sport', label: 'Sport' }
+    { value: 'sport time', label: 'Sport Time' },
+    { value: 'sport level', label: 'Sport Intensity' },
+    { value: 'mood', label: 'Mood' },
+    { value: 'sleep', label: 'Sleep Time' }
     // Add more health markers as needed
 ];
+
+const getLabel = (value) => {
+    const labelMap = {
+      'heart rate': 'Heart Rate',
+      'temperature': 'Body Temperature',
+      'hydration': 'Hydration',
+      'sport time': 'Sport Time',
+      'sport level': 'Sport Intensity',
+      'mood': 'Mood',
+      'sleep': 'Sleep Time'
+      // Add more mappings as needed
+    };
+    return labelMap[value] || value;
+  };
 
 const thresholds = {
     min: 0,
@@ -61,9 +79,9 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
 
     }, [criteriaData]);
 
-    const getSuggestions = (suggestionObj, affectingCriterionKey) => {
-        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey)
-            .sort((a, b) => b.correlationCoefficient - a.correlationCoefficient);;
+    const getSuggestions = (suggestionObj, affectingCriterionKey, threshold) => {
+        return suggestionObj.filter(value => value.affectingCriterionKey == affectingCriterionKey && Math.abs(value.correlationCoefficient) >= threshold)
+            .sort((a, b) => b.correlationCoefficient - a.correlationCoefficient);
     };
 
     return (
@@ -76,7 +94,7 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
             <hr />
             <br />
 
-            <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh' }}>
+            <section className="marker-dropdown" style={{ marginTop: '2vh', marginBottom: '5vh', position: 'relative', zIndex: 1 }}>
                 <label>Select Health Marker:</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <Select
@@ -96,27 +114,30 @@ const CorrelationMatrixComponent = ({ criteriaData }) => {
                         <label style={{ marginRight: '10px' }}>Correlation Threshold:</label>
                     </div>
                 </div>
-            </section >
-            <section className="suggestions-list">
+            </section>
+            <section className="suggestions-list" style={{ position: 'relative', zIndex: 0 }}>
                 {loading ? (
                     <div className='text-center'>
                         <Spinner variant='info' animation="border" />
                         <p>Loading Suggestions...</p>
                     </div>
-                ) : (
-                    <Carousel data-bs-theme="dark" indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {getSuggestions(correlationMatrix, selectedMarker.value).filter(value => Math.abs(value.correlationCoefficient) >= threshold).map((item, index) => (
+                ) : getSuggestions(correlationMatrix, selectedMarker.value, threshold).length > 0 ? (
+                    <Carousel data-bs-theme="dark" interval={null} indicator="false" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {getSuggestions(correlationMatrix, selectedMarker.value, threshold).map((item, index) => (
                             <Carousel.Item key={index}>
                                 <div style={{ padding: '50px 150px 50px 150px' }}>
-                                    <h5>Possible effect of {selectedMarker.label} on {item.affectedCriterionKey}:</h5>
-                                    <i>{item.suggestion}</i>
+                                    <h5>Possible effect of {selectedMarker.label} on {getLabel(item.affectedCriterionKey)}:</h5>
+                                    <SuggestionComponent corrcoeff={item.correlationCoefficient} affectingCriteria={item.affectingCriterionKey} affectedCriteria={item.affectedCriterionKey} trendOfAbnormal={item.finalAbnormalStatus} />
                                 </div>
                             </Carousel.Item>
                         ))}
                     </Carousel>
+                ) : (
+                    <p className='text-center' style={{ fontStyle: 'italic' }}>No correlation found for this health marker! <FaFaceGrinBeamSweat /></p>
                 )}
             </section>
-        </div >
+        </div>
+
     );
 };
 

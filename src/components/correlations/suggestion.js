@@ -1,63 +1,160 @@
 import tracery from 'tracery-grammar';
 import jstat from 'jstat';
 import { Status } from '../../utils/normalRanges';
+import { HiOutlineKey } from "react-icons/hi";
+import { HiBell } from 'react-icons/hi';
+import { HiInformationCircle } from 'react-icons/hi';
+import { HiExclamation } from "react-icons/hi";
+import { Container } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 
-const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal) => {
-    if (corrcoeff == NaN || affectedCriteria == null || affectingCriteria == null || trendOfAbnormal == null) {
-        return;
+
+// Map correlation values to severity levels
+const mapCorrelationSeverity = (correlation) => {
+    var absCor = Math.abs(correlation);
+    if (absCor >= 0.8 && absCor <= 1) return 'very strong';
+    if (absCor >= 0.6 && absCor < 0.8) return 'strong';
+    if (absCor >= 0.4 && absCor < 0.6) return 'moderate';
+    if (absCor >= 0.2 && absCor < 0.4) return 'weak';
+    if (absCor > 0 && absCor < 0.2) return 'very weak';
+    return 'none';
+};
+
+// Adjust weights for each severity level
+const severityAnalysis = (correlationSeverity) => {
+    switch (correlationSeverity) {
+        case 'very weak': return '#AnalysisVeryWeak#';
+        case 'weak': return '#AnalysisWeak#';
+        case 'moderate': return '#AnalysisModerate#';
+        case 'strong': return '#AnalysisStrong#';
+        case 'very strong': return '#AnalysisVeryStrong#';
     }
+};
 
-    // Map correlation values to severity levels
-    const mapCorrelationSeverity = (correlation) => {
-        var absCor = Math.abs(correlation);
-        if (absCor >= 0.8 && absCor <= 1) return 'very strong';
-        if (absCor >= 0.6 && absCor < 0.8) return 'strong';
-        if (absCor >= 0.4 && absCor < 0.6) return 'moderate';
-        if (absCor >= 0.2 && absCor < 0.4) return 'weak';
-        if (absCor >= 0 && absCor < 0.2) return 'very weak';
-        return 'none';
-    };
+// Decide on the #suggestion# based on correlationDirection and trendOfAbnormal
+const selectAdvice = (correlationDirection, trendOfAbnormal) => {
+    if ((correlationDirection == 'positive' && trendOfAbnormal == 'too high') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'too low')) {
+        return '#LowerAdvice#';
+    } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'too low') ||
+        (correlationDirection == 'negative' && trendOfAbnormal == 'too high')) {
+        return '#StrengthenAdvice#';
+    }
+    else if (trendOfAbnormal == 'unstable') {
+        return '#MonitorAdvice#';
+    }
+    else {
+        return '#NeutralAdvice#';
+    }
+};
 
-    // Adjust weights for each severity level
-    const severityAnalysis = (correlationSeverity) => {
-        switch (correlationSeverity) {
-            case 'very weak': return '#AnalysisVeryWeak#';
-            case 'weak': return '#AnalysisWeak#';
-            case 'moderate': return '#AnalysisModerate#';
-            case 'strong': return '#AnalysisStrong#';
-            case 'very strong': return '#AnalysisVeryStrong#';
-        }
-    };
-
-    // Decide on the #suggestion# based on correlationDirection and trendOfAbnormal
-    const selectAdvice = (correlationDirection, trendOfAbnormal) => {
-        if ((correlationDirection == 'positive' && trendOfAbnormal == 'high') ||
-            (correlationDirection == 'negative' && trendOfAbnormal == 'low')) {
-            return '#LowerAdvice#';
-        } else if ((correlationDirection == 'positive' && trendOfAbnormal == 'low') ||
-            (correlationDirection == 'negative' && trendOfAbnormal == 'high')) {
-            return '#StrengthenAdvice#';
-        }
-        else if (trendOfAbnormal == 'unstable') {
-            return '#MonitorAdvice#';
-        }
-        else {
-            return '#NeutralAdvice#';
-        }
-    };
-
-    const trendAnalysis = (direction) => {
-        if (direction === "Positive") {
-            return '#DirectionAnalysisPositive#';
-        }
-        else {
-            return '#DirectionAnalysisNegative#';
+const detailedAdvice = (affectedCriteria, trend) => {
+    if (trend == "too high") {
+        switch (affectedCriteria) {
+            case 'hydration':
+                return '#HighHydration#';
+            case 'body temperature':
+                return '#HighTemperature#';
+            case 'heart rate':
+                return '#HighHeartRate#';
+            case 'temperature':
+                return '#HighTemperature#';
+            case 'mood':
+                return '#HighMood#';
+            case 'sleep':
+                return '#HighSleep#';
+            case 'sport time':
+                return '#HighSportTime#';
+            case 'sport level':
+                return '#HighSportLevel#';
         }
     }
+    else if (trend == "too low") {
+        switch (affectedCriteria) {
+            case 'hydration':
+                return '#LowHydration#';
+            case 'body temperature':
+                return '#LowTemperature#';
+            case 'heart rate':
+                return '#LowHeartRate#';
+            case 'temperature':
+                return '#LowTemperature#';
+            case 'mood':
+                return '#LowMood#';
+            case 'sleep':
+                return '#LowSleep#';
+            case 'sport time':
+                return '#LowSportTime#';
+            case 'sport level':
+                return '#LowSportLevel#';
+        }
+    }
+    return;
+}
+
+const trendAnalysis = (direction) => {
+    if (direction === "positive") {
+        return '#DirectionAnalysisPositive#';
+    }
+    else {
+        return '#DirectionAnalysisNegative#';
+    }
+}
+
+const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const findCorrelationsFromData = (healthData, goalId) => {
+    const correlations = [];
+    Object.entries(healthData).forEach(([affectedCriterionKey, affectedCriterion]) => {
+        Object.entries(healthData).forEach(([affectingCriterionKey, affectingCriterion]) => {
+            if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
+                return;
+            }
+
+            const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
+            const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
+            const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
+
+            const finalAbnormalStatus =
+                tooHighCount.length > 2 && tooLowCount > 2
+                    ? 'unstable'
+                    : tooHighCount > 2
+                        ? 'too high'
+                        : tooLowCount > 2
+                            ? 'too low'
+                            : 'normal';
+
+            const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
+            const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
+            const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
+
+            if (correlationCoefficient === undefined || correlationCoefficient === null || correlationCoefficient==0 || isNaN(correlationCoefficient)) {
+                return;
+            }
+
+            correlations.push({
+                correlationCoefficient,
+                affectingCriterionKey,
+                affectedCriterionKey,
+                finalAbnormalStatus
+            });
+        });
+    });
+    return correlations;
+}
+
+const SuggestionComponent = ({ corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal }) => {
+
+    const [info, setInfo] = useState("");
+    const [detectedValue, setDetectedValue] = useState("");
+    const [change, setChange] = useState("");
+    const [possibilities, setPossibilities] = useState("");
 
     const grammar = tracery.createGrammar({
-        AffectingCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
-        AffectedCriteria: ['movement', 'respiration', 'hydration', 'body temperature', 'oxygen saturation', 'heart rate', 'temperature', 'mood', 'sleep time', 'sport time'],
+        AffectingCriteria: ['hydration', 'body temperature', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
+        AffectedCriteria: ['hydration', 'body temperature', 'heart rate', 'temperature', 'mood', 'sleep', 'sport time', 'sport level'],
         CorrelationSeverity: ['#VeryWeak', '#Weak#', '#Moderate#', '#Strong#', '#VeryStrong'],
         CorrelationDirection: ['#PositiveDirection#', '#NegativeDirection#'],
 
@@ -105,21 +202,19 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
             `It appears that when ${affectingCriteria} increases, your ${affectedCriteria} tends to decrease.`,
             `An increase in your ${affectingCriteria} is associated with a decrease in ${affectedCriteria}.`,
             `There is an inverse relationship between ${affectingCriteria} and ${affectedCriteria}: as one goes up, the other goes down.`,
-            `Your ${affectedCriteria} shows a negative trend when ${affectingCriteria} experiences an upward movement.`,
-            `Observations suggest a negative correlation: increasing ${affectingCriteria} coincides with decreasing ${affectedCriteria}.`,
+            `Observations suggest that, increasing ${affectingCriteria} coincides with decreasing ${affectedCriteria}.`,
             `A negative trend is evident, indicating that an increase in ${affectingCriteria} is associated with a downward movement in ${affectedCriteria}.`,
-            `There is a discernible negative trend, where rising ${affectingCriteria} coincides with a decrease in ${affectedCriteria}.`,
+            `There is a negative trend, where rising ${affectingCriteria} coincides with a decrease in ${affectedCriteria}.`,
         ],
 
         DirectionAnalysisPositive: [
-            `There seems to be a positive correlation between an increase in your ${affectingCriteria} and an increase in ${affectedCriteria}.`,
             `Your ${affectedCriteria} tends to increase as ${affectingCriteria} increases.`,
             `There is a positive relationship between ${affectingCriteria} and ${affectedCriteria}: as one rises, the other also rises.`,
             `Observations indicate a positive trend: increasing ${affectingCriteria} aligns with an increase in ${affectedCriteria}.`,
-            `A positive correlation is evident, where an increase in ${affectingCriteria} corresponds to a rise in ${affectedCriteria}.`,
-            `A positive trend is notable, suggesting that an increase in ${affectingCriteria} corresponds with an upward movement in ${affectedCriteria}.`,
+            `A positive trend is evident, where an increase in ${affectingCriteria} corresponds to a rise in ${affectedCriteria}.`,
+            `Observations suggest that, an increase in ${affectingCriteria} corresponds with an upward movement in ${affectedCriteria}.`,
             `Evidence points towards a positive trend: when ${affectingCriteria} goes up, so does ${affectedCriteria}.`,
-            `The data indicates a favorable correlation, with increasing ${affectingCriteria} linked to a positive shift in ${affectedCriteria}.`,
+            `The data indicates a positive relationship, with increasing ${affectingCriteria} linked to a positive shift in ${affectedCriteria}.`,
         ],
 
         AbnormalMeasurementsAnalysis: [
@@ -143,11 +238,11 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
         ],
 
         MonitorAdvice: [
-            'You should continue monitoring and make adjustments as needed.',
-            'Continuous monitoring is recommended to track any changes over time.',
-            'Regular monitoring will provide insights into any fluctuations. Adjustments can be made accordingly.',
-            'Keeping a watchful eye on your metrics is crucial for long-term health management. Make adjustments based on changes.',
-            'Ongoing monitoring will help you stay proactive in maintaining your health. Adjust your routine as needed.',
+            'Unstable values are detected, you should continue monitoring and make adjustments as needed.',
+            'Unstable values are detected, continuous monitoring is recommended to track any changes over time.',
+            'Unstable values are detected, regular monitoring will provide insights into any fluctuations. Adjustments can be made accordingly.',
+            'Unstable values are detected, keeping a watchful eye on your metrics is crucial for long-term health management. Make adjustments based on changes.',
+            'Unstable values are detected, ongoing monitoring will help you stay proactive in maintaining your health. Adjust your routine as needed.',
         ],
 
         LowerAdvice: [
@@ -165,67 +260,140 @@ const generateSuggestion = (corrcoeff, affectingCriteria, affectedCriteria, tren
             `Consider strategies to strengthen your ${affectingCriteria} for improved control over your ${affectedCriteria}.`,
             `Implementing changes to boost your ${affectingCriteria} could lead to enhanced management of your ${affectedCriteria}.`,
         ],
+        HighHydration: [
+            'We have identified unusually high hydration levels. Overhydration may result in electrolyte imbalances and, in severe cases, hyponatremia.'
+        ],
+        HighTemperature: [
+            'An unusually high body temperature has been recorded. An elevated body temperature could be a sign of hyperthermia, potentially resulting in symptoms like confusion, increased sweating, and, in severe instances, the risk of organ failure.'
+        ],
+        HighHeartRate: [
+            `Elevated heart rate levels have been detected. An abnormally high heart rate (tachycardia) may suggest an issue with the heart's electrical system..`
+        ],
+        HighMood: [
+            'Abnormally high mood levels have been identified. Extreme mood swings may suggest bipolar disorder or emotional instability.'
+        ],
+        HighSleep: [
+            'Abnormally extended sleep duration or disrupted sleep patterns have been observed. Excessive sleep may be a sign of certain medical conditions or poor sleep quality.'
+        ],
+        HighSportTime: [
+            'There are indications of an unusually prolonged duration of sports activity. Excessive or intense physical activity without proper recovery may lead to overtraining, injuries, and burnout.',
+            'There are indications of an unusually prolonged duration of sports activity. Exceesive physical activity has the potential for a negative impact on social and work-life balance.',
+            'There are indications of an unusually prolonged duration of sports activity. Elevated stress levels and decreased immune function can be associated with excessive sport time.'
+        ],
+        HighSportLevel: [
+            'We noticed a higher-than-normal intensity in sports activity. Overtraining can make you feel persistently tired and lead to a decline in performance, even when you are putting in more effort.',
+            'We noticed a higher-than-normal intensity in sports activity. Pushing your body too hard in sports increases the risk of getting hurt, from strains to long-lasting injuries due to repetitive stress.',
+            'We noticed a higher-than-normal intensity in sports activity. Overdoing it in sports may bring about stress, irritability, mood swings, and make it harder to find motivation for physical activities.',
+            'We noticed a higher-than-normal intensity in sports activity. Excessive training might disrupt your sleep, making it challenging to fall asleep or stay asleep, and leaving you feeling less rested.',
+            'We noticed a higher-than-normal intensity in sports activity. Training too intensely can mess with your hormones, potentially causing irregular menstrual cycles in females and other hormonal imbalances.',
+            'We noticed a higher-than-normal intensity in sports activity. Overtraining weakens your immune system, making you more susceptible to illnesses and lengthening the time it takes to recover.',
+            'We noticed a higher-than-normal intensity in sports activity. Going beyond your limits may lead to not getting enough essential nutrients, affecting your overall health.',
+            'We noticed a higher-than-normal intensity in sports activity. Balancing social life and training can be challenging, potentially straining relationships and causing neglect of other important life responsibilities.',
+            'We noticed a higher-than-normal intensity in sports activity. Constant fatigue from overtraining might result in a plateau or decline in your athletic performance and physical abilities.'
+        ],
+        LowHydration: [
+            'We have identified unusually low hydration levels. Dehydration can lead to dizziness, fatigue, headaches, and impaired cognitive function.'
+        ],
+        LowTemperature: [
+            'We observed an abnormally low body temperature. Low body temperature may suggest hypothermia, which can lead to confusion, shivering, and, in severe cases, organ failure.'
+        ],
+        LowHeartRate: [
+            `An unusually low heart rate has been detected. Abnormally low heart rate (bradycardia) may indicate a problem with the heart's electrical system.`
+        ],
+        LowTemperature: [
+            'We observed an abnormally low body temperature. Low skin temperature may indicate poor circulation or exposure to cold conditions.'
+        ],
+        LowMood: [
+            'Abnormally low mood levels have been identified. Persistent low mood may indicate depression or other mental health concerns.'
+        ],
+        LowSleep: [
+            'Abnormally low sleep duration or quality has been observed. Insufficient sleep can lead to fatigue, impaired cognitive function, and increased susceptibility to illness.'
+        ],
+        LowSportTime: [
+            'There are indications of an unusually short duration of sports activity. Inadequate physical activity may contribute to weight gain, muscle weakness, and poor cardiovascular health.',
+            'There are indications of an unusually short duration of sports activity. Insufficient sport time may result in reduced cardiovascular fitness and endurance.',
+            'There are indications of an unusually short duration of sports activity. Inadequate can increase the risk of weight gain and obesity.',
+            'There are indications of an unusually short duration of sports activity. Insufficient sport time may lead to lowered mood and increased stress levels.'
+        ],
+        LowSportLevel: [
+            'We noticed a lower-than-normal intensity in sports activity. Light activity may not burn enough calories, potentially hindering weight management efforts.',
+            'We noticed a lower-than-normal intensity in sports activity. Progress in improving overall fitness levels may be slower without adequate sport intensity.',
+            'We noticed a lower-than-normal intensity in sports activity. The body may not be effectively challenged with low level of sport, reducing the potential for optimal health benefits.',
+            'We noticed a lower-than-normal intensity in sports activity. Light activity may not provide enough stimulation to positively impact mood and mental well-being.'
+        ]
     });
 
-    if (corrcoeff !== undefined) {
-        const correlationSeverity = mapCorrelationSeverity(corrcoeff);
-        const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
+    useEffect(() => {
+        if (corrcoeff == NaN || affectedCriteria == null || affectingCriteria == null || trendOfAbnormal == null) {
+            return;
+        }
 
-        // Use the grammar to generate suggestions
-        return grammar.flatten(`${capitalizeFirstLetter(affectingCriteria)} and ${affectedCriteria} show a ${correlationSeverity} ${correlationDirection} correlation.\n` +
-            `${severityAnalysis(correlationSeverity)}\n${trendAnalysis(correlationDirection)}\n${selectAdvice(correlationDirection, trendOfAbnormal)}`);
-    } else {
-        return 'No correlation information available for the specified attributes.';
-    }
-};
+        if (corrcoeff !== undefined) {
+            const correlationSeverity = mapCorrelationSeverity(corrcoeff);
+            const correlationDirection = corrcoeff > 0 ? 'positive' : 'negative';
 
-const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+            const trend = grammar.flatten(trendAnalysis(correlationDirection));
+            const detect = grammar.flatten(severityAnalysis(correlationSeverity));
+            const ad = grammar.flatten(selectAdvice(correlationDirection, trendOfAbnormal));
+            const pos = grammar.flatten(detailedAdvice(affectedCriteria, trendOfAbnormal));
 
-const findCorrelationsFromData = (healthData, goalId) => {
-    const correlations = [];
-    Object.entries(healthData).forEach(([affectedCriterionKey, affectedCriterion]) => {
-        Object.entries(healthData).forEach(([affectingCriterionKey, affectingCriterion]) => {
-            if (affectingCriterionKey === affectedCriterionKey || (goalId != null && affectedCriterionKey !== goalId)) {
-                return;
+            if (trend) {
+                setInfo(trend);
+            }
+            if (detect) {
+                setDetectedValue(detect);
+            }
+            if (ad) {
+                setChange(ad);
+            }
+            if (pos) {
+                setPossibilities(pos);
             }
 
-            const abnormalValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.abnormal));
-            const tooHighCount = abnormalValues.filter(status => status === Status.TOO_HIGH).length;
-            const tooLowCount = abnormalValues.filter(status => status === Status.TOO_LOW).length;
+        } else {
+            return 'No correlation information available for the specified attributes.';
+        }
 
-            const finalAbnormalStatus =
-                tooHighCount.length > 2 && tooLowCount > 2
-                    ? 'unstable'
-                    : tooHighCount > 2
-                        ? 'too high'
-                        : tooLowCount > 2
-                            ? 'too low'
-                            : 'normal';
-
-            const affectingValues = [].concat(...Object.values(affectingCriterion).map(entry => entry.value));
-            const affectedValues = [].concat(...Object.values(affectedCriterion).map(entry => entry.value));
-            const correlationCoefficient = jstat.corrcoeff(affectingValues, affectedValues);
+    }, [corrcoeff, affectingCriteria, affectedCriteria, trendOfAbnormal]);
 
 
-            const suggestion = generateSuggestion(
-                correlationCoefficient,
-                affectingCriterionKey,
-                affectedCriterionKey,
-                finalAbnormalStatus
-            );
+    
 
-            correlations.push({
-                affectingCriterionKey,
-                affectedCriterionKey,
-                correlationCoefficient,
-                suggestion,
-            });
-        });
-    });
-    console.log(correlations);
-    return correlations;
+    return (
+        <Container>
+            {info !== "" && (
+                <div>
+                    <HiInformationCircle />
+                    {info}
+                </div>
+            )}
+
+            {detectedValue !== "" && (
+                <div>
+                    <HiBell />
+                    {detectedValue}
+                </div>
+            )}
+
+            {change !== "" && (
+                <div>
+                    <HiOutlineKey />
+                    {change}
+                </div>
+            )}
+
+            {possibilities !== "" && (
+                <div>
+                    <HiExclamation />
+                    {possibilities}
+                </div>
+            )}
+        </Container>
+    );
+
+};
+
+export {
+    SuggestionComponent,
+    findCorrelationsFromData
 }
-
-export { generateSuggestion, findCorrelationsFromData };

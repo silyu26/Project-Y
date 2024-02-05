@@ -2,6 +2,7 @@ const Status = {
     TOO_HIGH: 1,
     TOO_LOW: -1,
     NORMAL: 0,
+    UNDEF: 2,
 };
 
 const normalRanges = {
@@ -10,56 +11,49 @@ const normalRanges = {
         max: 100,
     },
     temperatureCelsius: {
-        min: 36.1,
-        max: 37.2,
+        min: 35.5,
+        max: 36.9,
     },
     //TODO: what values to use here?
     hydration: {
         min: -1,
         max: 1,
+    },
+    mood: {
+        min: 3,
+        max: 8
+    },
+    sleep: {
+        min: 420,
+        max: 540
+    },
+    sportLevel: {
+        min: 3,
+        max: 7
+    },
+    sportTime: {
+        min: 10,
+        max: 120
     }
+
 };
 
-/**
- * Check the status of the provided heart rate.
- * @param {number} heartRate - The heart rate value.
- * @returns {number} - Status using enum (TOO_HIGH, TOO_LOW, NORMAL).
- */
-function checkHeartRateStatus(heartRate) {
-    const { min, max } = normalRanges.heartRate;
-
-    if (heartRate > max) {
-        return Status.TOO_HIGH;
-    } else if (heartRate < min) {
-        return Status.TOO_LOW;
-    } else {
-        return Status.NORMAL;
-    }
-}
 
 /**
- * Check the status of the provided temperature in Celsius.
- * @param {number} temperatureCelsius - The temperature value in Celsius.
- * @returns {number} - Status using enum (TOO_HIGH, TOO_LOW, NORMAL).
+ * Check the status of the provided health criteria.
+ * @param {*} attribute - chosen health criteria
+ * @param {*} value - value of the chosen criteria.
+ * @returns - Status using enum (TOO_HIGH, TOO_LOW, NORMAL).
  */
-function checkTemperatureStatus(temperatureCelsius) {
-    const { min, max } = normalRanges.temperatureCelsius;
-
-    if (temperatureCelsius > max) {
-        return Status.TOO_HIGH;
-    } else if (temperatureCelsius < min) {
-        return Status.TOO_LOW;
-    } else {
+function checkStatus(attribute, value) {
+    if (attribute == "doingsport") {
         return Status.NORMAL;
     }
-}
+    const { min, max } = normalRanges[attribute];
 
-function checkHydrationStatus(hydration){
-    const { min, max } = normalRanges.hydration;
-
-    if (hydration > max) {
+    if (value > max) {
         return Status.TOO_HIGH;
-    } else if (hydration < min) {
+    } else if (value < min) {
         return Status.TOO_LOW;
     } else {
         return Status.NORMAL;
@@ -68,7 +62,5 @@ function checkHydrationStatus(hydration){
 
 export {
     Status,
-    checkHeartRateStatus,
-    checkTemperatureStatus,
-    checkHydrationStatus
+    checkStatus
 };
