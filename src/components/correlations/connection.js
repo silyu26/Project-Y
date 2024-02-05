@@ -27,7 +27,6 @@ const PodConnectionSuggestion = () => {
   const [urls2, setUrls2] = useState([])
   const [show, setShow] = useState(false)
   const [show2, setShow2] = useState(false)
-  const [hasManualData, setHasManualData] = useState(false)
 
   useEffect(() => {
     const getAllContainers = async () => {
@@ -74,7 +73,6 @@ const PodConnectionSuggestion = () => {
   const getManualObjFromUrl = async (url) => {
     let datasets = await getSolidDataset(url, { fetch: session.fetch });
     if (datasets.graphs.default.hasOwnProperty(`${url}manual/`)) {
-      setHasManualData(true);
       return getObjFromUrl(`${url}manual/`)
     }
     else {
@@ -127,12 +125,18 @@ const PodConnectionSuggestion = () => {
             hydArr.push(createObj("hydration", obj.measurement.humidity, timeString));
             activeArr.push(createObj("doingsport", obj.measurement.doingsport, timeString));
 
-            if (hasManualData && manualObjArr && manualObjArr.length > 0) {
+            if (manualObjArr && manualObjArr.length > 0) {
               manualObjArr.forEach(manualObj => {
                 switch (manualObj.id) {
                   case "Mood Morning":
+                    if(time.getHours()>=12){
+                      moodArr.push(createObj("mood", manualObj.value, timeString));
+                    }
+                    break;
                   case "Mood Evening":
-                    moodArr.push(createObj("mood", manualObj.value, timeString));
+                    if(time.getHours()<11){
+                      moodArr.push(createObj("mood", manualObj.value, timeString));
+                    }
                     break;
                   case "Sports level of effort":
                     sportLevelArr.push(createObj("sportLevel", manualObj.value, timeString));
@@ -184,7 +188,7 @@ const PodConnectionSuggestion = () => {
     };
 
     queryObj();
-  }, [urls, session, hasManualData]);
+  }, [urls, session]);
 
 
   const shareData = () => {
