@@ -316,8 +316,12 @@ const Share = () => {
       <Toast show={show} onClose={() => setShow(false)} delay={5000} bg='success'>
         <Toast.Header>
           <strong className="me-auto">Sharing Completed!</strong>
+          
         </Toast.Header>
-        <Toast.Body>Your doctor can now view your observations!</Toast.Body>
+        <Toast.Body>
+          <p style={{ fontStyle: 'italic' }}>Your data has been converted into standard HL7 FHIR format and your doctor can now view your observations! These files are stored at:</p>
+          {validContainer.map((container, index) => <p key={index}>{process.env.REACT_APP_FHIR_DATA_URL}{container.value}fhir</p>)}
+        </Toast.Body>
       </Toast>
       <Toast show={show2} onClose={() => setShow2(false)} delay={5000} bg='danger' >
         <Toast.Header>
