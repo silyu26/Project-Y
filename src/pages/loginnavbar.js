@@ -43,7 +43,7 @@ function Loginnavbar() {
         ) : <Row>
             <div className="message">
               <LoginButton className="authButton" oidcIssuer={process.env.REACT_APP_SERVER_URL2}
-                redirectUrl={"http://localhost:3000/"}
+                redirectUrl={"http://projecty.wirtz.tech"}
                 authOptions={authOptions}
                 onError={onError} >
                 <Button variant="outline-primary">Log In</Button>
