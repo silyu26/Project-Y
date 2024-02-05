@@ -22,7 +22,7 @@ const PodConnectionSuggestion = () => {
   const [queriedDataset, setQueriedDataset] = useState(null)
   const [containers, setContainers] = useState([])
   const [validContainer, setValidContainer] = useState([])
-  const [isSharing, setIsSharing] = useState(false)
+  const [isSharing, setIsSharing] = useState(true)
   const [urls, setUrls] = useState([])
   const [urls2, setUrls2] = useState([])
   const [show, setShow] = useState(false)
