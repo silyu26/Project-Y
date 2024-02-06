@@ -1,6 +1,6 @@
 import { LoginButton, LogoutButton, useSession, CombinedDataProvider } from "@inrupt/solid-ui-react"
 // import { createSolidDataset, getSolidDataset, saveSolidDatasetAt } from "@inrupt/solid-client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -17,6 +17,7 @@ function Loginnavbar() {
   const {session} = useSession()
   const [error, setError] = useState(null) 
   const [showToast, setShowToast] = useState(false)
+  const [currentUrl, setCurrentUrl] = useState("http://projecty.wirtz.tech:7500")
 
     const onError = (Error) => {
         console.log("Error:",Error)
@@ -24,6 +25,9 @@ function Loginnavbar() {
         setError(Error.message)
         setShowToast(true)
     } 
+    useEffect(() => {
+      setCurrentUrl(window.location.href);
+    }, [setCurrentUrl])
 
     return(
       <>
@@ -43,7 +47,7 @@ function Loginnavbar() {
         ) : <Row>
             <div className="message">
               <LoginButton className="authButton" oidcIssuer={process.env.REACT_APP_SERVER_URL2}
-                redirectUrl={process.env.REACT_APP_REDIRECT_URL}
+                redirectUrl={currentUrl}
                 authOptions={authOptions}
                 onError={onError} >
                 <Button variant="outline-primary">Log In</Button>
