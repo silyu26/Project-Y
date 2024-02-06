@@ -1,7 +1,7 @@
 //import React from 'react';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-
+//after the user logged into the pod, the code and state has to be send to the python backend getAuth to recieve the DPop Header. This has to be saved to the sd card. 
 const ConnectSensor = () => {
   const queryParameters = new URLSearchParams(window.location.search)
   const code = queryParameters.get("code")

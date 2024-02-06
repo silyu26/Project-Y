@@ -12,7 +12,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 function Connectsensor(props) {
 
   const [data, setData] = useState([]);
-
+    //Use Python Backend to connect Sensor
     useEffect(() => {
         fetch('http://localhost:8000')
         .then((response) => response.text())
@@ -34,10 +34,10 @@ function Connectsensor(props) {
       </Modal.Header>
       <Modal.Body>
         
-        <h4>Which sensor would you like to connect?</h4>
+        <h4>Click here to start connecting an EmotiBit?</h4>
         <div id="ob">
 
-        <button onClick={() => (window.location.href = "" + data.split("|")[0])}>
+        <button onClick={() => (window.location.href = "" + data)}>
         Redirect
 </button>
 
