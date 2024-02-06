@@ -107,6 +107,16 @@ const PodConnectionSuggestion = () => {
     }
   };
 
+  const mockManualObj = (obj, arr) => {
+    if (obj === undefined || obj === null || !obj) {
+      const average = arr => arr.reduce((p, c) => p + c.value, 0) / arr.length;
+      const mockObj = arr.length > 0 ? { value: average(arr), abnormal: Status.UNDEF, timestamp: "" }
+        : { value: 0, abnormal: Status.UNDEF, timestamp: "" };
+        return mockObj;
+    }
+    return obj;
+  }
+
   useEffect(() => {
     const queryObj = async () => {
       try {
@@ -142,21 +152,14 @@ const PodConnectionSuggestion = () => {
               }
             });
           }
-          
-          //mock or sample manual data object if needed
-          [{ obj: sportLevelObj, arr: sportLevelArr },
-          { obj: sportTimeObj, arr: sportTimeArr },
-          { obj: moodMorningObj, arr: moodArr },
-          { obj: moodEveningObj, arr: moodArr },
-          { obj: sleepObj, arr: sleepArr }].forEach(item => {
-            if (item.obj === undefined || item.obj === null || !item.obj) {
-              const average = arr => arr.reduce((p, c) => p + c.value, 0) / arr.length;
-              const mockObj = item.arr.length > 0 ? { value: average(item.arr), abnormal: Status.UNDEF, timestamp: "" }
-                : { value: 0, abnormal: Status.UNDEF, timestamp: "" };
-              item.obj = mockObj;
-            }
-          });
 
+
+          //mock or sample manual data object if needed
+          sportLevelObj = mockManualObj(sportLevelObj, sportLevelArr);
+          sportTimeObj = mockManualObj(sportTimeObj, sportTimeArr);
+          moodMorningObj = mockManualObj(moodMorningObj, moodArr);
+          moodEveningObj = mockManualObj(moodEveningObj, moodArr);
+          sleepObj = mockManualObj(sleepObj, sleepArr);
 
           contObjArr.forEach(obj => {
             const time = new Date(obj.measurement.timestamp);
@@ -167,13 +170,18 @@ const PodConnectionSuggestion = () => {
             hydArr.push(createObj("hydration", obj.measurement.humidity, timeString));
             activeArr.push(createObj("doingsport", obj.measurement.doingsport, timeString));
 
-            [{ obj: sportLevelObj, arr: sportLevelArr },
-            { obj: sportTimeObj, arr: sportTimeArr },
-            { obj: time.getHours() >= 12 ? moodEveningObj : moodMorningObj, arr: moodArr },
-            { obj: sleepObj, arr: sleepArr }].forEach(item => {
-              item.obj.timestamp = timeString;
-              item.arr.push(item.obj);
-            });
+            sportLevelObj.timestamp = timeString;
+            sportLevelArr.push(sportLevelObj);
+
+            sportTimeObj.timestamp = timeString;
+            sportTimeArr.push(sportTimeObj);
+
+            let currentMood = time.getHours() >= 12 ? moodEveningObj : moodMorningObj;
+            currentMood.timestamp = timeString;
+            moodArr.push(currentMood);
+
+            sleepObj.timestamp = timeString;
+            sleepArr.push(sleepObj);
 
           });
         }
@@ -195,8 +203,10 @@ const PodConnectionSuggestion = () => {
 
         console.log(new Date(), "Done creating the data objects in heartRate.js");
         console.log(new Date(), temp);
+        setShow(true)
       } catch (error) {
         console.log(error);
+        setShow2(true)
       }
     };
 
@@ -219,10 +229,10 @@ const PodConnectionSuggestion = () => {
         setUrls2(urls2)
         setIsSharing(!isSharing)
       }
-      setShow(true)
+      // setShow(true)
     } catch (error) {
       console.log(error)
-      setShow2(true)
+      // setShow2(true)
     }
 
 

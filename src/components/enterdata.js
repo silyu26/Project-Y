@@ -24,7 +24,7 @@ function Enterdata(props) {
     // Define the file URL
     const fileURL = `${solidPodURL}${startDate}/manual/${selectedAttribute}.json`;
     const jsonBlob = new Blob([JSON.stringify({ id: selectedAttribute, value: selectedValue, timestamp: startDate })], { type: "application/json" });
-    const jsonFile = new File([jsonBlob], "goals.json", { type: "application/json" });
+    const jsonFile = new File([jsonBlob], `${selectedAttribute}.json`, { type: "application/json" });
 
     // Overwrite the JSON file in the Solid Pod
     await overwriteFile(
