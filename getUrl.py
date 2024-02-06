@@ -34,7 +34,7 @@ def format_response(response):
 
 OICD_SERVER = "http://88.99.95.51:4000" # Some OpenId connect issuer
 CLIENT_NAME = "ProjectXEmotibit"
-CLIENT_URL = "http://localhost:3000/pages/connectSensor"
+CLIENT_URL = "http://localhost:9000/pages/connectSensor"
 
 session = requests.Session()
 def printURL():
@@ -91,7 +91,7 @@ def printURL():
     })
 
     #print(LOGIN_URL)
-    ret = LOGIN_URL #+ "client" + CLIENT_ID + "|" + CODE_VERIFIER + "|" + TOKEN_ENDPOINT + CLIENT_SECRET
+    ret = LOGIN_URL + "|" + CLIENT_ID + "|" + CODE_VERIFIER + "|" + TOKEN_ENDPOINT + "|" + CLIENT_SECRET
     return ret
   
 
@@ -103,8 +103,22 @@ class CORSRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        #self.wfile.write(b'Hello, world!')
-        self.wfile.write(bytes(printURL(), "utf-8"))
+        print("PATH" + self.path)
+        query_components = parse_qs(urlparse(self.path).query)
+        get = ""
+        try:
+            get = query_components["get"] 
+        except:
+            self.wfile.write(bytes("error", "utf-8"))
+        if(get != ""):
+
+            #self.wfile.write(b'Hello, world!')
+            p = printURL()
+            f = open("registerDevice", "w")
+            #print(p)
+            f.write(p)
+            f.close()
+            self.wfile.write(bytes(p.split("|")[0], "utf-8"))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])

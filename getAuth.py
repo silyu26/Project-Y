@@ -28,12 +28,12 @@ OICD_SERVER = "http://88.99.95.51:4000"
 UPLOAD_PATH = "/test5/test2.txt"
 
 
-# AUTH_CODE = sys.argv[1]
-# state_value = sys.argv[2]
-# CLIENT_ID = sys.argv[3]
-# CODE_VERIFIER = sys.argv[4]
-# TOKEN_ENDPOINT = sys.argv[5]
-# CLIENT_SECRET = sys.argv[6]
+AUTH_CODE = "sys.argv[1]"
+state_value = "sys.argv[2]"
+CLIENT_ID = "sys.argv[3]"
+CODE_VERIFIER = "sys.argv[4]"
+TOKEN_ENDPOINT = ""
+CLIENT_SECRET = "sys.argv[6]"
 
 
 
@@ -142,20 +142,24 @@ class CORSRequestHandler(BaseHTTPRequestHandler):
         f = open("registerDevice", "r")
         da = f.read().split("|")
         query_components = parse_qs(urlparse(self.path).query)
-
-        AUTH_CODE = query_components["AUTH_CODE"] 
-        state_value = query_components["state_value"] 
-        CLIENT_ID = da[0]
-        CODE_VERIFIER = da[1] 
-        TOKEN_ENDPOINT = da[2]
-        CLIENT_SECRET = da[3]
-        f
+        AUTH_CODE = ""
+        state_value = ""
+        try:
+            AUTH_CODE = query_components["code"] 
+            state_value = query_components["state"] 
+        except:
+            print("error")
+        CLIENT_ID = da[1]
+        CODE_VERIFIER = da[2] 
+        TOKEN_ENDPOINT = da[3]
+        CLIENT_SECRET = da[4]
+        
 #        self.wfile.write(bytes("printAuth()", "utf-8"))
         #        CLIENT_ID = query_components["CLIENT_ID"] 
 #        CODE_VERIFIER = query_components["CODE_VERIFIER"] 
 #        TOKEN_ENDPOINT = query_components["TOKEN_ENDPOINT"] 
 #        CLIENT_SECRET = query_components["CLIENT_SECRET"] 
-#        self.wfile.write(bytes("printAuth()", "utf-8"))
+        self.wfile.write(bytes(printAuth(), "utf-8"))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
