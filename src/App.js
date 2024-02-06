@@ -5,6 +5,7 @@ import Footer from "./components/footer"
 import Share from "./pages/share"
 import Manageaccount from './pages/manageaccount';
 import Managepod from './pages/managepod';
+import ConnectSensor from './pages/connectSensor';
 import Settings from './pages/settings';
 import Home from "./pages/home"
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/pages/share" element={<Share />} />
             <Route path="/pages/manageaccount" element={<Manageaccount />} />
             <Route path="/pages/managepod" element={<Managepod />} />
+            <Route path="/pages/connectSensor" element={<ConnectSensor />} />
             <Route path="/pages/settings" element={<Settings />} />
           </Routes>
         </Container>
