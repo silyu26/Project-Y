@@ -195,8 +195,10 @@ const PodConnectionSuggestion = () => {
 
         console.log(new Date(), "Done creating the data objects in heartRate.js");
         console.log(new Date(), temp);
+        setShow(true)
       } catch (error) {
         console.log(error);
+        setShow2(true)
       }
     };
 
@@ -219,10 +221,10 @@ const PodConnectionSuggestion = () => {
         setUrls2(urls2)
         setIsSharing(!isSharing)
       }
-      setShow(true)
+      // setShow(true)
     } catch (error) {
       console.log(error)
-      setShow2(true)
+      // setShow2(true)
     }
 
 
