@@ -19,7 +19,7 @@ function Footer() {
                         </a>
                     </Col>
                     <Col className="text-center col-md-auto text-nowrap">
-                        <a href={process.env.REACT_APP_SERVER_URL} target="_blank" rel="noopener noreferrer" className="no-underline" >
+                        <a href={process.env.REACT_APP_SERVER_URL2} target="_blank" rel="noopener noreferrer" className="no-underline" >
                             <TbHexagonLetterS size={25} style={{ paddingRight: '2px' }} />
                             Solid server
                         </a>
