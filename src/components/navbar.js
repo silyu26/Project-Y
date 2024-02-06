@@ -49,14 +49,14 @@ function Navigatebar() {
                   />
               </NavDropdown.Item>
               {/*<NavDropdown.Item> <Link to="/pages/login" className="no-ul"> Add/Show Data</Link></NavDropdown.Item>*/}
-              <NavDropdown.Item> <span onClick={() => setConnectSensorModalShow(true)}>
+              {/*<NavDropdown.Item> <span onClick={() => setConnectSensorModalShow(true)}>
                  Connect Sensor
                  </span>
                 <Connectsensor
                   show={connectSensorModalShow}
                   onHide={() => setConnectSensorModalShow(false)}
                   />
-              </NavDropdown.Item>
+          </NavDropdown.Item>*/}
               </NavDropdown>
 
               <Nav.Link ><Link to="/pages/goals" className="no-ul"> Goals</Link></Nav.Link>

@@ -182,7 +182,7 @@ const PodConnectionSuggestion = () => {
 
             sleepObj.timestamp = timeString;
             sleepArr.push(sleepObj);
-
+            
           });
         }
 
