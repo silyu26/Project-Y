@@ -74,7 +74,7 @@ def format_response(response):
     #print("COOKIES: ")
     #print(response.cookies)
     return headers, body
-def printAuth(CLIENT_ID, CODE_VERIFIER, TOKEN_ENDPOINT, CLIENT_SECRET, AUTH_CODE, ):
+def printAuth(CLIENT_ID, CODE_VERIFIER, TOKEN_ENDPOINT, CLIENT_SECRET, AUTH_CODE, state_value):
 # generate public & private keys
     key = jwk.JWK.generate(kty='EC', crv='P-256')
 
@@ -105,10 +105,15 @@ def printAuth(CLIENT_ID, CODE_VERIFIER, TOKEN_ENDPOINT, CLIENT_SECRET, AUTH_CODE
 
     headers, body = format_response(res)
 
-    ACCESS_TOKEN = body['access_token']
-    ID_TOKEN = body['id_token']
-    REFRESH_TOKEN = body['refresh_token']
-
+    ACCESS_TOKEN = ""
+    ID_TOKEN = ""
+    REFRESH_TOKEN = ""
+    try:
+        ACCESS_TOKEN = body['access_token']
+        ID_TOKEN = body['id_token']
+        REFRESH_TOKEN = body['refresh_token']
+    except:
+        print("error")
     print('ACCESS_TOKEN ', ACCESS_TOKEN)
     print('ID_TOKEN ', ID_TOKEN)
     print('REFRESH_TOKEN ', REFRESH_TOKEN)
@@ -127,7 +132,7 @@ def printAuth(CLIENT_ID, CODE_VERIFIER, TOKEN_ENDPOINT, CLIENT_SECRET, AUTH_CODE
     }
     print(headers)
     ##response = session.put(upload_url, headers=headers, data="sdfdsfsdff")  # Use data instead of files
-    return headers;
+    return str(headers);
 
 
 class CORSRequestHandler(BaseHTTPRequestHandler):
